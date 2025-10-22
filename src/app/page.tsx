@@ -629,7 +629,7 @@ export default function Home() {
                 WHERE VISION MEETS REALITY
               </h2>
               <p className="text-lg text-muted-foreground mb-6">
-                Founded by <span className="text-foreground font-semibold">Darren Smith</span>, Swift Fit 215 is Philadelphia's premier boutique gym specializing in elite speed and strength training. Located in the heart of the Harrowgate community, we've been transforming bodies and building champions since 2021.
+                Founded by <span className="text-foreground font-semibold">Darren Swift</span>, Swift Fit 215 is Philadelphia's premier boutique gym specializing in elite speed and strength training. Located in the heart of the Harrowgate community, we've been transforming bodies and building champions since 2021.
               </p>
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
@@ -725,42 +725,42 @@ export default function Home() {
                 <p className="text-lg font-medium mb-3 text-foreground italic">
                   "Your success is our goal. We don't just track numbers—we build champions."
                 </p>
-                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+                <p className="text-sm text-muted-foreground">— Darren Swift</p>
               </Card>
 
               <Card className="p-6 border-l-4 border-l-primary">
                 <p className="text-lg font-medium mb-3 text-foreground italic">
                   "Where else would I be? This isn't just a job—it's my calling, my lifestyle, my family."
                 </p>
-                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+                <p className="text-sm text-muted-foreground">— Darren Swift</p>
               </Card>
 
               <Card className="p-6 border-l-4 border-l-primary">
                 <p className="text-lg font-medium mb-3 text-foreground italic">
                   "It gets greater, later. Trust the process and watch yourself transform."
                 </p>
-                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+                <p className="text-sm text-muted-foreground">— Darren Swift</p>
               </Card>
 
               <Card className="p-6 border-l-4 border-l-primary">
                 <p className="text-lg font-medium mb-3 text-foreground italic">
                   "We're not just building bodies—we're shifting mindsets and changing lives."
                 </p>
-                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+                <p className="text-sm text-muted-foreground">— Darren Swift</p>
               </Card>
 
               <Card className="p-6 border-l-4 border-l-primary">
                 <p className="text-lg font-medium mb-3 text-foreground italic">
                   "Fitness isn't a hobby here—it's a lifestyle. We live it, breathe it, embody it."
                 </p>
-                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+                <p className="text-sm text-muted-foreground">— Darren Swift</p>
               </Card>
 
               <Card className="p-6 border-l-4 border-l-primary">
                 <p className="text-lg font-medium mb-3 text-foreground italic">
                   "This is where champions are made. Elite training, personal attention, unbreakable results."
                 </p>
-                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+                <p className="text-sm text-muted-foreground">— Darren Swift</p>
               </Card>
             </div>
           </div>
