@@ -252,7 +252,7 @@ export default function Home() {
                   <div className="text-white/60 text-sm">Trained to play at the highest level</div>
                 </div>
                 <div className="text-center">
-                  <div className="font-display text-6xl md:text-7xl text-primary mb-2">3+</div>
+                  <div className="font-display text-6xl md:text-7xl text-primary mb-2">20+</div>
                   <div className="text-white text-lg font-semibold mb-1">Years Experience</div>
                   <div className="text-white/60 text-sm">Dedicated to elite athlete development</div>
                 </div>
