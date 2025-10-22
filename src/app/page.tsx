@@ -967,7 +967,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-white/10 pt-8 text-center text-sm text-white/60">
-            <p>© 2024 Swift Fit 215. All rights reserved. | Established May 2021</p>
+            <p>© 2025 Swift Fit 215. All rights reserved. | Established May 2021</p>
             <p className="mt-2 font-display text-primary">TRANSFORM YOUR BODY TODAY</p>
           </div>
         </div>
