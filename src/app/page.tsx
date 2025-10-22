@@ -353,7 +353,7 @@ export default function Home() {
           {/* Videos Section */}
           <div className="mb-16">
             <h3 className="font-display text-3xl text-secondary mb-8 tracking-wide">TRAINING VIDEOS</h3>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
                 <div className="relative aspect-video bg-muted">
                   <iframe
@@ -387,6 +387,24 @@ export default function Home() {
                 <CardHeader>
                   <CardTitle>Team Training</CardTitle>
                   <CardDescription>Group training sessions and team athletic development</CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <iframe
+                    src="https://player.vimeo.com/video/1129611092?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                    title="Youth Training"
+                    className="absolute inset-0 w-full h-full"
+                  ></iframe>
+                </div>
+                <CardHeader>
+                  <CardTitle>Youth Training</CardTitle>
+                  <CardDescription>Elite development programs for young athletes</CardDescription>
                 </CardHeader>
               </Card>
             </div>
