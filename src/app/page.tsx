@@ -658,12 +658,9 @@ export default function Home() {
             </div>
             <div className="relative">
               <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-muted relative">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1761151805681.png?width=8000&height=8000&resize=contain" 
-                  alt="Darren Smith - Founder & Head Trainer" 
-                  className="object-cover w-full h-full"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent"></div>
+                <div className="w-full h-full flex items-center justify-center bg-muted">
+                  <span className="text-muted-foreground text-lg">Placeholder</span>
+                </div>
               </div>
               <Card className="absolute -bottom-6 -left-6 p-6 bg-secondary text-white border-0 max-w-xs">
                 <div className="font-display text-3xl text-primary mb-2">IT GETS GREATER, LATER</div>
