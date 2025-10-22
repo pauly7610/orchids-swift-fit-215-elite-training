@@ -433,7 +433,7 @@ export default function Home() {
               <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
                 <div className="relative aspect-video bg-muted">
                   <iframe
-                    src="https://player.vimeo.com/video/1129620623?badge=0&autopause=0&player_id=0&app_id=58479"
+                    src="https://player.vimeo.com/video/1129620623?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
                     width="100%"
                     height="100%"
                     frameBorder="0"
