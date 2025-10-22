@@ -374,20 +374,19 @@ export default function Home() {
 
               <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
                 <div className="relative aspect-video bg-muted">
-                  <img 
-                    src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80" 
-                    alt="Athletic Performance" 
-                    className="object-cover w-full h-full"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
-                      <Play className="h-8 w-8 text-white fill-white ml-1" />
-                    </div>
-                  </div>
+                  <iframe
+                    src="https://player.vimeo.com/video/1129613316?badge=0&autopause=0&player_id=0&app_id=58479"
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
+                    title="Team Training"
+                    className="absolute inset-0 w-full h-full"
+                  ></iframe>
                 </div>
                 <CardHeader>
-                  <CardTitle>Athletic Performance</CardTitle>
-                  <CardDescription>Basketball, football, and track training sessions</CardDescription>
+                  <CardTitle>Team Training</CardTitle>
+                  <CardDescription>Group training sessions and team athletic development</CardDescription>
                 </CardHeader>
               </Card>
             </div>
