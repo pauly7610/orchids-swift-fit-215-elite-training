@@ -265,7 +265,7 @@ export default function Home() {
             </div>
           </Card>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
             <Card className="text-center p-8 border-2">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Award className="h-8 w-8 text-primary" />
@@ -281,10 +281,43 @@ export default function Home() {
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Trophy className="h-8 w-8 text-primary" />
               </div>
-              <div className="font-display text-4xl text-primary mb-2">FOX 29</div>
+              <div className="font-display text-4xl text-primary mb-2">3CBS</div>
               <div className="font-semibold mb-2">Featured On</div>
               <p className="text-sm text-muted-foreground">
-                Recognized by Philadelphia's leading news network
+                Recognized by CBS Philadelphia news network
+              </p>
+            </Card>
+
+            <Card className="text-center p-8 border-2">
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Trophy className="h-8 w-8 text-primary" />
+              </div>
+              <div className="font-display text-4xl text-primary mb-2">6ABC</div>
+              <div className="font-semibold mb-2">Featured On</div>
+              <p className="text-sm text-muted-foreground">
+                Recognized by ABC Philadelphia news network
+              </p>
+            </Card>
+
+            <Card className="text-center p-8 border-2">
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Trophy className="h-8 w-8 text-primary" />
+              </div>
+              <div className="font-display text-4xl text-primary mb-2">10NBC</div>
+              <div className="font-semibold mb-2">Featured On</div>
+              <p className="text-sm text-muted-foreground">
+                Recognized by NBC Philadelphia news network
+              </p>
+            </Card>
+
+            <Card className="text-center p-8 border-2">
+              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                <Trophy className="h-8 w-8 text-primary" />
+              </div>
+              <div className="font-display text-4xl text-primary mb-2">FOX29</div>
+              <div className="font-semibold mb-2">Featured On</div>
+              <p className="text-sm text-muted-foreground">
+                Recognized by FOX Philadelphia news network
               </p>
             </Card>
 
