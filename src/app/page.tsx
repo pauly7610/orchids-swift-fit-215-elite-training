@@ -230,6 +230,36 @@ export default function Home() {
             </p>
           </div>
 
+          {/* Proven Track Record Banner */}
+          <Card className="mb-12 overflow-hidden border-2 border-primary/20 bg-gradient-to-r from-secondary via-secondary/95 to-black">
+            <div className="p-8 md:p-12 text-center">
+              <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">PROVEN TRACK RECORD</Badge>
+              <h3 className="font-display text-3xl md:text-5xl text-white mb-4 tracking-wide">
+                BUILDING CHAMPIONS, CREATING FUTURES
+              </h3>
+              <p className="text-white/80 text-lg mb-8 max-w-3xl mx-auto">
+                Coach Darren Smith has transformed hundreds of athletes into college competitors and NFL professionals
+              </p>
+              <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="text-center">
+                  <div className="font-display text-6xl md:text-7xl text-primary mb-2">100s</div>
+                  <div className="text-white text-lg font-semibold mb-1">College Athletes</div>
+                  <div className="text-white/60 text-sm">Sent to compete at the collegiate level</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-display text-6xl md:text-7xl text-primary mb-2">12+</div>
+                  <div className="text-white text-lg font-semibold mb-1">NFL Players</div>
+                  <div className="text-white/60 text-sm">Trained to play at the highest level</div>
+                </div>
+                <div className="text-center">
+                  <div className="font-display text-6xl md:text-7xl text-primary mb-2">3+</div>
+                  <div className="text-white text-lg font-semibold mb-1">Years Experience</div>
+                  <div className="text-white/60 text-sm">Dedicated to elite athlete development</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <Card className="text-center p-8 border-2">
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
