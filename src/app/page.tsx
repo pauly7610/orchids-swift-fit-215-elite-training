@@ -618,8 +618,8 @@ export default function Home() {
             <div className="relative">
               <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-muted relative">
                 <img 
-                  src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80" 
-                  alt="Swift Fit Training" 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000006-1761148932677.JPG?width=8000&height=8000&resize=contain" 
+                  alt="Darren Smith - Founder & Head Trainer" 
                   className="object-cover w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent"></div>
