@@ -488,18 +488,18 @@ export default function Home() {
               <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
                 <div className="relative aspect-video bg-muted">
                   <iframe
-                    src="https://player.vimeo.com/video/1129620708?badge=0&autopause=0&player_id=0&app_id=58479"
+                    src="https://player.vimeo.com/video/1129624043?badge=0&autopause=0&player_id=0&app_id=58479"
                     width="100%"
                     height="100%"
                     frameBorder="0"
                     allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
-                    title="Agility Training"
+                    title="Cryotherapy Wellness"
                     className="absolute inset-0 w-full h-full"
                   ></iframe>
                 </div>
                 <CardHeader>
-                  <CardTitle>Agility Training</CardTitle>
-                  <CardDescription>Explosive movement and agility conditioning</CardDescription>
+                  <CardTitle>Cryotherapy Wellness</CardTitle>
+                  <CardDescription>Advanced recovery and wellness therapy</CardDescription>
                 </CardHeader>
               </Card>
             </div>
