@@ -46,7 +46,7 @@ export default function Home() {
             <a href="#gallery" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Gallery</a>
             <a href="#contact" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Contact</a>
             <Button size="sm" className="bg-primary hover:bg-primary/90">
-              <a href="tel:2154377658">Call Now</a>
+              <a href="tel:2679390254">Call Now</a>
             </Button>
           </nav>
         </div>
@@ -836,7 +836,7 @@ export default function Home() {
                     </div>
                     <div>
                       <div className="font-semibold mb-1">Phone</div>
-                      <a href="tel:2154377658" className="text-primary hover:underline block">(215) 437-7658</a>
+                      <a href="tel:2679390254" className="text-primary hover:underline block">(267) 939-0254</a>
                       <a href="tel:2155522939" className="text-primary hover:underline block">(215) 552-2939</a>
                     </div>
                   </div>
@@ -998,7 +998,7 @@ export default function Home() {
             <div>
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-white/70">
-                <li>(215) 437-7658</li>
+                <li>(267) 939-0254</li>
                 <li>(215) 552-2939</li>
                 <li>2245 E Tioga Street</li>
                 <li>Philadelphia, PA 19134</li>
