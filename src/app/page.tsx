@@ -402,6 +402,58 @@ export default function Home() {
               <p className="text-sm text-muted-foreground">Fitness as a lifestyle, not just a hobby</p>
             </div>
           </div>
+
+          {/* Darren's Philosophy Quotes */}
+          <div className="mt-20">
+            <div className="text-center mb-12">
+              <h3 className="font-display text-4xl md:text-5xl text-secondary mb-3 tracking-wide">WORDS FROM DARREN</h3>
+              <p className="text-muted-foreground">Motivation and mindset from our founder</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card className="p-6 border-l-4 border-l-primary">
+                <p className="text-lg font-medium mb-3 text-foreground italic">
+                  "Your success is our goal. We don't just track numbers—we build champions."
+                </p>
+                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+              </Card>
+
+              <Card className="p-6 border-l-4 border-l-primary">
+                <p className="text-lg font-medium mb-3 text-foreground italic">
+                  "Where else would I be? This isn't just a job—it's my calling, my lifestyle, my family."
+                </p>
+                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+              </Card>
+
+              <Card className="p-6 border-l-4 border-l-primary">
+                <p className="text-lg font-medium mb-3 text-foreground italic">
+                  "It gets greater, later. Trust the process and watch yourself transform."
+                </p>
+                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+              </Card>
+
+              <Card className="p-6 border-l-4 border-l-primary">
+                <p className="text-lg font-medium mb-3 text-foreground italic">
+                  "We're not just building bodies—we're shifting mindsets and changing lives."
+                </p>
+                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+              </Card>
+
+              <Card className="p-6 border-l-4 border-l-primary">
+                <p className="text-lg font-medium mb-3 text-foreground italic">
+                  "Fitness isn't a hobby here—it's a lifestyle. We live it, breathe it, embody it."
+                </p>
+                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+              </Card>
+
+              <Card className="p-6 border-l-4 border-l-primary">
+                <p className="text-lg font-medium mb-3 text-foreground italic">
+                  "This is where champions are made. Elite training, personal attention, unbreakable results."
+                </p>
+                <p className="text-sm text-muted-foreground">— Darren Smith</p>
+              </Card>
+            </div>
+          </div>
         </div>
       </section>
 
