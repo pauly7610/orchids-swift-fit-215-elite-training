@@ -357,6 +357,63 @@ export default function Home() {
               <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
                 <div className="relative aspect-video bg-muted">
                   <img 
+                    src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000003-1-1761150356094.JPG?width=8000&height=8000&resize=contain" 
+                    alt="Swift Fit Family Training" 
+                    className="object-cover w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
+                      <Play className="h-8 w-8 text-white fill-white ml-1" />
+                    </div>
+                  </div>
+                </div>
+                <CardHeader>
+                  <CardTitle>Swift Fit Family in Action</CardTitle>
+                  <CardDescription>Team training sessions with Coach Darren Smith</CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <img 
+                    src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/51EE0F41-EA39-442B-8017-19FAF07E1CBE-1761150357302.JPG?width=8000&height=8000&resize=contain" 
+                    alt="Championship Training" 
+                    className="object-cover w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
+                      <Play className="h-8 w-8 text-white fill-white ml-1" />
+                    </div>
+                  </div>
+                </div>
+                <CardHeader>
+                  <CardTitle>Championship Success Story</CardTitle>
+                  <CardDescription>Building champions one athlete at a time</CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <img 
+                    src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000000-2-1761150356181.JPG?width=8000&height=8000&resize=contain" 
+                    alt="Transformation Results" 
+                    className="object-cover w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
+                      <Play className="h-8 w-8 text-white fill-white ml-1" />
+                    </div>
+                  </div>
+                </div>
+                <CardHeader>
+                  <CardTitle>Real Client Transformations</CardTitle>
+                  <CardDescription>See the amazing results our clients achieve</CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <img 
                     src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80" 
                     alt="Training Session" 
                     className="object-cover w-full h-full"
@@ -410,25 +467,6 @@ export default function Home() {
                   <CardDescription>Basketball, football, and track training sessions</CardDescription>
                 </CardHeader>
               </Card>
-
-              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
-                <div className="relative aspect-video bg-muted">
-                  <img 
-                    src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&q=80" 
-                    alt="Recovery & Wellness" 
-                    className="object-cover w-full h-full"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
-                      <Play className="h-8 w-8 text-white fill-white ml-1" />
-                    </div>
-                  </div>
-                </div>
-                <CardHeader>
-                  <CardTitle>Recovery & Wellness</CardTitle>
-                  <CardDescription>Stretch therapy and mobility work for optimal recovery</CardDescription>
-                </CardHeader>
-              </Card>
             </div>
           </div>
 
@@ -458,45 +496,6 @@ export default function Home() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute bottom-4 left-4 right-4">
                     <p className="text-white font-semibold">Pro Training Connection</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/51EE0F41-EA39-442B-8017-19FAF07E1CBE-1761150357302.JPG?width=8000&height=8000&resize=contain" 
-                  alt="Champion Athlete with Coach" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Championship Success</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000003-1-1761150356094.JPG?width=8000&height=8000&resize=contain" 
-                  alt="Team Training Group" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Swift Fit Family</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000000-2-1761150356181.JPG?width=8000&height=8000&resize=contain" 
-                  alt="Client Transformation Results" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Real Results</p>
                   </div>
                 </div>
               </div>
