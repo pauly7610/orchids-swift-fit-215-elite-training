@@ -281,43 +281,16 @@ export default function Home() {
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Trophy className="h-8 w-8 text-primary" />
               </div>
-              <div className="font-display text-4xl text-primary mb-2">3CBS</div>
+              <div className="font-display text-4xl text-primary mb-2">MEDIA</div>
               <div className="font-semibold mb-2">Featured On</div>
-              <p className="text-sm text-muted-foreground">
-                Recognized by CBS Philadelphia news network
-              </p>
-            </Card>
-
-            <Card className="text-center p-8 border-2">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Trophy className="h-8 w-8 text-primary" />
+              <div className="flex flex-wrap justify-center gap-2 mb-3">
+                <Badge variant="secondary" className="text-xs">3CBS</Badge>
+                <Badge variant="secondary" className="text-xs">6ABC</Badge>
+                <Badge variant="secondary" className="text-xs">10NBC</Badge>
+                <Badge variant="secondary" className="text-xs">FOX29</Badge>
               </div>
-              <div className="font-display text-4xl text-primary mb-2">6ABC</div>
-              <div className="font-semibold mb-2">Featured On</div>
               <p className="text-sm text-muted-foreground">
-                Recognized by ABC Philadelphia news network
-              </p>
-            </Card>
-
-            <Card className="text-center p-8 border-2">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Trophy className="h-8 w-8 text-primary" />
-              </div>
-              <div className="font-display text-4xl text-primary mb-2">10NBC</div>
-              <div className="font-semibold mb-2">Featured On</div>
-              <p className="text-sm text-muted-foreground">
-                Recognized by NBC Philadelphia news network
-              </p>
-            </Card>
-
-            <Card className="text-center p-8 border-2">
-              <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                <Trophy className="h-8 w-8 text-primary" />
-              </div>
-              <div className="font-display text-4xl text-primary mb-2">FOX29</div>
-              <div className="font-semibold mb-2">Featured On</div>
-              <p className="text-sm text-muted-foreground">
-                Recognized by FOX Philadelphia news network
+                Recognized by Philadelphia's major news networks
               </p>
             </Card>
 
