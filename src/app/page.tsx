@@ -419,6 +419,19 @@ export default function Home() {
             <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
               <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
                 <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/IMG_4557-1761151137859.jpg?width=8000&height=8000&resize=contain" 
+                  alt="Swift Fit Team Training" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Group Training Session</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000003-1-1761150356094.JPG?width=8000&height=8000&resize=contain" 
                   alt="Swift Fit Family Training" 
                   className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
@@ -472,12 +485,12 @@ export default function Home() {
               <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
                 <img 
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/IMG_4559-1761148933467.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Darren Smith at Pro Event" 
+                  alt="Pro Training Connection - Micah Parsons" 
                   className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                   <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Pro Training Connection</p>
+                    <p className="text-white font-semibold">With NFL Star Micah Parsons</p>
                   </div>
                 </div>
               </div>
