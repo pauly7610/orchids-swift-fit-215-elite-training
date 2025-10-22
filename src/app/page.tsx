@@ -74,7 +74,7 @@ export default function Home() {
               <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg h-14 px-8">
                 <a href="#contact">Get Free Consultation</a>
               </Button>
-              <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-secondary text-lg h-14 px-8">
+              <Button size="lg" variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-secondary text-lg h-14 px-8">
                 <a href="#services">View Membership</a>
               </Button>
             </div>
