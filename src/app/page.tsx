@@ -91,7 +91,7 @@ export default function Home() {
               </div>
               <div className="h-12 w-px bg-white/20"></div>
               <div className="text-center">
-                <div className="font-display text-4xl text-primary">3.7K+</div>
+                <div className="font-display text-4xl text-primary">20K+</div>
                 <div className="text-sm text-white/60">Community</div>
               </div>
             </div>
