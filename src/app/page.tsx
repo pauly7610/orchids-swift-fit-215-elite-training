@@ -357,25 +357,6 @@ export default function Home() {
               <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
                 <div className="relative aspect-video bg-muted">
                   <img 
-                    src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80" 
-                    alt="Training Session" 
-                    className="object-cover w-full h-full"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
-                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
-                      <Play className="h-8 w-8 text-white fill-white ml-1" />
-                    </div>
-                  </div>
-                </div>
-                <CardHeader>
-                  <CardTitle>Speed & Agility Training</CardTitle>
-                  <CardDescription>Watch our athletes push their limits with explosive drills</CardDescription>
-                </CardHeader>
-              </Card>
-
-              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
-                <div className="relative aspect-video bg-muted">
-                  <img 
                     src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&q=80" 
                     alt="Strength Training" 
                     className="object-cover w-full h-full"
