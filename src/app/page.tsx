@@ -607,9 +607,29 @@ export default function Home() {
                   <h3 className="font-display text-2xl tracking-wider">SWIFT FIT 215</h3>
                 </div>
               </div>
-              <p className="text-white/70 text-sm">
+              <p className="text-white/70 text-sm mb-4">
                 Philadelphia's premier speed and strength training academy
               </p>
+              <div className="flex gap-3">
+                <a 
+                  href="https://www.instagram.com/swiftfit215/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="h-10 w-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors"
+                  aria-label="Follow us on Instagram"
+                >
+                  <Instagram className="h-5 w-5" />
+                </a>
+                <a 
+                  href="https://www.facebook.com/SwiftFit215/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="h-10 w-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors"
+                  aria-label="Follow us on Facebook"
+                >
+                  <Facebook className="h-5 w-5" />
+                </a>
+              </div>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Quick Links</h4>
