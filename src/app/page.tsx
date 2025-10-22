@@ -837,7 +837,6 @@ export default function Home() {
                     <div>
                       <div className="font-semibold mb-1">Phone</div>
                       <a href="tel:2679390254" className="text-primary hover:underline block">(267) 939-0254</a>
-                      <a href="tel:2155522939" className="text-primary hover:underline block">(215) 552-2939</a>
                     </div>
                   </div>
                   <div className="flex gap-4">
