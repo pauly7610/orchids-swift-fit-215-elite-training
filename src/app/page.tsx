@@ -357,18 +357,18 @@ export default function Home() {
               <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
                 <div className="relative aspect-video bg-muted">
                   <iframe
-                    src="https://player.vimeo.com/video/1129611092?badge=0&autopause=0&player_id=0&app_id=58479"
+                    src="https://player.vimeo.com/video/1129611570?badge=0&autopause=0&player_id=0&app_id=58479"
                     width="100%"
                     height="100%"
                     frameBorder="0"
                     allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
-                    title="Youth Training Session"
+                    title="1 on 1 Training"
                     className="absolute inset-0 w-full h-full"
                   ></iframe>
                 </div>
                 <CardHeader>
-                  <CardTitle>Youth Training Session</CardTitle>
-                  <CardDescription>Elite youth athlete development and speed training</CardDescription>
+                  <CardTitle>1 on 1 Training</CardTitle>
+                  <CardDescription>Personalized coaching and individualized training sessions</CardDescription>
                 </CardHeader>
               </Card>
 
