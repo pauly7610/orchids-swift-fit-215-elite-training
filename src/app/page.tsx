@@ -60,7 +60,7 @@ export default function Home() {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-3xl">
             <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 text-sm px-4 py-1">
-              Featured on FOX 29 Philadelphia
+              Featured on 3CBS, 6ABC, 10NBC & FOX29
             </Badge>
             <h1 className="font-display text-6xl md:text-8xl text-white mb-6 leading-tight tracking-wide">
               TRANSFORM YOUR BODY TODAY
