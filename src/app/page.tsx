@@ -432,6 +432,19 @@ export default function Home() {
 
               <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
                 <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000003-1761152593690.JPG?width=8000&height=8000&resize=contain" 
+                  alt="Team Training Sessions" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Team Training Sessions</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000003-1-1761150356094.JPG?width=8000&height=8000&resize=contain" 
                   alt="Swift Fit Family Training" 
                   className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
