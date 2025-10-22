@@ -571,6 +571,84 @@ export default function Home() {
 
               <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
                 <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/arsb-1761158486526.jpg?width=8000&height=8000&resize=contain" 
+                  alt="Amon-Ra St. Brown - NFL Star" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">With NFL Star Amon-Ra St. Brown</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/ryan-clark-1761158486622.jpg?width=8000&height=8000&resize=contain" 
+                  alt="Swift with NFL Legend and Commentator Ryan Clark" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">With NFL Legend Ryan Clark</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/team-training-photo-1761158486722.jpg?width=8000&height=8000&resize=contain" 
+                  alt="Team Training Session" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Team Training Session</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/best-athletes-come-to-swift-1761158484815.jpg?width=8000&height=8000&resize=contain" 
+                  alt="The Best Athletes Come to Swift" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">The Best Athletes Come to Swift</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/youth-workout-1761158484721.jpg?width=8000&height=8000&resize=contain" 
+                  alt="Youth Workout Session" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Youth Workout Session</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Darren-Swift-coaches-running-backs-at-the-premier-high-school-program-in-the-state-1761158484380.jpg?width=8000&height=8000&resize=contain" 
+                  alt="Darren Swift - RB Coach at Premier High School Program" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">RB Coach at Premier High School Program</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
                   src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80" 
                   alt="Gym Equipment" 
                   className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
