@@ -231,6 +231,47 @@ export default function Home() {
             </p>
           </div>
 
+          {/* NFL Success Stories */}
+          <Card className="mb-12 overflow-hidden border-2 border-primary/20 bg-gradient-to-r from-secondary via-secondary/95 to-black">
+            <div className="p-8 md:p-12">
+              <div className="text-center mb-8">
+                <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">FROM MIDDLE SCHOOL TO THE NFL</Badge>
+                <h3 className="font-display text-3xl md:text-5xl text-white mb-4 tracking-wide">
+                  TRAINED 3 NFL PLAYERS FROM THE GROUND UP
+                </h3>
+                <p className="text-white/80 text-lg max-w-3xl mx-auto">
+                  Mark Webb, Nasir Adderley, and D'Andre Swift have been training at SwiftFit215 since middle school. Now they're dominating in the NFL.
+                </p>
+              </div>
+              
+              <div className="relative rounded-xl overflow-hidden mb-6">
+                <img 
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000008-1761154858471.jpg?width=8000&height=8000&resize=contain" 
+                  alt="Mark Webb, Nasir Adderley, and D'Andre Swift - NFL Players trained by SwiftFit215" 
+                  className="w-full h-auto"
+                />
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div className="text-center bg-white/5 rounded-lg p-6 border border-white/10">
+                  <div className="font-display text-2xl text-white mb-2">MARK WEBB</div>
+                  <div className="text-primary font-semibold mb-1">Denver Broncos</div>
+                  <div className="text-white/60 text-sm">Trained since middle school</div>
+                </div>
+                <div className="text-center bg-white/5 rounded-lg p-6 border border-white/10">
+                  <div className="font-display text-2xl text-white mb-2">NASIR ADDERLEY</div>
+                  <div className="text-primary font-semibold mb-1">LA Chargers</div>
+                  <div className="text-white/60 text-sm">Trained since middle school</div>
+                </div>
+                <div className="text-center bg-white/5 rounded-lg p-6 border border-white/10">
+                  <div className="font-display text-2xl text-white mb-2">D'ANDRE SWIFT</div>
+                  <div className="text-primary font-semibold mb-1">Detroit Lions</div>
+                  <div className="text-white/60 text-sm">Trained since middle school</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+
           {/* Proven Track Record Banner */}
           <Card className="mb-12 overflow-hidden border-2 border-primary/20 bg-gradient-to-r from-secondary via-secondary/95 to-black">
             <div className="p-8 md:p-12 text-center">
