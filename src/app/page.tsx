@@ -589,19 +589,6 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80" 
-                  alt="Athletic Training" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Youth Athletes</p>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
