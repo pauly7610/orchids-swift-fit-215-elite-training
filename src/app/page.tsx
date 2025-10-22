@@ -407,6 +407,24 @@ export default function Home() {
                   <CardDescription>Elite development programs for young athletes</CardDescription>
                 </CardHeader>
               </Card>
+
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <iframe
+                    src="https://player.vimeo.com/video/1129611184?title=0&byline=0&portrait=0&badge=0&autopause=0&player_id=0&app_id=58479"
+                    width="100%"
+                    height="100%"
+                    frameBorder="0"
+                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                    title="Group Training Session"
+                    className="absolute inset-0 w-full h-full"
+                  ></iframe>
+                </div>
+                <CardHeader>
+                  <CardTitle>Group Training Session</CardTitle>
+                  <CardDescription>High-energy group workouts and community training</CardDescription>
+                </CardHeader>
+              </Card>
             </div>
           </div>
 
