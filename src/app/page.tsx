@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Phone, MapPin, Clock, Dumbbell, Users, Target, Zap, Heart, Trophy, Award, CheckCircle2, Star, Facebook, Instagram } from "lucide-react"
+import { Phone, MapPin, Clock, Dumbbell, Users, Target, Zap, Heart, Trophy, Award, CheckCircle2, Star, Facebook, Instagram, Play } from "lucide-react"
 import { useState } from "react"
 
 export default function Home() {
@@ -43,6 +43,7 @@ export default function Home() {
           <nav className="hidden md:flex items-center gap-6">
             <a href="#services" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Services</a>
             <a href="#about" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">About</a>
+            <a href="#gallery" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Gallery</a>
             <a href="#contact" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Contact</a>
             <Button size="sm" className="bg-primary hover:bg-primary/90">
               <a href="tel:2154377658">Call Now</a>
@@ -335,6 +336,236 @@ export default function Home() {
                 </div>
               </div>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section id="gallery" className="py-20 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide">SEE US IN ACTION</h2>
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Experience the energy, dedication, and transformations happening at Swift Fit 215
+            </p>
+          </div>
+
+          {/* Videos Section */}
+          <div className="mb-16">
+            <h3 className="font-display text-3xl text-secondary mb-8 tracking-wide">TRAINING VIDEOS</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <img 
+                    src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80" 
+                    alt="Training Session" 
+                    className="object-cover w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
+                      <Play className="h-8 w-8 text-white fill-white ml-1" />
+                    </div>
+                  </div>
+                </div>
+                <CardHeader>
+                  <CardTitle>Speed & Agility Training</CardTitle>
+                  <CardDescription>Watch our athletes push their limits with explosive drills</CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <img 
+                    src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&q=80" 
+                    alt="Strength Training" 
+                    className="object-cover w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
+                      <Play className="h-8 w-8 text-white fill-white ml-1" />
+                    </div>
+                  </div>
+                </div>
+                <CardHeader>
+                  <CardTitle>Strength Development</CardTitle>
+                  <CardDescription>Elite strength training techniques for maximum gains</CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <img 
+                    src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80" 
+                    alt="Athletic Performance" 
+                    className="object-cover w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
+                      <Play className="h-8 w-8 text-white fill-white ml-1" />
+                    </div>
+                  </div>
+                </div>
+                <CardHeader>
+                  <CardTitle>Athletic Performance</CardTitle>
+                  <CardDescription>Basketball, football, and track training sessions</CardDescription>
+                </CardHeader>
+              </Card>
+
+              <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
+                <div className="relative aspect-video bg-muted">
+                  <img 
+                    src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&q=80" 
+                    alt="Recovery & Wellness" 
+                    className="object-cover w-full h-full"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+                    <div className="h-16 w-16 rounded-full bg-primary flex items-center justify-center">
+                      <Play className="h-8 w-8 text-white fill-white ml-1" />
+                    </div>
+                  </div>
+                </div>
+                <CardHeader>
+                  <CardTitle>Recovery & Wellness</CardTitle>
+                  <CardDescription>Stretch therapy and mobility work for optimal recovery</CardDescription>
+                </CardHeader>
+              </Card>
+            </div>
+          </div>
+
+          {/* Photos Section */}
+          <div>
+            <h3 className="font-display text-3xl text-secondary mb-8 tracking-wide">FACILITY & TRAINING PHOTOS</h3>
+            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80" 
+                  alt="Gym Equipment" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">State-of-the-Art Equipment</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80" 
+                  alt="Training Floor" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Open Training Floor</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80" 
+                  alt="Personal Training" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">1-on-1 Training</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&q=80" 
+                  alt="Strength Zone" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Strength Zone</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&q=80" 
+                  alt="Group Training" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Team Training Sessions</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80" 
+                  alt="Athletic Training" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Youth Athletes</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&q=80" 
+                  alt="Stretching Area" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Recovery Area</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
+                <img 
+                  src="https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=600&q=80" 
+                  alt="Cardio Zone" 
+                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-white font-semibold">Cardio & Conditioning</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-muted-foreground mb-6">Follow us on social media for daily training content and updates</p>
+            <div className="flex justify-center gap-4">
+              <a 
+                href="https://www.instagram.com/swiftfit215/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-primary hover:bg-primary/90">
+                  <Instagram className="h-5 w-5 mr-2" />
+                  Follow on Instagram
+                </Button>
+              </a>
+              <a 
+                href="https://www.facebook.com/SwiftFit215/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                  <Facebook className="h-5 w-5 mr-2" />
+                  Like on Facebook
+                </Button>
+              </a>
+            </div>
           </div>
         </div>
       </section>
