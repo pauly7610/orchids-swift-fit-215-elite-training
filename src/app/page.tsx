@@ -998,7 +998,6 @@ export default function Home() {
               <h4 className="font-semibold mb-4">Contact</h4>
               <ul className="space-y-2 text-sm text-white/70">
                 <li>(267) 939-0254</li>
-                <li>(215) 552-2939</li>
                 <li>2245 E Tioga Street</li>
                 <li>Philadelphia, PA 19134</li>
               </ul>
