@@ -36,7 +36,7 @@ export default function Home() {
           <div className="flex items-center gap-2">
             <Dumbbell className="h-8 w-8 text-primary" />
             <div>
-              <h1 className="font-display text-2xl text-white tracking-wider">SWIFT FIT 215</h1>
+              <h1 className="font-display text-2xl text-white tracking-wider">SWIFTFIT 215</h1>
               <p className="text-xs text-primary/80 -mt-1">Speed & Strength Training</p>
             </div>
           </div>
@@ -334,7 +334,7 @@ export default function Home() {
                 ))}
               </div>
               <p className="text-lg mb-4 italic">
-                "Swift Fit is more than a gym—it's a family. The personalized attention and elite training programs have transformed not just my body, but my entire mindset."
+                "SwiftFit is more than a gym—it's a family. The personalized attention and elite training programs have transformed not just my body, but my entire mindset."
               </p>
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
@@ -356,7 +356,7 @@ export default function Home() {
           <div className="text-center mb-16">
             <h2 className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide">SEE US IN ACTION</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Experience the energy, dedication, and transformations happening at Swift Fit 215
+              Experience the energy, dedication, and transformations happening at SwiftFit 215
             </p>
           </div>
 
@@ -726,7 +726,7 @@ export default function Home() {
                 WHERE VISION MEETS REALITY
               </h2>
               <p className="text-lg text-muted-foreground mb-6">
-                Founded by <span className="text-foreground font-semibold">Darren Swift</span>, Swift Fit 215 is Philadelphia's premier boutique gym specializing in elite speed and strength training. Located in the heart of the Harrowgate community, we've been transforming bodies and building champions since 2021.
+                Founded by <span className="text-foreground font-semibold">Darren Swift</span>, SwiftFit 215 is Philadelphia's premier boutique gym specializing in elite speed and strength training. Located in the heart of the Harrowgate community, we've been transforming bodies and building champions since 2021.
               </p>
               <div className="space-y-4 mb-8">
                 <div className="flex items-start gap-3">
@@ -765,7 +765,7 @@ export default function Home() {
               <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-muted relative">
                 <img 
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1761152758760.png?width=8000&height=8000&resize=contain" 
-                  alt="Swift Fit 215 Training" 
+                  alt="SwiftFit 215 Training" 
                   className="object-cover w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent"></div>
@@ -929,7 +929,7 @@ export default function Home() {
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Swift Fit 215 Location"
+                  title="SwiftFit 215 Location"
                 ></iframe>
               </div>
             </div>
@@ -994,7 +994,7 @@ export default function Home() {
                   {isSubmitting ? "Sending..." : "Get Your Free Consultation"}
                 </Button>
                 <p className="text-xs text-center text-muted-foreground">
-                  By submitting this form, you agree to be contacted by Swift Fit 215
+                  By submitting this form, you agree to be contacted by SwiftFit 215
                 </p>
               </form>
             </Card>
@@ -1010,7 +1010,7 @@ export default function Home() {
               <div className="flex items-center gap-2 mb-4">
                 <Dumbbell className="h-8 w-8 text-primary" />
                 <div>
-                  <h3 className="font-display text-2xl tracking-wider">SWIFT FIT 215</h3>
+                  <h3 className="font-display text-2xl tracking-wider">SWIFTFIT 215</h3>
                 </div>
               </div>
               <p className="text-white/70 text-sm mb-4">
@@ -1064,7 +1064,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-white/10 pt-8 text-center text-sm text-white/60">
-            <p>© 2025 Swift Fit 215. All rights reserved. | Established May 2021</p>
+            <p>© 2025 SwiftFit 215. All rights reserved. | Established May 2021</p>
             <p className="mt-2 font-display text-primary">TRANSFORM YOUR BODY TODAY</p>
           </div>
         </div>
