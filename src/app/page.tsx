@@ -292,7 +292,7 @@ export default function Home() {
               <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                 <Users className="h-8 w-8 text-primary" />
               </div>
-              <div className="font-display text-4xl text-primary mb-2">3.7K+</div>
+              <div className="font-display text-4xl text-primary mb-2">20K+</div>
               <div className="font-semibold mb-2">Community Members</div>
               <p className="text-sm text-muted-foreground">
                 Active social media following and growing family
