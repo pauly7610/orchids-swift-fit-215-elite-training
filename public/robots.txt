@@ -1,0 +1,6 @@
+# Allow all crawlers to index all content
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://swiftfit215.com/sitemap.xml
