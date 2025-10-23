@@ -766,7 +766,7 @@ export default function Home() {
                 <img 
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1761152758760.png?width=8000&height=8000&resize=contain" 
                   alt="SwiftFit 215 Training" 
-                  className="object-cover w-full h-full"
+                  className="object-cover object-[center_30%] w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent"></div>
               </div>
