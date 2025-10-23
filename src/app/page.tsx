@@ -62,12 +62,12 @@ export default function Home() {
             <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 text-sm px-4 py-1">
               Featured on 3CBS, 6ABC, 10NBC & FOX29
             </Badge>
-            <h1 className="font-display text-6xl md:text-8xl text-white mb-6 leading-tight tracking-wide">
-              TRANSFORM YOUR BODY TODAY
-            </h1>
-            <p className="text-xl md:text-2xl text-white/90 mb-4 font-light">
+            <h1 className="font-display text-5xl md:text-7xl text-white mb-6 leading-tight tracking-wide">
               Elite Speed & Strength Training in the Heart of Philadelphia
-            </p>
+            </h1>
+            <h2 className="font-display text-4xl md:text-6xl text-primary mb-4 leading-tight tracking-wide">
+              TRANSFORM YOUR BODY TODAY
+            </h2>
             <p className="text-lg text-white/70 mb-8 max-w-2xl">
               Join Philadelphia's premier boutique gym where champions are made. From beginners to elite athletes, we build stronger bodies and unbreakable mindsets.
             </p>
