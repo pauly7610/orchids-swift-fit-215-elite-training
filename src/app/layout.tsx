@@ -5,8 +5,8 @@ import ErrorReporter from "@/components/ErrorReporter";
 import Script from "next/script";
 
 export const metadata: Metadata = {
-  title: "Swift Fit 215 - Elite Training & Gym in Philadelphia",
-  description: "Transform your body at Swift Fit 215. $45/month gym membership, personal training, and specialized athletic training in Philadelphia, PA.",
+  title: "SwiftFit 215 | Elite Speed & Strength Training | Philadelphia Gym | NFL Trainer Darren Swift",
+  description: "Train with NFL player coach Darren Swift at Philadelphia's premier boutique gym. Elite speed & strength training for athletes of all levels. Free consultation - 2245 E Tioga St.",
 };
 
 export default function RootLayout({
