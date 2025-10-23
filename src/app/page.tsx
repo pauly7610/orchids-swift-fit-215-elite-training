@@ -321,7 +321,7 @@ export default function Home() {
                   <span className="font-display text-primary">DS</span>
                 </div>
                 <div>
-                  <div className="font-semibold">Darren Smith</div>
+                  <div className="font-semibold">Darren Swift</div>
                   <div className="text-sm text-muted-foreground">Owner & Head Trainer</div>
                 </div>
               </div>
