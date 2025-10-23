@@ -243,7 +243,7 @@ export default function Home() {
                 BUILDING CHAMPIONS, CREATING FUTURES
               </h3>
               <p className="text-white/80 text-lg mb-8 max-w-3xl mx-auto">
-                Coach Darren Smith has transformed hundreds of athletes into college competitors and NFL professionals
+                Coach Darren Swift has transformed hundreds of athletes into college competitors and NFL professionals
               </p>
               <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
                 <div className="text-center">
