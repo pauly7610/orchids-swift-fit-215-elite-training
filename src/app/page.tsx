@@ -44,6 +44,7 @@ export default function Home() {
             <a href="#services" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Services</a>
             <a href="#about" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">About</a>
             <a href="#gallery" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Gallery</a>
+            <a href="/pilates" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Pilates</a>
             <a href="#contact" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Contact</a>
             <Button size="sm" className="bg-primary hover:bg-primary/90">
               <a href="tel:2679390254">Call Now</a>
