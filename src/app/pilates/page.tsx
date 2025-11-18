@@ -2,30 +2,235 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
-import { CheckCircle2, Clock, Target, Zap, Heart, Award } from "lucide-react"
-import { useState } from "react"
+import { CheckCircle2, Clock, Target, Zap, Heart, Award, Calendar, User, AlertCircle } from "lucide-react"
+import { useState, useEffect } from "react"
 import { PilatesNav } from "@/components/pilates-nav"
+import { useSession } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
+import { format, parseISO, startOfWeek, addDays, isSameDay } from "date-fns"
+
+interface ClassWithDetails {
+  id: number
+  date: string
+  startTime: string
+  endTime: string
+  capacity: number
+  status: string
+  classType: {
+    id: number
+    name: string
+    description: string
+    durationMinutes: number
+  }
+  instructor: {
+    id: number
+    name: string
+    bio: string
+  }
+  registeredCount: number
+  spotsRemaining: number
+  isUserBooked: boolean
+  waitlistPosition: number | null
+}
+
+interface StudentCredit {
+  totalCredits: number
+  packages: Array<{
+    id: number
+    name: string
+    creditsRemaining: number
+    expiresAt: string
+  }>
+}
 
 export default function PilatesPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    phone: ""
-  })
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { data: session } = useSession()
+  const router = useRouter()
+  const [classes, setClasses] = useState<ClassWithDetails[]>([])
+  const [loading, setLoading] = useState(true)
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [credits, setCredits] = useState<StudentCredit | null>(null)
+  const [bookingInProgress, setBookingInProgress] = useState<number | null>(null)
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    alert("Thank you! We'll contact you about our Pilates classes.")
-    setFormData({ name: "", email: "", phone: "" })
-    setIsSubmitting(false)
+  const weekDays = Array.from({ length: 7 }, (_, i) => 
+    addDays(startOfWeek(selectedDate, { weekStartsOn: 1 }), i)
+  )
+
+  useEffect(() => {
+    fetchClasses()
+    if (session) {
+      fetchCredits()
+    }
+  }, [selectedDate, session])
+
+  const fetchClasses = async () => {
+    try {
+      setLoading(true)
+      const token = localStorage.getItem("bearer_token")
+      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      
+      const res = await fetch("/api/classes/schedule", { headers })
+      if (res.ok) {
+        const data = await res.json()
+        setClasses(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch classes:", error)
+    } finally {
+      setLoading(false)
+    }
   }
+
+  const fetchCredits = async () => {
+    try {
+      const token = localStorage.getItem("bearer_token")
+      if (!token) return
+      
+      const res = await fetch(`/api/students/${session?.user?.id}/credits`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setCredits(data)
+      }
+    } catch (error) {
+      console.error("Failed to fetch credits:", error)
+    }
+  }
+
+  const handleBookClass = async (classId: number) => {
+    if (!session) {
+      toast.error("Please log in to book classes")
+      router.push(`/login?redirect=/pilates`)
+      return
+    }
+
+    if (credits && credits.totalCredits === 0) {
+      toast.error("No credits available. Please purchase a package.")
+      router.push("/student/purchase")
+      return
+    }
+
+    setBookingInProgress(classId)
+
+    try {
+      const token = localStorage.getItem("bearer_token")
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ classId })
+      })
+
+      const data = await res.json()
+      
+      if (res.ok) {
+        toast.success(data.message || "✓ Class booked successfully!")
+        await fetchClasses()
+        await fetchCredits()
+      } else {
+        toast.error(data.error || "Failed to book class")
+      }
+    } catch (error) {
+      toast.error("Failed to book class. Please try again.")
+    } finally {
+      setBookingInProgress(null)
+    }
+  }
+
+  const handleCancelBooking = async (classId: number) => {
+    if (!session) return
+
+    const classData = classes.find(c => c.id === classId)
+    if (!classData) return
+
+    setBookingInProgress(classId)
+
+    try {
+      const token = localStorage.getItem("bearer_token")
+      
+      // Find the booking ID
+      const bookingsRes = await fetch(`/api/bookings?classId=${classId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      
+      if (!bookingsRes.ok) {
+        toast.error("Failed to find booking")
+        return
+      }
+
+      const bookings = await bookingsRes.json()
+      const booking = bookings.find((b: any) => b.bookingStatus === "confirmed")
+      
+      if (!booking) {
+        toast.error("Booking not found")
+        return
+      }
+
+      const res = await fetch(`/api/bookings/${booking.id}/cancel`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      const data = await res.json()
+      
+      if (res.ok) {
+        toast.success(data.message || "✓ Booking cancelled")
+        await fetchClasses()
+        await fetchCredits()
+      } else {
+        toast.error(data.error || "Failed to cancel booking")
+      }
+    } catch (error) {
+      toast.error("Failed to cancel booking")
+    } finally {
+      setBookingInProgress(null)
+    }
+  }
+
+  const handleJoinWaitlist = async (classId: number) => {
+    if (!session) {
+      toast.error("Please log in to join waitlist")
+      router.push(`/login?redirect=/pilates`)
+      return
+    }
+
+    setBookingInProgress(classId)
+
+    try {
+      const token = localStorage.getItem("bearer_token")
+      const res = await fetch("/api/waitlist", {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ classId })
+      })
+
+      const data = await res.json()
+      
+      if (res.ok) {
+        toast.success(`✓ Added to waitlist (Position: ${data.position})`)
+        await fetchClasses()
+      } else {
+        toast.error(data.error || "Failed to join waitlist")
+      }
+    } catch (error) {
+      toast.error("Failed to join waitlist")
+    } finally {
+      setBookingInProgress(null)
+    }
+  }
+
+  const filteredClasses = classes.filter(cls => {
+    const classDate = parseISO(cls.date)
+    return isSameDay(classDate, selectedDate)
+  })
 
   return (
     <div className="min-h-screen">
@@ -62,29 +267,30 @@ export default function PilatesPage() {
               Not your typical Pilates class. We combine core strength, flexibility, and athletic conditioning to build powerful, injury-resistant bodies. Perfect for athletes, fitness enthusiasts, and anyone serious about functional strength.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg h-14 px-8">
-                <a href="#signup">Join a Class</a>
+              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg h-14 px-8" onClick={() => {
+                document.getElementById("book-classes")?.scrollIntoView({ behavior: "smooth" })
+              }}>
+                Book a Class Now
               </Button>
               <Button size="lg" variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-secondary text-lg h-14 px-8">
                 <a href="#schedule">View Schedule</a>
               </Button>
             </div>
-            <div className="flex items-center gap-8 mt-10">
-              <div className="text-center">
-                <div className="font-display text-4xl text-primary">5AM</div>
-                <div className="text-sm text-white/60">Early Session</div>
+            {session && credits && (
+              <div className="mt-8 p-4 bg-white/10 backdrop-blur rounded-lg border border-white/20">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-white/60 text-sm">Your Available Credits</p>
+                    <p className="text-white font-display text-3xl">{credits.totalCredits}</p>
+                  </div>
+                  {credits.totalCredits === 0 && (
+                    <Button variant="outline" className="border-white text-white hover:bg-white hover:text-secondary" onClick={() => router.push("/student/purchase")}>
+                      Buy Credits
+                    </Button>
+                  )}
+                </div>
               </div>
-              <div className="h-12 w-px bg-white/20"></div>
-              <div className="text-center">
-                <div className="font-display text-4xl text-primary">6:30AM</div>
-                <div className="text-sm text-white/60">Morning Session</div>
-              </div>
-              <div className="h-12 w-px bg-white/20"></div>
-              <div className="text-center">
-                <div className="font-display text-4xl text-primary">50MIN</div>
-                <div className="text-sm text-white/60">Class Length</div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -187,8 +393,243 @@ export default function PilatesPage() {
         </div>
       </section>
 
+      {/* Real-Time Class Booking Section */}
+      <section id="book-classes" className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide">BOOK YOUR CLASS</h2>
+              <p className="text-lg text-muted-foreground mb-2">
+                Real-time availability • Instant confirmation • Easy cancellation
+              </p>
+              {!session && (
+                <p className="text-sm text-muted-foreground">
+                  <Button variant="link" className="text-primary p-0 h-auto" onClick={() => router.push("/login?redirect=/pilates")}>
+                    Log in
+                  </Button> or <Button variant="link" className="text-primary p-0 h-auto" onClick={() => router.push("/register")}>
+                    create an account
+                  </Button> to book classes
+                </p>
+              )}
+            </div>
+
+            {/* Week Selector */}
+            <div className="mb-8">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedDate(addDays(selectedDate, -7))}
+                >
+                  ← Previous Week
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedDate(new Date())}
+                >
+                  Today
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedDate(addDays(selectedDate, 7))}
+                >
+                  Next Week →
+                </Button>
+              </div>
+
+              <div className="grid grid-cols-7 gap-2">
+                {weekDays.map((day, idx) => {
+                  const isSelected = isSameDay(day, selectedDate)
+                  const isToday = isSameDay(day, new Date())
+                  const dayClasses = classes.filter(cls => isSameDay(parseISO(cls.date), day))
+                  
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setSelectedDate(day)}
+                      className={`p-3 rounded-lg border-2 transition-all ${
+                        isSelected 
+                          ? "border-primary bg-primary/10" 
+                          : "border-border hover:border-primary/50"
+                      }`}
+                    >
+                      <div className="text-xs text-muted-foreground mb-1">
+                        {format(day, "EEE")}
+                      </div>
+                      <div className={`text-lg font-semibold ${isToday ? "text-primary" : ""}`}>
+                        {format(day, "d")}
+                      </div>
+                      {dayClasses.length > 0 && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {dayClasses.length} class{dayClasses.length !== 1 ? "es" : ""}
+                        </div>
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Classes for Selected Date */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Classes on {format(selectedDate, "EEEE, MMMM d, yyyy")}</CardTitle>
+                <CardDescription>
+                  {filteredClasses.length} class{filteredClasses.length !== 1 ? "es" : ""} available
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {loading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                    <p className="text-muted-foreground">Loading classes...</p>
+                  </div>
+                ) : filteredClasses.length === 0 ? (
+                  <div className="text-center py-12">
+                    <AlertCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-muted-foreground">No classes scheduled for this date</p>
+                    <p className="text-sm text-muted-foreground mt-2">Try selecting a different day</p>
+                  </div>
+                ) : (
+                  filteredClasses.map((cls) => {
+                    const isFull = cls.spotsRemaining <= 0
+                    const isBooked = cls.isUserBooked
+                    const isOnWaitlist = cls.waitlistPosition !== null
+                    const isProcessing = bookingInProgress === cls.id
+                    
+                    return (
+                      <Card key={cls.id} className="border-2 hover:border-primary/50 transition-all">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between gap-6">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-3 mb-3">
+                                <h3 className="font-display text-2xl text-primary tracking-wide">
+                                  {cls.classType.name}
+                                </h3>
+                                {isBooked && (
+                                  <Badge className="bg-green-500">✓ Booked</Badge>
+                                )}
+                                {isOnWaitlist && (
+                                  <Badge variant="outline">Waitlist #{cls.waitlistPosition}</Badge>
+                                )}
+                              </div>
+                              
+                              <p className="text-muted-foreground mb-4 text-sm">
+                                {cls.classType.description}
+                              </p>
+
+                              <div className="grid grid-cols-2 gap-4 text-sm">
+                                <div className="flex items-center gap-2">
+                                  <Clock className="h-4 w-4 text-primary" />
+                                  <span className="font-semibold">{cls.startTime} - {cls.endTime}</span>
+                                  <span className="text-muted-foreground">({cls.classType.durationMinutes} min)</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <User className="h-4 w-4 text-primary" />
+                                  <span>{cls.instructor.name}</span>
+                                </div>
+                              </div>
+
+                              <div className="mt-4 flex items-center gap-4">
+                                <Badge 
+                                  variant={isFull ? "destructive" : cls.spotsRemaining <= 3 ? "default" : "secondary"}
+                                  className="text-sm"
+                                >
+                                  {isFull ? "FULL" : `${cls.spotsRemaining} spot${cls.spotsRemaining !== 1 ? "s" : ""} left`}
+                                </Badge>
+                                <span className="text-sm text-muted-foreground">
+                                  {cls.registeredCount} / {cls.capacity} registered
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col gap-2 min-w-[140px]">
+                              {isBooked ? (
+                                <Button 
+                                  variant="outline"
+                                  onClick={() => handleCancelBooking(cls.id)}
+                                  disabled={isProcessing}
+                                  className="w-full"
+                                >
+                                  {isProcessing ? "Cancelling..." : "Cancel Booking"}
+                                </Button>
+                              ) : isFull ? (
+                                isOnWaitlist ? (
+                                  <Button variant="outline" disabled className="w-full">
+                                    On Waitlist
+                                  </Button>
+                                ) : (
+                                  <Button 
+                                    variant="outline"
+                                    onClick={() => handleJoinWaitlist(cls.id)}
+                                    disabled={isProcessing || !session}
+                                    className="w-full"
+                                  >
+                                    {isProcessing ? "Joining..." : "Join Waitlist"}
+                                  </Button>
+                                )
+                              ) : (
+                                <Button 
+                                  onClick={() => handleBookClass(cls.id)}
+                                  disabled={isProcessing || !session || (credits && credits.totalCredits === 0)}
+                                  className="w-full bg-primary hover:bg-primary/90"
+                                >
+                                  {isProcessing ? "Booking..." : "Book Now"}
+                                </Button>
+                              )}
+                              
+                              {!session && (
+                                <p className="text-xs text-center text-muted-foreground mt-1">
+                                  Login required
+                                </p>
+                              )}
+                              
+                              {session && credits && credits.totalCredits === 0 && !isBooked && (
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => router.push("/student/purchase")}
+                                  className="w-full"
+                                >
+                                  Buy Credits
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )
+                  })
+                )}
+              </CardContent>
+            </Card>
+
+            {!session && (
+              <Card className="mt-8 bg-primary/5 border-primary/20">
+                <CardContent className="p-6 text-center">
+                  <h3 className="font-semibold text-lg mb-2">Ready to get started?</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Create an account to book classes, purchase packages, and manage your schedule
+                  </p>
+                  <div className="flex gap-4 justify-center">
+                    <Button onClick={() => router.push("/register")}>
+                      Create Account
+                    </Button>
+                    <Button variant="outline" onClick={() => router.push("/login?redirect=/pilates")}>
+                      Log In
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </section>
+
       {/* What to Expect */}
-      <section className="py-20 bg-muted/30">
+      <section id="schedule" className="py-20 bg-background">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
@@ -259,189 +700,21 @@ export default function PilatesPage() {
         </div>
       </section>
 
-      {/* Schedule Section */}
-      <section id="schedule" className="py-20 bg-background">
+      {/* Contact Section */}
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide">CLASS SCHEDULE</h2>
-              <p className="text-lg text-muted-foreground">
-                Early morning sessions to kickstart your day with focused movement
-              </p>
-            </div>
-
-            <Card className="p-8 mb-8 border-2">
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Clock className="h-8 w-8 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-display text-3xl text-primary">5:00 AM</div>
-                      <div className="text-sm text-muted-foreground">Early Bird Session</div>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground mb-4">
-                    Start your day with intentional movement before work or training. Perfect for early risers and those with busy schedules.
-                  </p>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      <span>50-minute mat Pilates class</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      <span>Small group setting</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      <span>All levels welcome</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div>
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Clock className="h-8 w-8 text-primary" />
-                    </div>
-                    <div>
-                      <div className="font-display text-3xl text-primary">6:30 AM</div>
-                      <div className="text-sm text-muted-foreground">Morning Power Session</div>
-                    </div>
-                  </div>
-                  <p className="text-muted-foreground mb-4">
-                    Energize your morning with core-focused training. Ideal timing for pre-work movement or before your main training session.
-                  </p>
-                  <ul className="space-y-2 text-sm">
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      <span>50-minute mat Pilates class</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      <span>Small group setting</span>
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-primary" />
-                      <span>All levels welcome</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </Card>
-
-            <Card className="p-6 bg-muted/50 border-primary/20">
-              <div className="flex items-start gap-4">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <CheckCircle2 className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2 text-lg">Included with Gym Membership</h4>
-                  <p className="text-muted-foreground mb-4">
-                    Mat Pilates classes are included with your $45/month SwiftFit membership—no extra fees, no hidden costs. Already a member? Just show up and join us on the mat.
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    <strong>Not a member yet?</strong> Contact us about starting your membership to access Pilates classes along with all gym facilities and training programs.
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* Signup Section */}
-      <section id="signup" className="py-20 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide">JOIN A CLASS</h2>
-              <p className="text-lg text-muted-foreground">
-                Ready to add Pilates to your training? Fill out the form and we'll get you started.
-              </p>
-            </div>
-
-            <Card className="p-8">
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div>
-                  <Label htmlFor="name">Full Name *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                    placeholder="John Doe"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">Email *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                    placeholder="john@example.com"
-                    className="mt-1"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">Phone Number *</Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    required
-                    placeholder="(215) 555-0123"
-                    className="mt-1"
-                  />
-                </div>
-                
-                <div className="bg-muted/50 p-4 rounded-lg">
-                  <h4 className="font-semibold mb-2">Preferred Class Time</h4>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="time" value="5am" className="accent-primary" />
-                      <span>5:00 AM - Early Bird Session</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="time" value="6:30am" className="accent-primary" />
-                      <span>6:30 AM - Morning Power Session</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input type="radio" name="time" value="either" className="accent-primary" defaultChecked />
-                      <span>Either time works for me</span>
-                    </label>
-                  </div>
-                </div>
-
-                <Button 
-                  type="submit" 
-                  className="w-full bg-primary hover:bg-primary/90 h-12 text-lg"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Submitting..." : "Sign Me Up"}
-                </Button>
-                <p className="text-xs text-center text-muted-foreground">
-                  We'll contact you within 24 hours to confirm your class registration and membership status
-                </p>
-              </form>
-            </Card>
-
-            <div className="mt-12 text-center">
-              <p className="text-muted-foreground mb-4">Questions about our Pilates classes?</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button variant="outline" asChild>
-                  <a href="tel:2679390254">(267) 939-0254</a>
-                </Button>
-                <Button variant="outline" asChild>
-                  <a href="/#contact">Contact Us</a>
-                </Button>
-              </div>
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="font-display text-4xl text-secondary mb-4 tracking-wide">QUESTIONS?</h2>
+            <p className="text-muted-foreground mb-8">
+              Contact us about our Pilates program, membership options, or class packages
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button variant="outline" asChild size="lg">
+                <a href="tel:2679390254">(267) 939-0254</a>
+              </Button>
+              <Button variant="outline" asChild size="lg">
+                <a href="/#contact">Contact Us</a>
+              </Button>
             </div>
           </div>
         </div>
