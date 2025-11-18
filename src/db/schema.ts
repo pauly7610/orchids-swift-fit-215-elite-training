@@ -1,4 +1,4 @@
-import { sqliteTable, integer, text } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, integer, text, real } from 'drizzle-orm/sqlite-core';
 
 
 
@@ -65,4 +65,164 @@ export const verification = sqliteTable("verification", {
   updatedAt: integer("updated_at", { mode: "timestamp" }).$defaultFn(
     () => new Date(),
   ),
+});
+
+// User profiles extending auth
+export const userProfiles = sqliteTable('user_profiles', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: text('user_id').notNull().unique().references(() => user.id, { onDelete: 'cascade' }),
+  role: text('role').notNull(), // 'admin', 'instructor', 'student'
+  phone: text('phone'),
+  profileImage: text('profile_image'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// Instructors
+export const instructors = sqliteTable('instructors', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userProfileId: integer('user_profile_id').notNull().references(() => userProfiles.id, { onDelete: 'cascade' }),
+  bio: text('bio'),
+  specialties: text('specialties', { mode: 'json' }),
+  headshotUrl: text('headshot_url'),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  createdAt: text('created_at').notNull(),
+});
+
+// Class types
+export const classTypes = sqliteTable('class_types', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  description: text('description'),
+  durationMinutes: integer('duration_minutes').notNull().default(50),
+  createdAt: text('created_at').notNull(),
+});
+
+// Classes
+export const classes = sqliteTable('classes', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  classTypeId: integer('class_type_id').notNull().references(() => classTypes.id),
+  instructorId: integer('instructor_id').notNull().references(() => instructors.id),
+  date: text('date').notNull(),
+  startTime: text('start_time').notNull(),
+  endTime: text('end_time').notNull(),
+  capacity: integer('capacity').notNull().default(15),
+  price: real('price'),
+  status: text('status').notNull().default('scheduled'), // 'scheduled', 'cancelled', 'completed'
+  createdAt: text('created_at').notNull(),
+});
+
+// Packages
+export const packages = sqliteTable('packages', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  description: text('description'),
+  credits: integer('credits').notNull(),
+  price: real('price').notNull(),
+  expirationDays: integer('expiration_days'),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  createdAt: text('created_at').notNull(),
+});
+
+// Memberships
+export const memberships = sqliteTable('memberships', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  description: text('description'),
+  priceMonthly: real('price_monthly').notNull(),
+  isUnlimited: integer('is_unlimited', { mode: 'boolean' }).notNull().default(true),
+  creditsPerMonth: integer('credits_per_month'),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  createdAt: text('created_at').notNull(),
+});
+
+// Payments
+export const payments = sqliteTable('payments', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  studentProfileId: integer('student_profile_id').notNull().references(() => userProfiles.id),
+  amount: real('amount').notNull(),
+  currency: text('currency').notNull().default('USD'),
+  paymentMethod: text('payment_method').notNull(), // 'square', 'cash', 'other'
+  squarePaymentId: text('square_payment_id').unique(),
+  status: text('status').notNull().default('pending'), // 'pending', 'completed', 'failed', 'refunded'
+  paymentDate: text('payment_date').notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+// Student purchases
+export const studentPurchases = sqliteTable('student_purchases', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  studentProfileId: integer('student_profile_id').notNull().references(() => userProfiles.id),
+  purchaseType: text('purchase_type').notNull(), // 'package', 'membership', 'single_class'
+  packageId: integer('package_id').references(() => packages.id),
+  membershipId: integer('membership_id').references(() => memberships.id),
+  creditsRemaining: integer('credits_remaining'),
+  creditsTotal: integer('credits_total'),
+  purchasedAt: text('purchased_at').notNull(),
+  expiresAt: text('expires_at'),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+  paymentId: integer('payment_id').notNull().references(() => payments.id),
+});
+
+// Bookings
+export const bookings = sqliteTable('bookings', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  classId: integer('class_id').notNull().references(() => classes.id),
+  studentProfileId: integer('student_profile_id').notNull().references(() => userProfiles.id),
+  bookingStatus: text('booking_status').notNull().default('confirmed'), // 'confirmed', 'cancelled', 'no_show', 'late_cancel'
+  bookedAt: text('booked_at').notNull(),
+  cancelledAt: text('cancelled_at'),
+  cancellationType: text('cancellation_type'), // 'on_time', 'late', 'no_show'
+  paymentId: integer('payment_id').references(() => payments.id),
+  creditsUsed: integer('credits_used').notNull().default(0),
+});
+
+// Waitlist
+export const waitlist = sqliteTable('waitlist', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  classId: integer('class_id').notNull().references(() => classes.id),
+  studentProfileId: integer('student_profile_id').notNull().references(() => userProfiles.id),
+  position: integer('position').notNull(),
+  joinedAt: text('joined_at').notNull(),
+  notified: integer('notified', { mode: 'boolean' }).notNull().default(false),
+});
+
+// Payment methods
+export const paymentMethods = sqliteTable('payment_methods', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  studentProfileId: integer('student_profile_id').notNull().references(() => userProfiles.id),
+  squareCardId: text('square_card_id').notNull().unique(),
+  cardBrand: text('card_brand'),
+  last4: text('last_4'),
+  isDefault: integer('is_default', { mode: 'boolean' }).notNull().default(false),
+  createdAt: text('created_at').notNull(),
+});
+
+// Studio info
+export const studioInfo = sqliteTable('studio_info', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  studioName: text('studio_name').notNull(),
+  logoUrl: text('logo_url'),
+  address: text('address'),
+  phone: text('phone'),
+  email: text('email'),
+  hours: text('hours', { mode: 'json' }),
+  cancellationWindowHours: integer('cancellation_window_hours').notNull().default(24),
+  lateCancelPenalty: text('late_cancel_penalty'), // 'lose_credit', 'warning', 'fee'
+  noShowPenalty: text('no_show_penalty'), // 'lose_credit', 'warning', 'fee'
+  cancellationPolicyText: text('cancellation_policy_text'),
+  refundPolicyText: text('refund_policy_text'),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// Notifications
+export const notifications = sqliteTable('notifications', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userProfileId: integer('user_profile_id').notNull().references(() => userProfiles.id),
+  notificationType: text('notification_type').notNull(), // 'booking_confirmation', 'reminder', 'cancellation', 'waitlist_available'
+  subject: text('subject').notNull(),
+  message: text('message').notNull(),
+  sentAt: text('sent_at'),
+  status: text('status').notNull().default('pending'), // 'pending', 'sent', 'failed'
+  createdAt: text('created_at').notNull(),
 });
