@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, Clock, Target, Zap, Heart, Award } from "lucide-react"
 import { useState } from "react"
+import { PilatesNav } from "@/components/pilates-nav"
 
 export default function PilatesPage() {
   const [formData, setFormData] = useState({
@@ -28,6 +29,22 @@ export default function PilatesPage() {
 
   return (
     <div className="min-h-screen">
+      {/* Navigation Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-8">
+              <a href="/" className="font-display text-2xl text-primary">SWIFTFIT 215</a>
+              <nav className="hidden md:flex items-center gap-6">
+                <a href="/" className="text-sm font-medium hover:text-primary transition-colors">Home</a>
+                <a href="/pilates" className="text-sm font-medium text-primary">Pilates</a>
+              </nav>
+            </div>
+            <PilatesNav />
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section */}
       <section className="relative pt-24 pb-20 md:pt-32 md:pb-32 overflow-hidden bg-gradient-to-br from-secondary via-secondary/95 to-black">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1518611012118-696072aa579a?w=1920&q=80')] bg-cover bg-center opacity-20"></div>
