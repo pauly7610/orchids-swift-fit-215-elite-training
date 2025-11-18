@@ -1,10 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { bookings, classes } from '@/db/schema';
+import { bookings, classes, instructors, userProfiles } from '@/db/schema';
 import { eq, and, gte, lte, sql, count, inArray } from 'drizzle-orm';
+import { getCurrentUser } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
+    // Authentication check
+    const user = await getCurrentUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    // Get user role and instructor ID if applicable
+    const userProfile = await db
+      .select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, user.id))
+      .limit(1);
+
+    if (!userProfile.length) {
+      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+    }
+
+    const role = userProfile[0].role;
+    let instructorId: number | null = null;
+
+    // If instructor, get their instructor ID
+    if (role === 'instructor') {
+      const instructor = await db
+        .select()
+        .from(instructors)
+        .where(eq(instructors.userProfileId, userProfile[0].id))
+        .limit(1);
+
+      if (!instructor.length) {
+        return NextResponse.json({ error: 'Instructor record not found' }, { status: 404 });
+      }
+      instructorId = instructor[0].id;
+    }
+
     const searchParams = request.nextUrl.searchParams;
     
     // Parse and validate date parameters
@@ -49,6 +84,17 @@ export async function GET(request: NextRequest) {
     const startDateStr = startDate.toISOString().split('T')[0];
     const endDateStr = endDate.toISOString().split('T')[0];
     
+    // Build class filter conditions
+    const classConditions = [
+      gte(classes.date, startDateStr),
+      lte(classes.date, endDateStr)
+    ];
+
+    // If instructor, only include their classes
+    if (role === 'instructor' && instructorId) {
+      classConditions.push(eq(classes.instructorId, instructorId));
+    }
+
     // Get all bookings in date range by joining with classes
     const allBookingsInRange = await db
       .select({
@@ -60,12 +106,7 @@ export async function GET(request: NextRequest) {
       })
       .from(bookings)
       .innerJoin(classes, eq(bookings.classId, classes.id))
-      .where(
-        and(
-          gte(classes.date, startDateStr),
-          lte(classes.date, endDateStr)
-        )
-      );
+      .where(and(...classConditions));
     
     // Calculate statistics
     const totalBookings = allBookingsInRange.length;
@@ -109,7 +150,7 @@ export async function GET(request: NextRequest) {
       : '0.00';
     
     // Return statistics
-    return NextResponse.json({
+    const response: any = {
       totalBookings,
       completedClasses,
       cancelledBookings,
@@ -122,7 +163,15 @@ export async function GET(request: NextRequest) {
         startDate: startDateStr,
         endDate: endDateStr
       }
-    }, { status: 200 });
+    };
+
+    // Add note for instructors
+    if (role === 'instructor') {
+      response.note = 'Attendance data shown is for your classes only';
+      response.restrictedTo = 'instructor_classes';
+    }
+
+    return NextResponse.json(response, { status: 200 });
     
   } catch (error) {
     console.error('GET attendance statistics error:', error);

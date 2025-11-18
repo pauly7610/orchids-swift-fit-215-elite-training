@@ -1,10 +1,45 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { bookings, classes, classTypes, instructors } from '@/db/schema';
+import { bookings, classes, classTypes, instructors, userProfiles } from '@/db/schema';
 import { eq, and, gte, lte, sql, desc } from 'drizzle-orm';
+import { getCurrentUser } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
+    // Authentication check
+    const user = await getCurrentUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    // Get user role and instructor ID if applicable
+    const userProfile = await db
+      .select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, user.id))
+      .limit(1);
+
+    if (!userProfile.length) {
+      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+    }
+
+    const role = userProfile[0].role;
+    let instructorIdFilter: number | null = null;
+
+    // If instructor, get their instructor ID
+    if (role === 'instructor') {
+      const instructor = await db
+        .select()
+        .from(instructors)
+        .where(eq(instructors.userProfileId, userProfile[0].id))
+        .limit(1);
+
+      if (!instructor.length) {
+        return NextResponse.json({ error: 'Instructor record not found' }, { status: 404 });
+      }
+      instructorIdFilter = instructor[0].id;
+    }
+
     const searchParams = request.nextUrl.searchParams;
     
     // Parse and validate date parameters
@@ -37,6 +72,17 @@ export async function GET(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Build where conditions
+    const whereConditions = [
+      gte(classes.date, startDate),
+      lte(classes.date, endDate)
+    ];
+
+    // Add instructor filter for instructors
+    if (role === 'instructor' && instructorIdFilter) {
+      whereConditions.push(eq(classes.instructorId, instructorIdFilter));
+    }
+
     // Get top classes with booking counts
     const topClassesQuery = await db
       .select({
@@ -53,12 +99,7 @@ export async function GET(request: NextRequest) {
       .from(classes)
       .leftJoin(bookings, eq(classes.id, bookings.classId))
       .leftJoin(classTypes, eq(classes.classTypeId, classTypes.id))
-      .where(
-        and(
-          gte(classes.date, startDate),
-          lte(classes.date, endDate)
-        )
-      )
+      .where(and(...whereConditions))
       .groupBy(classes.id, classes.classTypeId, classes.instructorId, classes.date, classes.startTime, classTypes.name)
       .orderBy(desc(sql`COUNT(${bookings.id})`))
       .limit(limit);
@@ -74,36 +115,34 @@ export async function GET(request: NextRequest) {
       .from(classTypes)
       .leftJoin(classes, eq(classTypes.id, classes.classTypeId))
       .leftJoin(bookings, eq(classes.id, bookings.classId))
-      .where(
-        and(
-          gte(classes.date, startDate),
-          lte(classes.date, endDate)
-        )
-      )
+      .where(and(...whereConditions))
       .groupBy(classTypes.id, classTypes.name)
       .orderBy(desc(sql`COUNT(${bookings.id})`))
       .limit(limit);
 
-    // Get top instructors with total bookings
-    const topInstructorsQuery = await db
-      .select({
-        instructorId: instructors.id,
-        totalBookings: sql<number>`COUNT(${bookings.id})`,
-        confirmedBookings: sql<number>`SUM(CASE WHEN ${bookings.bookingStatus} = 'confirmed' THEN 1 ELSE 0 END)`,
-        classesCount: sql<number>`COUNT(DISTINCT ${classes.id})`
-      })
-      .from(instructors)
-      .leftJoin(classes, eq(instructors.id, classes.instructorId))
-      .leftJoin(bookings, eq(classes.id, bookings.classId))
-      .where(
-        and(
-          gte(classes.date, startDate),
-          lte(classes.date, endDate)
+    // Get top instructors with total bookings (only if admin)
+    let topInstructorsQuery = [];
+    if (role === 'admin') {
+      topInstructorsQuery = await db
+        .select({
+          instructorId: instructors.id,
+          totalBookings: sql<number>`COUNT(${bookings.id})`,
+          confirmedBookings: sql<number>`SUM(CASE WHEN ${bookings.bookingStatus} = 'confirmed' THEN 1 ELSE 0 END)`,
+          classesCount: sql<number>`COUNT(DISTINCT ${classes.id})`
+        })
+        .from(instructors)
+        .leftJoin(classes, eq(instructors.id, classes.instructorId))
+        .leftJoin(bookings, eq(classes.id, bookings.classId))
+        .where(
+          and(
+            gte(classes.date, startDate),
+            lte(classes.date, endDate)
+          )
         )
-      )
-      .groupBy(instructors.id)
-      .orderBy(desc(sql`COUNT(${bookings.id})`))
-      .limit(limit);
+        .groupBy(instructors.id)
+        .orderBy(desc(sql`COUNT(${bookings.id})`))
+        .limit(limit);
+    }
 
     // Get most popular time slots
     const popularTimeSlotsQuery = await db
@@ -115,17 +154,12 @@ export async function GET(request: NextRequest) {
       })
       .from(classes)
       .leftJoin(bookings, eq(classes.id, bookings.classId))
-      .where(
-        and(
-          gte(classes.date, startDate),
-          lte(classes.date, endDate)
-        )
-      )
+      .where(and(...whereConditions))
       .groupBy(classes.startTime)
       .orderBy(desc(sql`COUNT(${bookings.id})`))
       .limit(limit);
 
-    return NextResponse.json({
+    const response: any = {
       topClasses: topClassesQuery.map(cls => ({
         classId: cls.classId,
         classTypeId: cls.classTypeId,
@@ -143,12 +177,6 @@ export async function GET(request: NextRequest) {
         totalBookings: ct.totalBookings || 0,
         confirmedBookings: ct.confirmedBookings || 0
       })),
-      topInstructors: topInstructorsQuery.map(inst => ({
-        instructorId: inst.instructorId,
-        totalBookings: inst.totalBookings || 0,
-        confirmedBookings: inst.confirmedBookings || 0,
-        classesCount: inst.classesCount || 0
-      })),
       mostPopularTimeSlots: popularTimeSlotsQuery.map(slot => ({
         timeSlot: slot.timeSlot,
         totalBookings: slot.totalBookings || 0,
@@ -159,7 +187,25 @@ export async function GET(request: NextRequest) {
         startDate,
         endDate
       }
-    }, { status: 200 });
+    };
+
+    // Only include instructor rankings for admins
+    if (role === 'admin') {
+      response.topInstructors = topInstructorsQuery.map(inst => ({
+        instructorId: inst.instructorId,
+        totalBookings: inst.totalBookings || 0,
+        confirmedBookings: inst.confirmedBookings || 0,
+        classesCount: inst.classesCount || 0
+      }));
+    }
+
+    // Add note for instructors
+    if (role === 'instructor') {
+      response.note = 'Popular classes data shown is for your classes only';
+      response.restrictedTo = 'instructor_classes';
+    }
+
+    return NextResponse.json(response, { status: 200 });
 
   } catch (error) {
     console.error('GET error:', error);
