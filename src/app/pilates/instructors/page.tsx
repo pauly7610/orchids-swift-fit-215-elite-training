@@ -3,8 +3,9 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Users, Award, Sparkles } from "lucide-react"
+import { Heart, Award, Sparkles } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 const instructors = [
   {
@@ -12,42 +13,48 @@ const instructors = [
     specialty: "Dance Fitness",
     badge: "Certified Fitness Instructor",
     bio: "Hi, my name is Des, your certified fitness instructor! I've been dancing since the age of four and created Dance and Release fitness class to help others build strength, confidence, and inner peace through movement. By day, I work in health care administration, bringing discipline and passion to everything I do. Dance is my freedom, and I'm here to help you find yours.",
-    classes: ["Dance Fitness", "Dance and Release"]
+    classes: ["Dance Fitness", "Dance and Release"],
+    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788581334.png?width=8000&height=8000&resize=contain"
   },
   {
     name: "Maisha",
     specialty: "Yoga & Group Fitness",
     badge: "Certified Yoga Instructor • BS Health Sciences",
     bio: "I'm a performance-driven group fitness instructor and certified yoga instructor with a Bachelor's degree in Health Sciences. I blend athletic training with personal growth strategies to help clients level up physically and mentally. I thrive on creating a supportive environment where people can build strength, refine their skills, and unlock next level success.",
-    classes: ["Yoga", "Group Fitness"]
+    classes: ["Yoga", "Group Fitness"],
+    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788595284.png?width=8000&height=8000&resize=contain"
   },
   {
     name: "Nasir",
     specialty: "Meditation & Herbal Wellness",
     badge: "Self-Taught Herbalist • Meditation Guide",
     bio: "I am a self-taught herbalist and meditation guide who creates warm, grounding spaces for healing and inner balance. Blending mindfulness, breathwork, and culturally rooted spiritual and herbal practices, I support the wider community in reconnecting with their emotional clarity and natural calm. With gentle guidance and soulful presence that helps others return to themselves and move through life with deeper peace and purpose.",
-    classes: ["Meditation", "Herbal Wellness", "Breathwork"]
+    classes: ["Meditation", "Herbal Wellness", "Breathwork"],
+    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788606511.png?width=8000&height=8000&resize=contain"
   },
   {
     name: "Tyra Woods",
     specialty: "Mat Pilates & Personal Training",
     badge: "Certified Personal Trainer • Mat Pilates Coach • PTA",
     bio: "My name is Tyra Woods. I'm a dedicated, Certified Personal Trainer and Mat Pilates Coach from the Mt. Airy section of Philadelphia. With a Bachelor of Science degree in Kinesiology and my current occupation as Physical Therapist Assistant, I've always had a passion for movement and helping others. I'm excited to be a part and share my love for physical wellness with the SwiftFit community.",
-    classes: ["Mat Pilates", "Strength Training", "HIIT"]
+    classes: ["Mat Pilates", "Strength Training", "HIIT"],
+    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788627646.png?width=8000&height=8000&resize=contain"
   },
   {
     name: "Joi",
     specialty: "Mat Pilates & Personal Training",
     badge: "Certified Personal Trainer • Mat Pilates Instructor",
     bio: "Certified personal trainer and mat Pilates instructor helping clients gain strength, balance, and confidence through mindful movement and customized training programs.",
-    classes: ["Mat Pilates", "Personal Training"]
+    classes: ["Mat Pilates", "Personal Training"],
+    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788638900.png?width=8000&height=8000&resize=contain"
   },
   {
     name: "Quadrelle Drelle Jin Harris",
     specialty: "Fitness & Strength Training",
     badge: "Communications & Psychology • Model & Dancer",
     bio: "Quadrelle Drelle Jin Harris, 29. A graduate of Communications and Psychology but also making her mark in athletics (track and gymnastics) and a signed model & dancer. Fitness has brought more than physical gains and community; it has also challenged her mentally which she has been able to travel the US to talk into with brands like Nike, UnderArmour and even Roc Nation. The feel good endorphins of dance fitness, strength training and working with professional Athletes is just the beginning of her purpose and you get to come along on the ride through her classes and training sessions.",
-    classes: ["Fitness", "Strength Training", "Athletic Training"]
+    classes: ["Fitness", "Strength Training", "Athletic Training"],
+    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788663358.png?width=8000&height=8000&resize=contain"
   }
 ]
 
@@ -106,8 +113,14 @@ export default function InstructorsPage() {
               {instructors.map((instructor, index) => (
                 <Card key={index} className="p-8 border-2 hover:border-primary transition-colors">
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Users className="h-8 w-8 text-primary" />
+                    <div className="h-24 w-24 rounded-full overflow-hidden flex-shrink-0 bg-muted">
+                      <Image
+                        src={instructor.image}
+                        alt={instructor.name}
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-2xl font-display tracking-wide text-primary mb-1">
