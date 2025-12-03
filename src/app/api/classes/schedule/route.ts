@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { classes, classTypes, instructors } from '@/db/schema';
+import { classes, classTypes, instructors, userProfiles, user } from '@/db/schema';
 import { eq, and, gte, lte, asc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -27,11 +27,15 @@ export async function GET(request: NextRequest) {
       classTypeName: classTypes.name,
       classTypeDescription: classTypes.description,
       classTypeDuration: classTypes.durationMinutes,
-      instructorName: instructors.name,
+      instructorName: user.name,
+      instructorBio: instructors.bio,
+      instructorHeadshot: instructors.headshotUrl,
     })
       .from(classes)
       .leftJoin(classTypes, eq(classes.classTypeId, classTypes.id))
       .leftJoin(instructors, eq(classes.instructorId, instructors.id))
+      .leftJoin(userProfiles, eq(instructors.userProfileId, userProfiles.id))
+      .leftJoin(user, eq(userProfiles.userId, user.id))
       .where(
         and(
           eq(classes.status, 'scheduled'),
@@ -62,8 +66,8 @@ export async function GET(request: NextRequest) {
       instructor: {
         id: cls.instructorId,
         name: cls.instructorName || 'Unknown',
-        bio: '',
-        headshotUrl: ''
+        bio: cls.instructorBio || '',
+        headshotUrl: cls.instructorHeadshot || ''
       },
       registeredCount: 0,
       spotsRemaining: cls.capacity,
