@@ -149,27 +149,13 @@ export async function GET(request: NextRequest) {
             .where(
               and(
                 eq(waitlist.classId, cls.id),
-                eq(waitlist.studentProfileId, studentProfileId),
-                eq(waitlist.status, 'waiting')
+                eq(waitlist.studentProfileId, studentProfileId)
               )
             )
             .limit(1);
           
           if (userWaitlist.length > 0) {
-            // Calculate position by counting earlier waitlist entries
-            const positionResult = await db.select({
-              count: sql<number>`count(*)::int`
-            })
-              .from(waitlist)
-              .where(
-                and(
-                  eq(waitlist.classId, cls.id),
-                  eq(waitlist.status, 'waiting'),
-                  sql`${waitlist.joinedAt} <= ${userWaitlist[0].joinedAt}`
-                )
-              );
-            
-            waitlistPosition = positionResult[0]?.count || 1;
+            waitlistPosition = userWaitlist[0].position;
           }
         }
         
