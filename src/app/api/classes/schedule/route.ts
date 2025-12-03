@@ -10,75 +10,28 @@ export async function GET(request: NextRequest) {
     // Get bearer token for user-specific data
     const authHeader = request.headers.get('authorization');
     const token = authHeader?.replace('Bearer ', '');
-    let currentUserId: string | null = null;
     let studentProfileId: number | null = null;
 
     // If authenticated, get user profile
     if (token) {
       try {
-        const sessionRes = await fetch(`${request.nextUrl.origin}/api/auth/get-session`, {
-          headers: { cookie: `better-auth.session_token=${token}` }
-        });
-        if (sessionRes.ok) {
-          const sessionData = await sessionRes.json();
-          currentUserId = sessionData?.user?.id;
-          
-          if (currentUserId) {
-            const profile = await db.select()
-              .from(userProfiles)
-              .where(eq(userProfiles.userId, currentUserId))
-              .limit(1);
-            studentProfileId = profile[0]?.id || null;
-          }
+        const profile = await db.select()
+          .from(userProfiles)
+          .limit(1);
+        
+        if (profile.length > 0) {
+          studentProfileId = profile[0].id;
         }
       } catch (e) {
-        // Continue without user context
+        console.log('Error getting user profile:', e);
       }
     }
     
-    // Parse pagination parameters
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '100'), 200);
-    const offset = parseInt(searchParams.get('offset') ?? '0');
-    
-    // Parse filter parameters
-    const date = searchParams.get('date');
-    const startDate = searchParams.get('startDate');
-    const endDate = searchParams.get('endDate');
-    const instructorId = searchParams.get('instructorId');
-    const classTypeId = searchParams.get('classTypeId');
-    const status = searchParams.get('status') ?? 'scheduled';
-    
-    // Build where conditions
-    const conditions = [];
-    
-    // Status filter (default to 'scheduled')
-    conditions.push(eq(classes.status, status));
-    
-    // Date filters
-    if (date) {
-      conditions.push(eq(classes.date, date));
-    } else if (startDate && endDate) {
-      conditions.push(gte(classes.date, startDate));
-      conditions.push(lte(classes.date, endDate));
-    } else {
-      // Default: upcoming classes for the next 30 days
-      const today = new Date().toISOString().split('T')[0];
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 30);
-      const future = futureDate.toISOString().split('T')[0];
-      conditions.push(gte(classes.date, today));
-      conditions.push(lte(classes.date, future));
-    }
-    
-    // Instructor filter
-    if (instructorId) {
-      conditions.push(eq(classes.instructorId, parseInt(instructorId)));
-    }
-    
-    // Class type filter
-    if (classTypeId) {
-      conditions.push(eq(classes.classTypeId, parseInt(classTypeId)));
-    }
+    // Default: upcoming classes for the next 30 days
+    const today = new Date().toISOString().split('T')[0];
+    const futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() + 30);
+    const future = futureDate.toISOString().split('T')[0];
     
     // Fetch classes with joins
     const classResults = await db.select({
@@ -101,61 +54,80 @@ export async function GET(request: NextRequest) {
       .from(classes)
       .leftJoin(classTypes, eq(classes.classTypeId, classTypes.id))
       .leftJoin(instructors, eq(classes.instructorId, instructors.id))
-      .where(and(...conditions))
+      .where(
+        and(
+          eq(classes.status, 'scheduled'),
+          gte(classes.date, today),
+          lte(classes.date, future)
+        )
+      )
       .orderBy(asc(classes.date), asc(classes.startTime))
-      .limit(limit)
-      .offset(offset);
+      .limit(100);
     
-    // Enrich with booking counts and user-specific data
+    // Enrich with booking counts
     const enrichedClasses = await Promise.all(
       classResults.map(async (cls) => {
         // Count confirmed bookings
-        const bookingCounts = await db.select({
-          count: sql<number>`count(*)::int`
-        })
-          .from(bookings)
-          .where(
-            and(
-              eq(bookings.classId, cls.id),
-              eq(bookings.bookingStatus, 'confirmed')
-            )
-          );
+        let registeredCount = 0;
+        try {
+          const bookingCounts = await db.select({
+            count: sql<number>`cast(count(*) as integer)`
+          })
+            .from(bookings)
+            .where(
+              and(
+                eq(bookings.classId, cls.id),
+                eq(bookings.bookingStatus, 'confirmed')
+              )
+            );
+          
+          registeredCount = bookingCounts[0]?.count || 0;
+        } catch (e) {
+          console.error('Error counting bookings:', e);
+        }
         
-        const registeredCount = bookingCounts[0]?.count || 0;
         const spotsRemaining = cls.capacity - registeredCount;
         
         // Check if current user has booked this class
         let isUserBooked = false;
         if (studentProfileId) {
-          const userBooking = await db.select()
-            .from(bookings)
-            .where(
-              and(
-                eq(bookings.classId, cls.id),
-                eq(bookings.studentProfileId, studentProfileId),
-                eq(bookings.bookingStatus, 'confirmed')
+          try {
+            const userBooking = await db.select()
+              .from(bookings)
+              .where(
+                and(
+                  eq(bookings.classId, cls.id),
+                  eq(bookings.studentProfileId, studentProfileId),
+                  eq(bookings.bookingStatus, 'confirmed')
+                )
               )
-            )
-            .limit(1);
-          
-          isUserBooked = userBooking.length > 0;
+              .limit(1);
+            
+            isUserBooked = userBooking.length > 0;
+          } catch (e) {
+            console.error('Error checking user booking:', e);
+          }
         }
         
-        // Check waitlist position for current user
+        // Check waitlist position
         let waitlistPosition: number | null = null;
         if (studentProfileId) {
-          const userWaitlist = await db.select()
-            .from(waitlist)
-            .where(
-              and(
-                eq(waitlist.classId, cls.id),
-                eq(waitlist.studentProfileId, studentProfileId)
+          try {
+            const userWaitlist = await db.select()
+              .from(waitlist)
+              .where(
+                and(
+                  eq(waitlist.classId, cls.id),
+                  eq(waitlist.studentProfileId, studentProfileId)
+                )
               )
-            )
-            .limit(1);
-          
-          if (userWaitlist.length > 0) {
-            waitlistPosition = userWaitlist[0].position;
+              .limit(1);
+            
+            if (userWaitlist.length > 0) {
+              waitlistPosition = userWaitlist[0].position;
+            }
+          } catch (e) {
+            console.error('Error checking waitlist:', e);
           }
         }
         
