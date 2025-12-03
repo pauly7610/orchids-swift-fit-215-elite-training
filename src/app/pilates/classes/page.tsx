@@ -114,7 +114,7 @@ export default function ClassesPage() {
             <Link href="/pilates/schedule" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Schedule</Link>
             <Link href="/pilates/faq" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">FAQ</Link>
             <Link href="/">
-              <Button size="sm" variant="outline" className="border-white/30 text-white hover:bg-white hover:text-secondary">
+              <Button size="sm" variant="outline" className="border-white/30 text-secondary hover:bg-white">
                 Back to Gym
               </Button>
             </Link>
