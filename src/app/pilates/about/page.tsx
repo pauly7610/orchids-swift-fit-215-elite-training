@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Heart, Users, Sparkles, CheckCircle2, Target, Smile } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export default function AboutPage() {
   return (
@@ -229,8 +230,14 @@ export default function AboutPage() {
 
             <Card className="p-8 md:p-12">
               <div className="flex items-center gap-4 mb-6">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Users className="h-8 w-8 text-primary" />
+                <div className="h-24 w-24 rounded-full overflow-hidden flex-shrink-0">
+                  <Image
+                    src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764789079370.png"
+                    alt="Deserae C. Smith"
+                    width={96}
+                    height={96}
+                    className="object-cover w-full h-full"
+                  />
                 </div>
                 <div>
                   <h3 className="text-2xl font-display tracking-wide text-primary">DESERAE C. SMITH</h3>
