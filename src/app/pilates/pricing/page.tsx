@@ -1,128 +1,108 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Sparkles, CheckCircle2, Star, Gift, TrendingUp, Zap } from "lucide-react"
+import { Heart, Sparkles, CheckCircle2, Star, Gift, TrendingUp, Zap, ExternalLink } from "lucide-react"
 import Link from "next/link"
+import { toast } from "sonner"
 
-const packages = [
-  {
-    name: "New Student Intro",
-    price: "$49",
-    description: "Perfect for trying us out",
-    highlight: true,
-    icon: Gift,
-    features: [
-      "3 classes of your choice",
-      "Try different class types",
-      "Meet our instructors",
-      "Experience our community",
-      "No commitment required"
-    ],
-    note: "Best value for first-time students!"
-  },
-  {
-    name: "Drop-In Class",
-    price: "$22",
-    description: "Single class, no commitment",
-    icon: Zap,
-    features: [
-      "Pay per class",
-      "No membership required",
-      "All class types included",
-      "Book day-of or in advance",
-      "Perfect for occasional visits"
-    ]
-  },
-  {
-    name: "5 Class Pack",
-    price: "$100",
-    perClass: "$20/class",
-    description: "Great for regular practice",
-    icon: Star,
-    features: [
-      "5 classes to use anytime",
-      "Valid for all class types",
-      "Better value than drop-in",
-      "Flexible scheduling",
-      "Share with friends/family"
-    ]
-  },
-  {
-    name: "10 Class Pack",
-    price: "$190",
-    perClass: "$19/class",
-    description: "Best value for class packs",
-    icon: TrendingUp,
-    features: [
-      "10 classes to use anytime",
-      "Valid for all class types",
-      "Maximum flexibility",
-      "Best per-class rate",
-      "Priority booking access"
-    ]
-  },
-  {
-    name: "20 Class Pack",
-    price: "$360",
-    perClass: "$18/class",
-    description: "Ultimate value pack",
-    icon: TrendingUp,
-    features: [
-      "20 classes to use anytime",
-      "Valid for all class types",
-      "Lowest per-class rate",
-      "Priority booking",
-      "Member perks included"
-    ]
-  }
-]
+interface Package {
+  id: number
+  name: string
+  description: string
+  credits: number
+  price: number
+  expirationDays: number
+  validityType: string
+  swipeSimpleLink: string
+  isActive: boolean
+}
 
-const memberships = [
-  {
-    name: "4 Class Monthly",
-    price: "$78",
-    perClass: "$19.50/class",
-    description: "Perfect for weekly practice",
-    features: [
-      "4 classes per month",
-      "Rollover unused classes (up to 1 month)",
-      "Priority booking",
-      "Member-only events",
-      "10% off workshops & merch"
-    ]
-  },
-  {
-    name: "8 Class Monthly",
-    price: "$140",
-    perClass: "$17.50/class",
-    description: "For dedicated practitioners",
-    popular: true,
-    features: [
-      "8 classes per month",
-      "Rollover unused classes (up to 1 month)",
-      "Priority booking",
-      "Member-only events & perks",
-      "10% off workshops & merch"
-    ]
-  },
-  {
-    name: "Unlimited Monthly",
-    price: "$179",
-    perClass: "Unlimited",
-    description: "For the committed yogi/athlete",
-    features: [
-      "Unlimited classes per month",
-      "All class types included",
-      "Priority booking",
-      "Member-only events & wellness perks",
-      "10% off workshops & merch"
-    ]
-  }
-]
+interface Membership {
+  id: number
+  name: string
+  description: string
+  priceMonthly: number
+  isUnlimited: boolean
+  creditsPerMonth: number
+  swipeSimpleLink: string
+  isActive: boolean
+}
+
+const iconMap: Record<string, any> = {
+  "New Student Intro": Gift,
+  "Drop In": Zap,
+  "5 Class Pack": Star,
+  "10 Class Pack": TrendingUp,
+  "20 Class Pack": TrendingUp,
+}
 
 export default function PricingPage() {
+  const [packages, setPackages] = useState<Package[]>([])
+  const [memberships, setMemberships] = useState<Membership[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchPricingData()
+  }, [])
+
+  const fetchPricingData = async () => {
+    try {
+      const [packagesRes, membershipsRes] = await Promise.all([
+        fetch("/api/packages?isActive=true"),
+        fetch("/api/memberships?isActive=true")
+      ])
+
+      if (packagesRes.ok) {
+        const data = await packagesRes.json()
+        setPackages(data)
+      }
+      if (membershipsRes.ok) {
+        const data = await membershipsRes.json()
+        setMemberships(data)
+      }
+    } catch (error) {
+      toast.error("Failed to load pricing information")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handlePurchase = (link: string, name: string) => {
+    // Check if running in iframe
+    const isInIframe = window.self !== window.top
+    
+    if (isInIframe) {
+      // Post message to parent to open in new tab
+      window.parent.postMessage({ 
+        type: "OPEN_EXTERNAL_URL", 
+        data: { url: link } 
+      }, "*")
+    } else {
+      // Open directly in new tab
+      window.open(link, "_blank", "noopener,noreferrer")
+    }
+    
+    toast.success(`Opening payment page for ${name}`)
+  }
+
+  const getPerClassPrice = (price: number, credits: number) => {
+    return (price / credits).toFixed(2)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading pricing...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen">
       {/* Header */}
@@ -143,7 +123,7 @@ export default function PricingPage() {
             <Link href="/pilates/schedule" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Schedule</Link>
             <Link href="/pilates/faq" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">FAQ</Link>
             <Link href="/">
-              <Button size="sm" variant="outline" className="border-white/30 text-white hover:bg-white hover:text-secondary">
+              <Button size="sm" variant="outline" className="border-white/30 text-secondary hover:bg-white">
                 Back to Gym
               </Button>
             </Link>
@@ -183,16 +163,18 @@ export default function PricingPage() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {packages.map((pkg, index) => {
-                const Icon = pkg.icon
+              {packages.map((pkg) => {
+                const Icon = iconMap[pkg.name] || Star
+                const isIntro = pkg.name === "New Student Intro"
+                
                 return (
                   <Card 
-                    key={index} 
+                    key={pkg.id} 
                     className={`relative border-2 transition-all hover:shadow-lg ${
-                      pkg.highlight ? 'border-primary bg-primary/5' : 'hover:border-primary'
+                      isIntro ? 'border-primary bg-primary/5' : 'hover:border-primary'
                     }`}
                   >
-                    {pkg.highlight && (
+                    {isIntro && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                         <Badge className="bg-primary text-white">
                           <Star className="h-3 w-3 mr-1" />
@@ -207,27 +189,58 @@ export default function PricingPage() {
                       </div>
                       <CardTitle className="text-2xl">{pkg.name}</CardTitle>
                       <div className="flex items-baseline gap-2 mt-2">
-                        <span className="font-display text-4xl text-primary">{pkg.price}</span>
-                        {pkg.perClass && (
-                          <span className="text-sm text-muted-foreground">({pkg.perClass})</span>
+                        <span className="font-display text-4xl text-primary">${pkg.price}</span>
+                        {pkg.credits > 1 && (
+                          <span className="text-sm text-muted-foreground">
+                            (${getPerClassPrice(pkg.price, pkg.credits)}/class)
+                          </span>
                         )}
                       </div>
                       <CardDescription className="mt-2">{pkg.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <ul className="space-y-3">
-                        {pkg.features.map((feature, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm">
+                      <ul className="space-y-3 mb-6">
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span>{pkg.credits} {pkg.credits === 1 ? 'class' : 'classes'} included</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Valid for all class types</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span>
+                            {pkg.expirationDays === 1 
+                              ? 'Valid same day only' 
+                              : pkg.expirationDays < 60
+                              ? `Valid for ${pkg.expirationDays} days`
+                              : pkg.validityType === 'annual'
+                              ? 'Valid for 1 year from purchase'
+                              : 'Flexible scheduling'}
+                          </span>
+                        </li>
+                        {pkg.credits >= 5 && (
+                          <li className="flex items-start gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                            <span>{feature}</span>
+                            <span>Share with friends/family</span>
                           </li>
-                        ))}
+                        )}
+                        {pkg.credits >= 10 && (
+                          <li className="flex items-start gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                            <span>Priority booking access</span>
+                          </li>
+                        )}
                       </ul>
-                      {pkg.note && (
-                        <p className="mt-4 text-xs text-primary font-medium italic">
-                          {pkg.note}
-                        </p>
-                      )}
+                      
+                      <Button 
+                        className="w-full bg-primary hover:bg-primary/90 text-white"
+                        onClick={() => handlePurchase(pkg.swipeSimpleLink, pkg.name)}
+                      >
+                        Purchase Now
+                        <ExternalLink className="h-4 w-4 ml-2" />
+                      </Button>
                     </CardContent>
                   </Card>
                 )
@@ -251,45 +264,81 @@ export default function PricingPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
-              {memberships.map((membership, index) => (
-                <Card 
-                  key={index} 
-                  className={`relative border-2 transition-all hover:shadow-lg ${
-                    membership.popular ? 'border-primary bg-primary/5' : 'hover:border-primary'
-                  }`}
-                >
-                  {membership.popular && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <Badge className="bg-primary text-white">
-                        <Star className="h-3 w-3 mr-1" />
-                        Most Popular
-                      </Badge>
-                    </div>
-                  )}
-                  
-                  <CardHeader>
-                    <CardTitle className="text-2xl">{membership.name}</CardTitle>
-                    <div className="flex items-baseline gap-2 mt-2">
-                      <span className="font-display text-4xl text-primary">{membership.price}</span>
-                      <span className="text-sm text-muted-foreground">/month</span>
-                    </div>
-                    {membership.perClass && (
-                      <p className="text-sm text-muted-foreground mt-1">({membership.perClass})</p>
+              {memberships.map((membership) => {
+                const isPopular = membership.creditsPerMonth === 8
+                
+                return (
+                  <Card 
+                    key={membership.id} 
+                    className={`relative border-2 transition-all hover:shadow-lg ${
+                      isPopular ? 'border-primary bg-primary/5' : 'hover:border-primary'
+                    }`}
+                  >
+                    {isPopular && (
+                      <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <Badge className="bg-primary text-white">
+                          <Star className="h-3 w-3 mr-1" />
+                          Most Popular
+                        </Badge>
+                      </div>
                     )}
-                    <CardDescription className="mt-2">{membership.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <ul className="space-y-3">
-                      {membership.features.map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
+                    
+                    <CardHeader>
+                      <CardTitle className="text-2xl">{membership.name}</CardTitle>
+                      <div className="flex items-baseline gap-2 mt-2">
+                        <span className="font-display text-4xl text-primary">
+                          ${membership.priceMonthly}
+                        </span>
+                        <span className="text-sm text-muted-foreground">/month</span>
+                      </div>
+                      {!membership.isUnlimited && membership.creditsPerMonth && (
+                        <p className="text-sm text-muted-foreground mt-1">
+                          (${(membership.priceMonthly / membership.creditsPerMonth).toFixed(2)}/class)
+                        </p>
+                      )}
+                      <CardDescription className="mt-2">{membership.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <ul className="space-y-3 mb-6">
+                        <li className="flex items-start gap-2 text-sm">
                           <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                          <span>{feature}</span>
+                          <span>
+                            {membership.isUnlimited 
+                              ? 'Unlimited classes per month' 
+                              : `${membership.creditsPerMonth} classes per month`}
+                          </span>
                         </li>
-                      ))}
-                    </ul>
-                  </CardContent>
-                </Card>
-              ))}
+                        {!membership.isUnlimited && (
+                          <li className="flex items-start gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                            <span>Rollover unused classes (up to 1 month)</span>
+                          </li>
+                        )}
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Priority booking</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span>Member-only events & wellness perks</span>
+                        </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span>10% off workshops & merch</span>
+                        </li>
+                      </ul>
+                      
+                      <Button 
+                        className="w-full bg-primary hover:bg-primary/90 text-white"
+                        onClick={() => handlePurchase(membership.swipeSimpleLink, membership.name)}
+                      >
+                        Subscribe Now
+                        <ExternalLink className="h-4 w-4 ml-2" />
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           </div>
         </div>
@@ -348,7 +397,7 @@ export default function PricingPage() {
             READY TO GET STARTED?
           </h2>
           <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-            Book your first class today and begin your wellness journey with us.
+            Purchase a package above, then book your first class to begin your wellness journey with us.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/pilates/schedule">
