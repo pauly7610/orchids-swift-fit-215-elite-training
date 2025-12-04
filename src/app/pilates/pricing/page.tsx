@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Sparkles, CheckCircle2, Star, Gift, TrendingUp, Zap, ExternalLink } from "lucide-react"
+import { Heart, Sparkles, CheckCircle2, Star, Gift, TrendingUp, Zap, ExternalLink, RefreshCw } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 
@@ -258,9 +258,13 @@ export default function PricingPage() {
               <h2 className="font-display text-4xl md:text-5xl text-secondary mb-4 tracking-wide">
                 MONTHLY MEMBERSHIPS
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-muted-foreground mb-4">
                 Commit to your practice with recurring monthly memberships
               </p>
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                <RefreshCw className="h-4 w-4 text-primary" />
+                <span>Memberships automatically renew monthly • Manage anytime from your dashboard</span>
+              </div>
             </div>
 
             <div className="grid md:grid-cols-3 gap-6">
@@ -308,6 +312,10 @@ export default function PricingPage() {
                               : `${membership.creditsPerMonth} classes per month`}
                           </span>
                         </li>
+                        <li className="flex items-start gap-2 text-sm">
+                          <RefreshCw className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <span className="font-medium">Automatically renews monthly</span>
+                        </li>
                         {!membership.isUnlimited && (
                           <li className="flex items-start gap-2 text-sm">
                             <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
@@ -335,6 +343,10 @@ export default function PricingPage() {
                         Subscribe Now
                         <ExternalLink className="h-4 w-4 ml-2" />
                       </Button>
+                      
+                      <p className="text-xs text-muted-foreground text-center mt-3">
+                        Cancel anytime from your student dashboard
+                      </p>
                     </CardContent>
                   </Card>
                 )
@@ -359,9 +371,12 @@ export default function PricingPage() {
 
             <div className="grid md:grid-cols-2 gap-6">
               <Card className="p-6 border-l-4 border-l-primary">
-                <h3 className="text-xl font-semibold mb-2">Rollover Classes</h3>
+                <div className="flex items-start gap-3 mb-2">
+                  <RefreshCw className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                  <h3 className="text-xl font-semibold">Auto-Renewal & Rollover</h3>
+                </div>
                 <p className="text-muted-foreground">
-                  Unused classes from your monthly membership roll over for up to 1 month, so you never lose what you've paid for.
+                  Your membership automatically renews each month so you never miss out. Unused classes roll over for up to 1 month, ensuring you never lose what you've paid for. Cancel anytime from your dashboard.
                 </p>
               </Card>
 
