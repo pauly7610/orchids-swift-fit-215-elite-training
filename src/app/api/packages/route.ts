@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { packages } from '@/db/schema';
-import { eq, like, or, and } from 'drizzle-orm';
+import { eq, like, or, and, desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -61,7 +61,10 @@ export async function GET(request: NextRequest) {
       query = query.where(and(...conditions));
     }
 
-    const results = await query.limit(limit).offset(offset);
+    const results = await query
+      .orderBy(desc(packages.createdAt))
+      .limit(limit)
+      .offset(offset);
 
     return NextResponse.json(results, { status: 200 });
   } catch (error) {
