@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { studentPurchases, packages, memberships } from '@/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
   try {
@@ -62,6 +62,19 @@ export async function GET(request: NextRequest) {
     const purchaseType = searchParams.get('purchaseType');
     const isActive = searchParams.get('isActive');
 
+    // Build filter conditions
+    const conditions = [];
+    if (studentProfileId) {
+      conditions.push(eq(studentPurchases.studentProfileId, parseInt(studentProfileId)));
+    }
+    if (purchaseType) {
+      conditions.push(eq(studentPurchases.purchaseType, purchaseType));
+    }
+    if (isActive !== null && isActive !== undefined) {
+      const isActiveValue = isActive === 'true' || isActive === '1';
+      conditions.push(eq(studentPurchases.isActive, isActiveValue));
+    }
+
     let query = db
       .select({
         id: studentPurchases.id,
@@ -87,19 +100,6 @@ export async function GET(request: NextRequest) {
       .from(studentPurchases)
       .leftJoin(packages, eq(studentPurchases.packageId, packages.id))
       .leftJoin(memberships, eq(studentPurchases.membershipId, memberships.id));
-
-    // Build filter conditions
-    const conditions = [];
-    if (studentProfileId) {
-      conditions.push(eq(studentPurchases.studentProfileId, parseInt(studentProfileId)));
-    }
-    if (purchaseType) {
-      conditions.push(eq(studentPurchases.purchaseType, purchaseType));
-    }
-    if (isActive !== null && isActive !== undefined) {
-      const isActiveValue = isActive === 'true' || isActive === '1';
-      conditions.push(eq(studentPurchases.isActive, isActiveValue));
-    }
 
     if (conditions.length > 0) {
       query = query.where(and(...conditions));
