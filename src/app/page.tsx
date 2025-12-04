@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Phone, MapPin, Clock, Dumbbell, Users, Target, Zap, Heart, Trophy, Award, CheckCircle2, Star, Facebook, Instagram, Play } from "lucide-react"
+import { Phone, MapPin, Clock, Dumbbell, Users, Target, Zap, Heart, Trophy, Award, CheckCircle2, Star, Facebook, Instagram, Play, Menu, X } from "lucide-react"
 import { useState } from "react"
 
 export default function Home() {
@@ -17,6 +17,7 @@ export default function Home() {
     message: ""
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -40,6 +41,8 @@ export default function Home() {
               <p className="text-xs text-primary/80 -mt-1">Speed & Strength Training</p>
             </div>
           </div>
+          
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
             <a href="#services" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Services</a>
             <a href="#about" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">About</a>
@@ -50,7 +53,62 @@ export default function Home() {
               <a href="tel:2679390254">Call Now</a>
             </Button>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+            aria-label="Toggle menu"
+          >
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden border-t border-primary/20 bg-secondary/98 backdrop-blur-sm">
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
+              <a 
+                href="#services" 
+                className="text-white/80 hover:text-primary transition-colors text-base font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Services
+              </a>
+              <a 
+                href="#about" 
+                className="text-white/80 hover:text-primary transition-colors text-base font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                About
+              </a>
+              <a 
+                href="#gallery" 
+                className="text-white/80 hover:text-primary transition-colors text-base font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Gallery
+              </a>
+              <a 
+                href="/pilates" 
+                className="text-white/80 hover:text-primary transition-colors text-base font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Pilates
+              </a>
+              <a 
+                href="#contact" 
+                className="text-white/80 hover:text-primary transition-colors text-base font-medium py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Contact
+              </a>
+              <Button size="sm" className="bg-primary hover:bg-primary/90 w-full">
+                <a href="tel:2679390254">Call Now</a>
+              </Button>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}
