@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, description, priceMonthly, isUnlimited, creditsPerMonth, isActive } = body;
+    const { name, description, priceMonthly, isUnlimited, creditsPerMonth, swipeSimpleLink, isActive } = body;
 
     // Validate required fields
     if (!name || name.trim() === '') {
@@ -126,6 +126,7 @@ export async function POST(request: NextRequest) {
       creditsPerMonth: creditsPerMonth !== undefined && creditsPerMonth !== null 
         ? parseInt(creditsPerMonth) 
         : null,
+      swipeSimpleLink: swipeSimpleLink ? swipeSimpleLink.trim() : null,
       isActive: isActive !== undefined ? Boolean(isActive) : true,
       createdAt: new Date().toISOString(),
     };
@@ -181,7 +182,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, priceMonthly, isUnlimited, creditsPerMonth, isActive } = body;
+    const { name, description, priceMonthly, isUnlimited, creditsPerMonth, swipeSimpleLink, isActive } = body;
 
     // Prepare update data
     const updateData: any = {};
@@ -228,6 +229,10 @@ export async function PUT(request: NextRequest) {
         }
         updateData.creditsPerMonth = credits;
       }
+    }
+
+    if (swipeSimpleLink !== undefined) {
+      updateData.swipeSimpleLink = swipeSimpleLink ? swipeSimpleLink.trim() : null;
     }
 
     if (isActive !== undefined) {
