@@ -165,6 +165,9 @@ export const studentPurchases = sqliteTable('student_purchases', {
   expiresAt: text('expires_at'),
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   paymentId: integer('payment_id').notNull().references(() => payments.id),
+  autoRenew: integer('auto_renew', { mode: 'boolean' }).notNull().default(false),
+  nextBillingDate: text('next_billing_date'),
+  squareCustomerId: text('square_customer_id'),
 });
 
 // Bookings
