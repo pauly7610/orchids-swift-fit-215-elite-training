@@ -94,36 +94,40 @@ export default function PricingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading pricing...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9BA899] mx-auto mb-4"></div>
+          <p className="text-[#7A736B]">Loading pricing...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#FAF8F5]">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur-sm border-b border-primary/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/pilates" className="flex items-center gap-2">
-            <Heart className="h-8 w-8 text-primary" />
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-sm border-b border-[#B8AFA5]/20">
+        <div className="container mx-auto px-4 py-5 flex items-center justify-between">
+          <Link href="/pilates" className="flex items-center gap-3">
+            <div className="relative w-12 h-12 rounded-full bg-[#9BA899]/10 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full border-2 border-[#B8AFA5] flex items-center justify-center">
+                <Heart className="h-5 w-5 text-[#B8AFA5]" fill="#B8AFA5" />
+              </div>
+            </div>
             <div>
-              <h1 className="font-display text-2xl text-white tracking-wider">SWIFTFIT PILATES</h1>
-              <p className="text-xs text-primary/80 -mt-1">Pilates + Wellness Studio</p>
+              <h1 className="font-serif text-xl tracking-wide text-[#5A5550]">Swift Fit</h1>
+              <p className="text-xs text-[#9BA899] -mt-0.5 tracking-wider">PILATES AND WELLNESS STUDIO</p>
             </div>
           </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/pilates/about" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">About</Link>
-            <Link href="/pilates/instructors" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Instructors</Link>
-            <Link href="/pilates/classes" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Classes</Link>
-            <Link href="/pilates/pricing" className="text-primary transition-colors text-sm font-medium">Pricing</Link>
-            <Link href="/pilates/schedule" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Schedule</Link>
-            <Link href="/pilates/faq" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">FAQ</Link>
+          <nav className="hidden md:flex items-center gap-8">
+            <Link href="/pilates/about" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">About</Link>
+            <Link href="/pilates/instructors" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">Instructors</Link>
+            <Link href="/pilates/classes" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">Classes</Link>
+            <Link href="/pilates/pricing" className="text-[#9BA899] font-medium transition-colors text-sm">Pricing</Link>
+            <Link href="/pilates/schedule" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">Schedule</Link>
+            <Link href="/pilates/faq" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">FAQ</Link>
             <Link href="/">
-              <Button size="sm" variant="outline" className="border-white/30 text-secondary hover:bg-white">
+              <Button size="sm" variant="outline" className="border-[#B8AFA5] text-[#5A5550] hover:bg-[#9BA899]/10">
                 Back to Gym
               </Button>
             </Link>
@@ -132,17 +136,14 @@ export default function PricingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-br from-secondary via-secondary/95 to-black">
-        <div className="container mx-auto px-4">
+      <section className="pt-32 pb-16 bg-gradient-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
+        <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-[#9BA899]/5 blur-3xl"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 text-sm px-4 py-1">
-              <Sparkles className="h-4 w-4 mr-2" />
-              Flexible Options
-            </Badge>
-            <h1 className="font-display text-5xl md:text-7xl text-white mb-6 tracking-wide">
-              PRICING & PACKAGES
+            <h1 className="font-serif text-5xl md:text-6xl text-[#5A5550] mb-4 font-light">
+              Pricing & Packages
             </h1>
-            <p className="text-xl text-white/80 leading-relaxed">
+            <p className="text-lg text-[#7A736B] leading-relaxed">
               Find the perfect package for your wellness journey - from drop-ins to unlimited monthly memberships.
             </p>
           </div>
@@ -150,14 +151,14 @@ export default function PricingPage() {
       </section>
 
       {/* Class Packs Section */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="font-display text-4xl md:text-5xl text-secondary mb-4 tracking-wide">
-                CLASS PACKS
+              <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-4 font-light">
+                Class Packs
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-base text-[#7A736B]">
                 Pay as you go with our flexible class pack options
               </p>
             </div>
@@ -170,13 +171,13 @@ export default function PricingPage() {
                 return (
                   <Card 
                     key={pkg.id} 
-                    className={`relative border-2 transition-all hover:shadow-lg ${
-                      isIntro ? 'border-primary bg-primary/5' : 'hover:border-primary'
+                    className={`relative border-2 transition-all hover:shadow-lg bg-white ${
+                      isIntro ? 'border-[#9BA899]' : 'border-[#B8AFA5]/30 hover:border-[#9BA899]'
                     }`}
                   >
                     {isIntro && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <Badge className="bg-primary text-white">
+                        <Badge className="bg-[#9BA899] text-white border-none">
                           <Star className="h-3 w-3 mr-1" />
                           Best for New Students
                         </Badge>
@@ -184,32 +185,32 @@ export default function PricingPage() {
                     )}
                     
                     <CardHeader>
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
-                        <Icon className="h-6 w-6 text-primary" />
+                      <div className="h-12 w-12 rounded-full bg-[#9BA899]/10 flex items-center justify-center mb-4">
+                        <Icon className="h-6 w-6 text-[#9BA899]" />
                       </div>
-                      <CardTitle className="text-2xl">{pkg.name}</CardTitle>
+                      <CardTitle className="text-2xl font-serif font-normal text-[#5A5550]">{pkg.name}</CardTitle>
                       <div className="flex items-baseline gap-2 mt-2">
-                        <span className="font-display text-4xl text-primary">${pkg.price}</span>
+                        <span className="font-serif text-4xl text-[#9BA899] font-light">${pkg.price}</span>
                         {pkg.credits > 1 && (
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-sm text-[#7A736B]">
                             (${getPerClassPrice(pkg.price, pkg.credits)}/class)
                           </span>
                         )}
                       </div>
-                      <CardDescription className="mt-2">{pkg.description}</CardDescription>
+                      <CardDescription className="mt-2 text-[#7A736B]">{pkg.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-3 mb-6">
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                           <span>{pkg.credits} {pkg.credits === 1 ? 'class' : 'classes'} included</span>
                         </li>
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                           <span>Valid for all class types</span>
                         </li>
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                           <span>
                             {pkg.expirationDays === 1 
                               ? 'Valid same day only' 
@@ -221,21 +222,21 @@ export default function PricingPage() {
                           </span>
                         </li>
                         {pkg.credits >= 5 && (
-                          <li className="flex items-start gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                             <span>Share with friends/family</span>
                           </li>
                         )}
                         {pkg.credits >= 10 && (
-                          <li className="flex items-start gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                             <span>Priority booking access</span>
                           </li>
                         )}
                       </ul>
                       
                       <Button 
-                        className="w-full bg-primary hover:bg-primary/90 text-white"
+                        className="w-full bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full"
                         onClick={() => handlePurchase(pkg.swipeSimpleLink, pkg.name)}
                       >
                         Purchase Now
@@ -251,18 +252,18 @@ export default function PricingPage() {
       </section>
 
       {/* Monthly Memberships Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-[#F5F2EE]">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="font-display text-4xl md:text-5xl text-secondary mb-4 tracking-wide">
-                MONTHLY MEMBERSHIPS
+              <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-4 font-light">
+                Monthly Memberships
               </h2>
-              <p className="text-lg text-muted-foreground mb-4">
+              <p className="text-base text-[#7A736B] mb-4">
                 Commit to your practice with recurring monthly memberships
               </p>
-              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                <RefreshCw className="h-4 w-4 text-primary" />
+              <div className="flex items-center justify-center gap-2 text-sm text-[#9BA899]">
+                <RefreshCw className="h-4 w-4" />
                 <span>Memberships automatically renew monthly • Manage anytime from your dashboard</span>
               </div>
             </div>
@@ -274,13 +275,13 @@ export default function PricingPage() {
                 return (
                   <Card 
                     key={membership.id} 
-                    className={`relative border-2 transition-all hover:shadow-lg ${
-                      isPopular ? 'border-primary bg-primary/5' : 'hover:border-primary'
+                    className={`relative border-2 transition-all hover:shadow-lg bg-white ${
+                      isPopular ? 'border-[#9BA899]' : 'border-[#B8AFA5]/30 hover:border-[#9BA899]'
                     }`}
                   >
                     {isPopular && (
                       <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                        <Badge className="bg-primary text-white">
+                        <Badge className="bg-[#9BA899] text-white border-none">
                           <Star className="h-3 w-3 mr-1" />
                           Most Popular
                         </Badge>
@@ -288,63 +289,63 @@ export default function PricingPage() {
                     )}
                     
                     <CardHeader>
-                      <CardTitle className="text-2xl">{membership.name}</CardTitle>
+                      <CardTitle className="text-2xl font-serif font-normal text-[#5A5550]">{membership.name}</CardTitle>
                       <div className="flex items-baseline gap-2 mt-2">
-                        <span className="font-display text-4xl text-primary">
+                        <span className="font-serif text-4xl text-[#9BA899] font-light">
                           ${membership.priceMonthly}
                         </span>
-                        <span className="text-sm text-muted-foreground">/month</span>
+                        <span className="text-sm text-[#7A736B]">/month</span>
                       </div>
                       {!membership.isUnlimited && membership.creditsPerMonth && (
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-[#7A736B] mt-1">
                           (${(membership.priceMonthly / membership.creditsPerMonth).toFixed(2)}/class)
                         </p>
                       )}
-                      <CardDescription className="mt-2">{membership.description}</CardDescription>
+                      <CardDescription className="mt-2 text-[#7A736B]">{membership.description}</CardDescription>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-3 mb-6">
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                           <span>
                             {membership.isUnlimited 
                               ? 'Unlimited classes per month' 
                               : `${membership.creditsPerMonth} classes per month`}
                           </span>
                         </li>
-                        <li className="flex items-start gap-2 text-sm">
-                          <RefreshCw className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                          <RefreshCw className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                           <span className="font-medium">Automatically renews monthly</span>
                         </li>
                         {!membership.isUnlimited && (
-                          <li className="flex items-start gap-2 text-sm">
-                            <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                          <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                             <span>Rollover unused classes (up to 1 month)</span>
                           </li>
                         )}
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                           <span>Priority booking</span>
                         </li>
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                           <span>Member-only events & wellness perks</span>
                         </li>
-                        <li className="flex items-start gap-2 text-sm">
-                          <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                        <li className="flex items-start gap-2 text-sm text-[#5A5550]">
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
                           <span>10% off workshops & merch</span>
                         </li>
                       </ul>
                       
                       <Button 
-                        className="w-full bg-primary hover:bg-primary/90 text-white"
+                        className="w-full bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full"
                         onClick={() => handlePurchase(membership.swipeSimpleLink, membership.name)}
                       >
                         Subscribe Now
                         <ExternalLink className="h-4 w-4 ml-2" />
                       </Button>
                       
-                      <p className="text-xs text-muted-foreground text-center mt-3">
+                      <p className="text-xs text-[#9BA899] text-center mt-3">
                         Cancel anytime from your student dashboard
                       </p>
                     </CardContent>
@@ -357,46 +358,46 @@ export default function PricingPage() {
       </section>
 
       {/* Membership Perks Section */}
-      <section className="py-20 bg-background">
+      <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-12">
-              <h2 className="font-display text-4xl md:text-5xl text-secondary mb-6 tracking-wide">
-                MEMBERSHIP PERKS
+              <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-6 font-light">
+                Membership Perks
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-base text-[#7A736B]">
                 All monthly memberships include these amazing benefits
               </p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <Card className="p-6 border-l-4 border-l-primary">
+              <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
                 <div className="flex items-start gap-3 mb-2">
-                  <RefreshCw className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
-                  <h3 className="text-xl font-semibold">Auto-Renewal & Rollover</h3>
+                  <RefreshCw className="h-5 w-5 text-[#9BA899] flex-shrink-0 mt-0.5" />
+                  <h3 className="text-xl font-serif font-normal text-[#5A5550]">Auto-Renewal & Rollover</h3>
                 </div>
-                <p className="text-muted-foreground">
+                <p className="text-[#7A736B]">
                   Your membership automatically renews each month so you never miss out. Unused classes roll over for up to 1 month, ensuring you never lose what you've paid for. Cancel anytime from your dashboard.
                 </p>
               </Card>
 
-              <Card className="p-6 border-l-4 border-l-primary">
-                <h3 className="text-xl font-semibold mb-2">Priority Booking</h3>
-                <p className="text-muted-foreground">
+              <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
+                <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">Priority Booking</h3>
+                <p className="text-[#7A736B]">
                   Members get first access to book classes, ensuring you never miss your favorite instructor or time slot.
                 </p>
               </Card>
 
-              <Card className="p-6 border-l-4 border-l-primary">
-                <h3 className="text-xl font-semibold mb-2">Member-Only Events</h3>
-                <p className="text-muted-foreground">
+              <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
+                <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">Member-Only Events</h3>
+                <p className="text-[#7A736B]">
                   Exclusive access to special events, workshops, and wellness experiences designed just for our community.
                 </p>
               </Card>
 
-              <Card className="p-6 border-l-4 border-l-primary">
-                <h3 className="text-xl font-semibold mb-2">10% Off Workshops & Merch</h3>
-                <p className="text-muted-foreground">
+              <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
+                <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">10% Off Workshops & Merch</h3>
+                <p className="text-[#7A736B]">
                   Save 10% on all special workshops, studio merchandise, and wellness products.
                 </p>
               </Card>
@@ -406,70 +407,74 @@ export default function PricingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-secondary via-secondary/95 to-black">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="font-display text-4xl md:text-5xl text-white mb-6 tracking-wide">
-            READY TO GET STARTED?
+      <section className="py-20 bg-gradient-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#B8AFA5]/10 blur-3xl"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-6 font-light">
+            Ready to Get Started?
           </h2>
-          <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-[#7A736B] mb-8 max-w-2xl mx-auto">
             Purchase a package above, then book your first class to begin your wellness journey with us.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/pilates/schedule">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg h-14 px-8">
+              <Button size="lg" className="bg-[#9BA899] hover:bg-[#8A9788] text-white text-base h-12 px-8 rounded-full">
                 View Schedule & Book
               </Button>
             </Link>
             <Link href="/pilates/faq">
-              <Button size="lg" variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-secondary text-lg h-14 px-8">
+              <Button size="lg" variant="outline" className="border-[#B8AFA5] bg-white text-[#5A5550] hover:bg-[#F5F2EE] text-base h-12 px-8 rounded-full">
                 Have Questions?
               </Button>
             </Link>
           </div>
-          <p className="text-sm text-white/60 mt-6">
+          <p className="text-sm text-[#9BA899] mt-6">
             New to the studio? Start with our 3-class intro pack for just $49!
           </p>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-secondary text-white py-12">
+      <footer className="bg-[#5A5550] text-[#FAF8F5] py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
+          <div className="grid md:grid-cols-3 gap-12 mb-12">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Heart className="h-8 w-8 text-primary" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full border border-[#B8AFA5] flex items-center justify-center">
+                  <Heart className="h-5 w-5 text-[#B8AFA5]" fill="#B8AFA5" />
+                </div>
                 <div>
-                  <h3 className="font-display text-2xl tracking-wider">SWIFTFIT PILATES</h3>
+                  <h3 className="font-serif text-xl tracking-wide">Swift Fit</h3>
+                  <p className="text-xs text-[#9BA899] tracking-wider">PILATES AND WELLNESS</p>
                 </div>
               </div>
-              <p className="text-white/70 text-sm">
+              <p className="text-[#B8AFA5] text-sm leading-relaxed">
                 A warm, welcoming space for real people on real journeys.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li><Link href="/pilates" className="hover:text-primary transition-colors">Home</Link></li>
-                <li><Link href="/pilates/about" className="hover:text-primary transition-colors">About</Link></li>
-                <li><Link href="/pilates/instructors" className="hover:text-primary transition-colors">Instructors</Link></li>
-                <li><Link href="/pilates/classes" className="hover:text-primary transition-colors">Classes</Link></li>
-                <li><Link href="/pilates/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
-                <li><Link href="/pilates/schedule" className="hover:text-primary transition-colors">Schedule</Link></li>
+              <h4 className="font-semibold mb-4 text-[#FAF8F5]">Quick Links</h4>
+              <ul className="space-y-2 text-sm text-[#B8AFA5]">
+                <li><Link href="/pilates" className="hover:text-[#9BA899] transition-colors">Home</Link></li>
+                <li><Link href="/pilates/about" className="hover:text-[#9BA899] transition-colors">About</Link></li>
+                <li><Link href="/pilates/instructors" className="hover:text-[#9BA899] transition-colors">Instructors</Link></li>
+                <li><Link href="/pilates/classes" className="hover:text-[#9BA899] transition-colors">Classes</Link></li>
+                <li><Link href="/pilates/pricing" className="hover:text-[#9BA899] transition-colors">Pricing</Link></li>
+                <li><Link href="/pilates/schedule" className="hover:text-[#9BA899] transition-colors">Schedule</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-white/70">
+              <h4 className="font-semibold mb-4 text-[#FAF8F5]">Contact</h4>
+              <ul className="space-y-2 text-sm text-[#B8AFA5]">
                 <li>swiftfitpws@gmail.com</li>
                 <li>2245 E Tioga Street</li>
                 <li>Philadelphia, PA 19134</li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/10 pt-8 text-center text-sm text-white/60">
+          <div className="border-t border-[#B8AFA5]/20 pt-8 text-center text-sm text-[#B8AFA5]">
             <p>© 2025 Swift Fit Pilates + Wellness Studio. All rights reserved.</p>
-            <p className="mt-2">Part of <Link href="/" className="text-primary hover:underline">SwiftFit 215</Link> family</p>
+            <p className="mt-2">Part of <Link href="/" className="text-[#9BA899] hover:underline">SwiftFit 215</Link> family</p>
           </div>
         </div>
       </footer>
