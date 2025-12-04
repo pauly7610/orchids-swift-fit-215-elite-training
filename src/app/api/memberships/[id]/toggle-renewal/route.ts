@@ -2,24 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { studentPurchases } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
-import { getCurrentUser } from '@/lib/auth';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // Authentication check
-    const user = await getCurrentUser(request);
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required', code: 'AUTHENTICATION_REQUIRED' },
-        { status: 401 }
-      );
-    }
-
     // Validate ID parameter
-    const id = params.id;
+    const { id } = await params;
     if (!id || isNaN(parseInt(id))) {
       return NextResponse.json(
         { error: 'Valid purchase ID is required', code: 'INVALID_ID' },
