@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, Users, DollarSign, TrendingUp, Plus } from "lucide-react"
+import { Calendar, Users, DollarSign, TrendingUp, Plus, Shield } from "lucide-react"
 import { toast } from "sonner"
 
 interface Stats {
@@ -174,6 +174,7 @@ export default function AdminDashboard() {
             <TabsTrigger value="classes">Classes</TabsTrigger>
             <TabsTrigger value="instructors">Instructors</TabsTrigger>
             <TabsTrigger value="students">Students</TabsTrigger>
+            <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="packages">Packages</TabsTrigger>
             <TabsTrigger value="reports">Reports</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -244,6 +245,33 @@ export default function AdminDashboard() {
                 <div className="text-center py-12 text-muted-foreground">
                   <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Student list will appear here</p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Users Management */}
+          <TabsContent value="users">
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>User Role Management</CardTitle>
+                    <CardDescription>Manage user roles and permissions (Admin, Instructor, Student)</CardDescription>
+                  </div>
+                  <Button onClick={() => router.push("/admin/users")}>
+                    <Shield className="h-4 w-4 mr-2" />
+                    Manage Users
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12 text-muted-foreground">
+                  <Shield className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p className="mb-4">Control who can access instructor and admin features</p>
+                  <Button onClick={() => router.push("/admin/users")}>
+                    Open User Management
+                  </Button>
                 </div>
               </CardContent>
             </Card>
