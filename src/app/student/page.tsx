@@ -7,9 +7,11 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Calendar, Clock, User, CreditCard, Package, CheckCircle2, XCircle, AlertCircle } from "lucide-react"
+import { Calendar, Clock, User, CreditCard, Package, CheckCircle2, XCircle, AlertCircle, RefreshCw } from "lucide-react"
 import { toast } from "sonner"
 import { format, parseISO } from "date-fns"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
 
 interface Class {
   id: number
@@ -45,6 +47,8 @@ interface Purchase {
   creditsRemaining: number
   creditsTotal: number
   expiresAt: string
+  autoRenew: boolean
+  nextBillingDate: string | null
   package?: { name: string }
   membership?: { name: string }
 }
@@ -57,6 +61,7 @@ export default function StudentDashboard() {
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("upcoming")
+  const [togglingRenewal, setTogglingRenewal] = useState<number | null>(null)
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -159,6 +164,30 @@ export default function StudentDashboard() {
       }
     } catch (error) {
       toast.error("Failed to join waitlist")
+    }
+  }
+
+  const handleToggleAutoRenewal = async (purchaseId: number, currentValue: boolean) => {
+    setTogglingRenewal(purchaseId)
+    try {
+      const token = localStorage.getItem("bearer_token")
+      const res = await fetch(`/api/memberships/${purchaseId}/toggle-renewal`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      const data = await res.json()
+      
+      if (res.ok) {
+        toast.success(currentValue ? "Auto-renewal disabled" : "Auto-renewal enabled")
+        fetchData()
+      } else {
+        toast.error(data.error || "Failed to update auto-renewal")
+      }
+    } catch (error) {
+      toast.error("Failed to update auto-renewal")
+    } finally {
+      setTogglingRenewal(null)
     }
   }
 
@@ -386,11 +415,11 @@ export default function StudentDashboard() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle>My Packages & Credits</CardTitle>
-                    <CardDescription>View your active packages and credits</CardDescription>
+                    <CardTitle>My Packages & Memberships</CardTitle>
+                    <CardDescription>View your active packages, memberships, and manage auto-renewal</CardDescription>
                   </div>
-                  <Button onClick={() => router.push("/student/purchase")}>
-                    Buy Credits
+                  <Button onClick={() => router.push("/pilates/pricing")}>
+                    Buy More
                   </Button>
                 </div>
               </CardHeader>
@@ -398,35 +427,105 @@ export default function StudentDashboard() {
                 {purchases.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-muted-foreground mb-4">No packages purchased yet</p>
-                    <Button onClick={() => router.push("/student/purchase")}>
+                    <Button onClick={() => router.push("/pilates/pricing")}>
                       Purchase Your First Package
                     </Button>
                   </div>
                 ) : (
-                  purchases.map((purchase) => (
-                    <Card key={purchase.id} className="border-2">
-                      <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-semibold">
-                              {purchase.package?.name || purchase.membership?.name || "Single Class"}
-                            </h4>
-                            <div className="text-sm text-muted-foreground mt-1">
-                              <div className="flex items-center gap-2">
-                                <span>Credits: {purchase.creditsRemaining} / {purchase.creditsTotal}</span>
-                                {purchase.expiresAt && (
-                                  <span>• Expires: {format(parseISO(purchase.expiresAt), "MMM d, yyyy")}</span>
-                                )}
+                  purchases.map((purchase) => {
+                    const isMembership = purchase.purchaseType === 'membership'
+                    const isExpiringSoon = purchase.expiresAt && 
+                      new Date(purchase.expiresAt).getTime() - new Date().getTime() < 7 * 24 * 60 * 60 * 1000
+                    
+                    return (
+                      <Card key={purchase.id} className="border-2">
+                        <CardContent className="p-6">
+                          <div className="space-y-4">
+                            <div className="flex items-start justify-between">
+                              <div className="flex-1">
+                                <div className="flex items-center gap-3 mb-2">
+                                  <h4 className="font-semibold text-lg">
+                                    {purchase.package?.name || purchase.membership?.name || "Single Class"}
+                                  </h4>
+                                  <Badge variant={purchase.creditsRemaining > 0 ? "default" : "secondary"}>
+                                    {isMembership ? "Membership" : "Package"}
+                                  </Badge>
+                                </div>
+                                
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                  {purchase.creditsTotal !== null && (
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium">Credits:</span>
+                                      <span>{purchase.creditsRemaining} / {purchase.creditsTotal} remaining</span>
+                                    </div>
+                                  )}
+                                  {purchase.expiresAt && (
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium">Expires:</span>
+                                      <span>{format(parseISO(purchase.expiresAt), "MMM d, yyyy")}</span>
+                                      {isExpiringSoon && (
+                                        <Badge variant="outline" className="text-xs">
+                                          <AlertCircle className="h-3 w-3 mr-1" />
+                                          Expiring Soon
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  )}
+                                  {isMembership && purchase.nextBillingDate && (
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium">Next Billing:</span>
+                                      <span>{format(parseISO(purchase.nextBillingDate), "MMM d, yyyy")}</span>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
+
+                            {/* Auto-renewal toggle for memberships */}
+                            {isMembership && (
+                              <div className="pt-4 border-t">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <RefreshCw className="h-5 w-5 text-primary" />
+                                    <div>
+                                      <Label htmlFor={`auto-renew-${purchase.id}`} className="font-medium cursor-pointer">
+                                        Auto-Renewal
+                                      </Label>
+                                      <p className="text-xs text-muted-foreground mt-0.5">
+                                        {purchase.autoRenew 
+                                          ? "Your membership will automatically renew monthly" 
+                                          : "Turn on to automatically renew your membership"}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <Switch
+                                    id={`auto-renew-${purchase.id}`}
+                                    checked={purchase.autoRenew}
+                                    onCheckedChange={() => handleToggleAutoRenewal(purchase.id, purchase.autoRenew)}
+                                    disabled={togglingRenewal === purchase.id}
+                                  />
+                                </div>
+                                {purchase.autoRenew && (
+                                  <div className="mt-3 p-3 bg-primary/5 rounded-lg">
+                                    <p className="text-xs text-muted-foreground flex items-start gap-2">
+                                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                                      <span>
+                                        Your membership will automatically renew on{" "}
+                                        <span className="font-medium text-foreground">
+                                          {purchase.nextBillingDate && format(parseISO(purchase.nextBillingDate), "MMMM d, yyyy")}
+                                        </span>
+                                        . Unused classes roll over for up to 1 month.
+                                      </span>
+                                    </p>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
-                          <Badge variant={purchase.creditsRemaining > 0 ? "default" : "secondary"}>
-                            {purchase.creditsRemaining > 0 ? "Active" : "Used"}
-                          </Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))
+                        </CardContent>
+                      </Card>
+                    )
+                  })
                 )}
               </CardContent>
             </Card>
