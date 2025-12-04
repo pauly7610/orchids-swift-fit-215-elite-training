@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { studentPurchases } from '@/db/schema';
+import { studentPurchases, packages, memberships } from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
-    // Single record fetch
+    // Single record fetch with package/membership details
     if (id) {
       if (!id || isNaN(parseInt(id))) {
         return NextResponse.json(
@@ -18,8 +18,30 @@ export async function GET(request: NextRequest) {
       }
 
       const record = await db
-        .select()
+        .select({
+          id: studentPurchases.id,
+          studentProfileId: studentPurchases.studentProfileId,
+          purchaseType: studentPurchases.purchaseType,
+          packageId: studentPurchases.packageId,
+          membershipId: studentPurchases.membershipId,
+          creditsRemaining: studentPurchases.creditsRemaining,
+          creditsTotal: studentPurchases.creditsTotal,
+          purchasedAt: studentPurchases.purchasedAt,
+          expiresAt: studentPurchases.expiresAt,
+          isActive: studentPurchases.isActive,
+          paymentId: studentPurchases.paymentId,
+          packageName: packages.name,
+          packagePrice: packages.price,
+          packageValidityType: packages.validityType,
+          packageSwipeSimpleLink: packages.swipeSimpleLink,
+          membershipName: memberships.name,
+          membershipPriceMonthly: memberships.priceMonthly,
+          membershipIsUnlimited: memberships.isUnlimited,
+          membershipSwipeSimpleLink: memberships.swipeSimpleLink,
+        })
         .from(studentPurchases)
+        .leftJoin(packages, eq(studentPurchases.packageId, packages.id))
+        .leftJoin(memberships, eq(studentPurchases.membershipId, memberships.id))
         .where(eq(studentPurchases.id, parseInt(id)))
         .limit(1);
 
@@ -33,14 +55,38 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(record[0], { status: 200 });
     }
 
-    // List with pagination and filtering
+    // List with pagination, filtering, and package/membership details
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
     const offset = parseInt(searchParams.get('offset') ?? '0');
     const studentProfileId = searchParams.get('studentProfileId');
     const purchaseType = searchParams.get('purchaseType');
     const isActive = searchParams.get('isActive');
 
-    let query = db.select().from(studentPurchases);
+    let query = db
+      .select({
+        id: studentPurchases.id,
+        studentProfileId: studentPurchases.studentProfileId,
+        purchaseType: studentPurchases.purchaseType,
+        packageId: studentPurchases.packageId,
+        membershipId: studentPurchases.membershipId,
+        creditsRemaining: studentPurchases.creditsRemaining,
+        creditsTotal: studentPurchases.creditsTotal,
+        purchasedAt: studentPurchases.purchasedAt,
+        expiresAt: studentPurchases.expiresAt,
+        isActive: studentPurchases.isActive,
+        paymentId: studentPurchases.paymentId,
+        packageName: packages.name,
+        packagePrice: packages.price,
+        packageValidityType: packages.validityType,
+        packageSwipeSimpleLink: packages.swipeSimpleLink,
+        membershipName: memberships.name,
+        membershipPriceMonthly: memberships.priceMonthly,
+        membershipIsUnlimited: memberships.isUnlimited,
+        membershipSwipeSimpleLink: memberships.swipeSimpleLink,
+      })
+      .from(studentPurchases)
+      .leftJoin(packages, eq(studentPurchases.packageId, packages.id))
+      .leftJoin(memberships, eq(studentPurchases.membershipId, memberships.id));
 
     // Build filter conditions
     const conditions = [];
