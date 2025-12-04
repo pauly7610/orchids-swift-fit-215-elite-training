@@ -133,6 +133,8 @@ export async function POST(request: NextRequest) {
       creditsTotal,
       expiresAt,
       isActive,
+      autoRenew,
+      squareCustomerId,
     } = body;
 
     // Validate required fields
@@ -254,6 +256,26 @@ export async function POST(request: NextRequest) {
 
     if (expiresAt) {
       insertData.expiresAt = expiresAt;
+    }
+
+    // Auto-renewal logic: default to true for memberships
+    if (purchaseType === 'membership') {
+      insertData.autoRenew = autoRenew !== undefined ? autoRenew : true;
+      
+      // Calculate next billing date (30 days from purchase)
+      if (insertData.autoRenew) {
+        const nextBilling = new Date();
+        nextBilling.setDate(nextBilling.getDate() + 30);
+        insertData.nextBillingDate = nextBilling.toISOString();
+      }
+      
+      // Store Square customer ID if provided
+      if (squareCustomerId) {
+        insertData.squareCustomerId = squareCustomerId.trim();
+      }
+    } else {
+      // For non-membership purchases, default to false
+      insertData.autoRenew = false;
     }
 
     // Insert record
