@@ -120,6 +120,8 @@ export const packages = sqliteTable('packages', {
   credits: integer('credits').notNull(),
   price: real('price').notNull(),
   expirationDays: integer('expiration_days'),
+  validityType: text('validity_type'),
+  swipeSimpleLink: text('swipe_simple_link'),
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   createdAt: text('created_at').notNull(),
 });
@@ -132,6 +134,7 @@ export const memberships = sqliteTable('memberships', {
   priceMonthly: real('price_monthly').notNull(),
   isUnlimited: integer('is_unlimited', { mode: 'boolean' }).notNull().default(true),
   creditsPerMonth: integer('credits_per_month'),
+  swipeSimpleLink: text('swipe_simple_link'),
   isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
   createdAt: text('created_at').notNull(),
 });
