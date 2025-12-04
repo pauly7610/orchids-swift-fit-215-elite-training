@@ -75,7 +75,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, description, credits, price, expirationDays, isActive } = body;
+    const { name, description, credits, price, expirationDays, validityType, swipeSimpleLink, isActive } = body;
 
     // Validate required fields
     if (!name || name.trim() === '') {
@@ -136,6 +136,8 @@ export async function POST(request: NextRequest) {
       credits: creditsInt,
       price: priceFloat,
       expirationDays: expirationDaysInt,
+      validityType: validityType ? validityType.trim() : null,
+      swipeSimpleLink: swipeSimpleLink ? swipeSimpleLink.trim() : null,
       isActive: isActive !== undefined ? Boolean(isActive) : true,
       createdAt: new Date().toISOString(),
     };
@@ -166,7 +168,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { name, description, credits, price, expirationDays, isActive } = body;
+    const { name, description, credits, price, expirationDays, validityType, swipeSimpleLink, isActive } = body;
 
     // Check if record exists
     const existing = await db.select()
@@ -233,6 +235,14 @@ export async function PUT(request: NextRequest) {
         }
         updateData.expirationDays = expirationDaysInt;
       }
+    }
+
+    if (validityType !== undefined) {
+      updateData.validityType = validityType ? validityType.trim() : null;
+    }
+
+    if (swipeSimpleLink !== undefined) {
+      updateData.swipeSimpleLink = swipeSimpleLink ? swipeSimpleLink.trim() : null;
     }
 
     if (isActive !== undefined) {
