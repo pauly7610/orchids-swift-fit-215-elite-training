@@ -4,9 +4,9 @@ import { useEffect, useState } from "react"
 import { useSession } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Calendar, Clock, User, MapPin, CreditCard } from "lucide-react"
+import { Heart, Calendar, User, CreditCard } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { format, parseISO, startOfWeek, addDays, isSameDay } from "date-fns"
@@ -162,49 +162,53 @@ export default function SchedulePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading schedule...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9BA899] mx-auto mb-4"></div>
+          <p className="text-[#7A736B]">Loading schedule...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-[#FAF8F5]">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur-sm border-b border-primary/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/pilates" className="flex items-center gap-2">
-            <Heart className="h-8 w-8 text-primary" />
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-sm border-b border-[#B8AFA5]/20">
+        <div className="container mx-auto px-4 py-5 flex items-center justify-between">
+          <Link href="/pilates" className="flex items-center gap-3">
+            <div className="relative w-12 h-12 rounded-full bg-[#9BA899]/10 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full border-2 border-[#B8AFA5] flex items-center justify-center">
+                <Heart className="h-5 w-5 text-[#B8AFA5]" fill="#B8AFA5" />
+              </div>
+            </div>
             <div>
-              <h1 className="font-display text-2xl text-white tracking-wider">SWIFTFIT PILATES</h1>
-              <p className="text-xs text-primary/80 -mt-1">Pilates + Wellness Studio</p>
+              <h1 className="font-serif text-xl tracking-wide text-[#5A5550]">Swift Fit</h1>
+              <p className="text-xs text-[#9BA899] -mt-0.5 tracking-wider">PILATES AND WELLNESS STUDIO</p>
             </div>
           </Link>
-          <nav className="hidden md:flex items-center gap-6">
-            <Link href="/pilates/about" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">About</Link>
-            <Link href="/pilates/instructors" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Instructors</Link>
-            <Link href="/pilates/classes" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Classes</Link>
-            <Link href="/pilates/pricing" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">Pricing</Link>
-            <Link href="/pilates/schedule" className="text-primary transition-colors text-sm font-medium">Schedule</Link>
-            <Link href="/pilates/faq" className="text-white/80 hover:text-primary transition-colors text-sm font-medium">FAQ</Link>
+          <nav className="hidden md:flex items-center gap-8">
+            <Link href="/pilates/about" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">About</Link>
+            <Link href="/pilates/instructors" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">Instructors</Link>
+            <Link href="/pilates/classes" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">Classes</Link>
+            <Link href="/pilates/pricing" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">Pricing</Link>
+            <Link href="/pilates/schedule" className="text-[#9BA899] font-medium transition-colors text-sm">Schedule</Link>
+            <Link href="/pilates/faq" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">FAQ</Link>
             {session ? (
               <Link href="/student">
-                <Button size="sm" className="bg-primary hover:bg-primary/90">
+                <Button size="sm" className="bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full">
                   Dashboard
                 </Button>
               </Link>
             ) : (
               <Link href="/login">
-                <Button size="sm" className="bg-primary hover:bg-primary/90">
+                <Button size="sm" className="bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full">
                   Login
                 </Button>
               </Link>
             )}
             <Link href="/">
-              <Button size="sm" variant="outline" className="border-white/30 text-secondary hover:bg-white">
+              <Button size="sm" variant="outline" className="border-[#B8AFA5] text-[#5A5550] hover:bg-[#9BA899]/10">
                 Back to Gym
               </Button>
             </Link>
@@ -213,23 +217,24 @@ export default function SchedulePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-12 bg-gradient-to-br from-secondary via-secondary/95 to-black">
-        <div className="container mx-auto px-4">
+      <section className="pt-32 pb-12 bg-gradient-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
+        <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-[#9BA899]/5 blur-3xl"></div>
+        <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
-            <h1 className="font-display text-5xl md:text-7xl text-white mb-6 tracking-wide">
-              CLASS SCHEDULE
+            <h1 className="font-serif text-5xl md:text-6xl text-[#5A5550] mb-4 font-light">
+              Class Schedule
             </h1>
-            <p className="text-xl text-white/80 mb-6">
+            <p className="text-lg text-[#7A736B] mb-6">
               Find your perfect class and book your spot today
             </p>
             {session && (
               <div className="flex items-center justify-center gap-4">
-                <Badge className="bg-primary/20 text-primary border-primary/30 text-base px-4 py-2">
+                <Badge className="bg-[#9BA899]/20 text-[#5A5550] border-[#9BA899] text-base px-6 py-2 rounded-full">
                   <CreditCard className="h-4 w-4 mr-2" />
                   {totalCredits} Credits Available
                 </Badge>
                 <Link href="/student/purchase">
-                  <Button variant="outline" size="sm" className="border-white/30 text-white hover:bg-white hover:text-secondary">
+                  <Button variant="outline" size="sm" className="border-[#B8AFA5] text-[#5A5550] hover:bg-[#9BA899]/10 rounded-full">
                     Buy More Credits
                   </Button>
                 </Link>
@@ -240,7 +245,7 @@ export default function SchedulePage() {
       </section>
 
       {/* Week Navigation */}
-      <section className="py-8 bg-background border-b">
+      <section className="py-8 bg-white border-b border-[#B8AFA5]/20">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-2 overflow-x-auto">
             {weekDays.map((day) => {
@@ -251,26 +256,26 @@ export default function SchedulePage() {
                 <button
                   key={day.toISOString()}
                   onClick={() => setSelectedDate(day)}
-                  className={`flex flex-col items-center min-w-[80px] px-4 py-3 rounded-lg border-2 transition-all ${
+                  className={`flex flex-col items-center min-w-[80px] px-4 py-3 rounded-2xl border-2 transition-all ${
                     isSelected
-                      ? "border-primary bg-primary/10"
+                      ? "border-[#9BA899] bg-[#9BA899]/10"
                       : hasClasses
-                      ? "border-border hover:border-primary/50"
-                      : "border-border opacity-50 cursor-not-allowed"
+                      ? "border-[#B8AFA5]/30 hover:border-[#9BA899]/50 bg-white"
+                      : "border-[#B8AFA5]/20 opacity-50 cursor-not-allowed bg-[#FAF8F5]"
                   }`}
                   disabled={!hasClasses}
                 >
-                  <span className="text-xs text-muted-foreground mb-1">
+                  <span className="text-xs text-[#9BA899] mb-1">
                     {format(day, "EEE")}
                   </span>
-                  <span className="text-2xl font-bold">
+                  <span className="text-2xl font-serif font-light text-[#5A5550]">
                     {format(day, "d")}
                   </span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-xs text-[#7A736B]">
                     {format(day, "MMM")}
                   </span>
                   {hasClasses && (
-                    <div className="w-1 h-1 rounded-full bg-primary mt-2" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#9BA899] mt-2" />
                   )}
                 </button>
               )
@@ -281,6 +286,7 @@ export default function SchedulePage() {
               variant="ghost"
               size="sm"
               onClick={() => setSelectedDate(new Date())}
+              className="text-[#9BA899] hover:text-[#8A9788]"
             >
               Today
             </Button>
@@ -289,30 +295,30 @@ export default function SchedulePage() {
       </section>
 
       {/* Classes List */}
-      <section className="py-12 bg-background">
+      <section className="py-12 bg-[#FAF8F5]">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             {selectedDate && (
               <div className="mb-8 text-center">
-                <h2 className="font-display text-3xl text-primary mb-2">
+                <h2 className="font-serif text-3xl text-[#5A5550] mb-2 font-light">
                   {format(selectedDate, "EEEE, MMMM d, yyyy")}
                 </h2>
-                <p className="text-muted-foreground">
+                <p className="text-[#7A736B]">
                   {filteredClasses.length} {filteredClasses.length === 1 ? "class" : "classes"} available
                 </p>
               </div>
             )}
 
             {filteredClasses.length === 0 ? (
-              <Card className="text-center py-12">
+              <Card className="text-center py-12 bg-white border-[#B8AFA5]/30">
                 <CardContent>
-                  <Calendar className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">No classes scheduled</h3>
-                  <p className="text-muted-foreground mb-6">
+                  <Calendar className="h-16 w-16 text-[#9BA899] mx-auto mb-4" />
+                  <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">No classes scheduled</h3>
+                  <p className="text-[#7A736B] mb-6">
                     No classes available for this date. Try selecting another day.
                   </p>
                   <Link href="/pilates/pricing">
-                    <Button>View Pricing & Packages</Button>
+                    <Button className="bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full">View Pricing & Packages</Button>
                   </Link>
                 </CardContent>
               </Card>
@@ -323,16 +329,16 @@ export default function SchedulePage() {
                   const isLowCapacity = cls.spotsRemaining <= 3 && cls.spotsRemaining > 0
                   
                   return (
-                    <Card key={cls.id} className="border-2 hover:border-primary transition-colors">
+                    <Card key={cls.id} className="border-2 border-[#B8AFA5]/30 hover:border-[#9BA899] transition-all bg-white">
                       <CardContent className="p-6">
                         <div className="flex flex-col md:flex-row gap-6">
                           {/* Time Badge */}
                           <div className="flex-shrink-0">
-                            <div className="bg-primary/10 rounded-lg px-6 py-4 text-center">
-                              <div className="font-display text-3xl text-primary">
+                            <div className="bg-[#9BA899]/10 rounded-2xl px-6 py-4 text-center border border-[#B8AFA5]/30">
+                              <div className="font-serif text-3xl text-[#9BA899] font-light">
                                 {cls.startTime}
                               </div>
-                              <div className="text-xs text-muted-foreground mt-1">
+                              <div className="text-xs text-[#7A736B] mt-1">
                                 {cls.classType.durationMinutes} min
                               </div>
                             </div>
@@ -342,48 +348,48 @@ export default function SchedulePage() {
                           <div className="flex-1">
                             <div className="flex items-start justify-between gap-4 mb-3">
                               <div>
-                                <h3 className="text-2xl font-display tracking-wide text-primary mb-1">
-                                  {cls.classType.name.toUpperCase()}
+                                <h3 className="text-2xl font-serif font-normal text-[#5A5550] mb-1">
+                                  {cls.classType.name}
                                 </h3>
-                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <div className="flex items-center gap-2 text-sm text-[#7A736B]">
                                   <User className="h-4 w-4" />
                                   <span>{cls.instructor.name}</span>
                                 </div>
                               </div>
                               <div className="text-right">
                                 {cls.price && (
-                                  <div className="text-2xl font-bold">${cls.price.toFixed(2)}</div>
+                                  <div className="text-2xl font-serif font-light text-[#9BA899]">${cls.price.toFixed(2)}</div>
                                 )}
-                                <div className="text-xs text-muted-foreground">per class</div>
+                                <div className="text-xs text-[#7A736B]">per class</div>
                               </div>
                             </div>
 
-                            <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
+                            <p className="text-sm text-[#7A736B] mb-4 line-clamp-2">
                               {cls.classType.description}
                             </p>
 
                             <div className="flex flex-wrap items-center gap-3">
                               {cls.isUserBooked ? (
-                                <Badge className="bg-green-500">✓ Booked</Badge>
+                                <Badge className="bg-[#9BA899] text-white border-none rounded-full">✓ Booked</Badge>
                               ) : isFull ? (
-                                <Badge variant="destructive">Full</Badge>
+                                <Badge variant="destructive" className="rounded-full">Full</Badge>
                               ) : isLowCapacity ? (
-                                <Badge variant="secondary" className="bg-orange-500 text-white">
+                                <Badge className="bg-orange-500 text-white border-none rounded-full">
                                   Only {cls.spotsRemaining} spots left
                                 </Badge>
                               ) : (
-                                <Badge variant="secondary">
+                                <Badge className="bg-[#9BA899]/20 text-[#5A5550] border-[#9BA899] rounded-full">
                                   {cls.spotsRemaining} spots available
                                 </Badge>
                               )}
 
                               {cls.waitlistPosition && (
-                                <Badge variant="outline">
+                                <Badge variant="outline" className="border-[#B8AFA5] text-[#5A5550] rounded-full">
                                   Waitlist #{cls.waitlistPosition}
                                 </Badge>
                               )}
 
-                              <div className="text-xs text-muted-foreground">
+                              <div className="text-xs text-[#9BA899]">
                                 {cls.registeredCount} / {cls.capacity} registered
                               </div>
                             </div>
@@ -393,25 +399,25 @@ export default function SchedulePage() {
                           <div className="flex flex-col gap-2 flex-shrink-0">
                             {cls.isUserBooked ? (
                               <>
-                                <Button variant="outline" disabled className="w-full md:w-32">
+                                <Button variant="outline" disabled className="w-full md:w-32 rounded-full border-[#9BA899] text-[#9BA899]">
                                   Booked
                                 </Button>
                                 <Link href="/student">
-                                  <Button variant="ghost" size="sm" className="w-full md:w-32">
+                                  <Button variant="ghost" size="sm" className="w-full md:w-32 text-[#5A5550] hover:text-[#9BA899]">
                                     Manage
                                   </Button>
                                 </Link>
                               </>
                             ) : isFull ? (
                               cls.waitlistPosition ? (
-                                <Button variant="outline" disabled className="w-full md:w-32">
+                                <Button variant="outline" disabled className="w-full md:w-32 rounded-full border-[#B8AFA5]">
                                   On Waitlist
                                 </Button>
                               ) : (
                                 <Button
                                   variant="outline"
                                   onClick={() => handleJoinWaitlist(cls.id)}
-                                  className="w-full md:w-32"
+                                  className="w-full md:w-32 rounded-full border-[#9BA899] text-[#9BA899] hover:bg-[#9BA899]/10"
                                 >
                                   Join Waitlist
                                 </Button>
@@ -419,7 +425,7 @@ export default function SchedulePage() {
                             ) : (
                               <Button
                                 onClick={() => handleBookClass(cls.id)}
-                                className="w-full md:w-32 bg-primary hover:bg-primary/90"
+                                className="w-full md:w-32 bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full"
                                 disabled={session && totalCredits === 0}
                               >
                                 {session ? (totalCredits > 0 ? "Book Now" : "No Credits") : "Login to Book"}
@@ -438,23 +444,24 @@ export default function SchedulePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-secondary via-secondary/95 to-black">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="font-display text-4xl md:text-5xl text-white mb-6 tracking-wide">
-            NEW TO SWIFTFIT PILATES?
+      <section className="py-20 bg-gradient-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#B8AFA5]/10 blur-3xl"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-6 font-light">
+            New to Swift Fit Pilates?
           </h2>
-          <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-[#7A736B] mb-8 max-w-2xl mx-auto">
             Get started with our introductory offer: 3 classes for just $49!
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/pilates/pricing">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg h-14 px-8">
+              <Button size="lg" className="bg-[#9BA899] hover:bg-[#8A9788] text-white text-base h-12 px-8 rounded-full">
                 View Pricing
               </Button>
             </Link>
             {!session && (
               <Link href="/register">
-                <Button size="lg" variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-secondary text-lg h-14 px-8">
+                <Button size="lg" variant="outline" className="border-[#B8AFA5] bg-white text-[#5A5550] hover:bg-[#F5F2EE] text-base h-12 px-8 rounded-full">
                   Create Account
                 </Button>
               </Link>
@@ -464,43 +471,46 @@ export default function SchedulePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-secondary text-white py-12">
+      <footer className="bg-[#5A5550] text-[#FAF8F5] py-16">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8 mb-8">
+          <div className="grid md:grid-cols-3 gap-12 mb-12">
             <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Heart className="h-8 w-8 text-primary" />
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full border border-[#B8AFA5] flex items-center justify-center">
+                  <Heart className="h-5 w-5 text-[#B8AFA5]" fill="#B8AFA5" />
+                </div>
                 <div>
-                  <h3 className="font-display text-2xl tracking-wider">SWIFTFIT PILATES</h3>
+                  <h3 className="font-serif text-xl tracking-wide">Swift Fit</h3>
+                  <p className="text-xs text-[#9BA899] tracking-wider">PILATES AND WELLNESS</p>
                 </div>
               </div>
-              <p className="text-white/70 text-sm">
+              <p className="text-[#B8AFA5] text-sm leading-relaxed">
                 A warm, welcoming space for real people on real journeys.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-white/70">
-                <li><Link href="/pilates" className="hover:text-primary transition-colors">Home</Link></li>
-                <li><Link href="/pilates/about" className="hover:text-primary transition-colors">About</Link></li>
-                <li><Link href="/pilates/instructors" className="hover:text-primary transition-colors">Instructors</Link></li>
-                <li><Link href="/pilates/classes" className="hover:text-primary transition-colors">Classes</Link></li>
-                <li><Link href="/pilates/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
-                <li><Link href="/pilates/schedule" className="hover:text-primary transition-colors">Schedule</Link></li>
+              <h4 className="font-semibold mb-4 text-[#FAF8F5]">Quick Links</h4>
+              <ul className="space-y-2 text-sm text-[#B8AFA5]">
+                <li><Link href="/pilates" className="hover:text-[#9BA899] transition-colors">Home</Link></li>
+                <li><Link href="/pilates/about" className="hover:text-[#9BA899] transition-colors">About</Link></li>
+                <li><Link href="/pilates/instructors" className="hover:text-[#9BA899] transition-colors">Instructors</Link></li>
+                <li><Link href="/pilates/classes" className="hover:text-[#9BA899] transition-colors">Classes</Link></li>
+                <li><Link href="/pilates/pricing" className="hover:text-[#9BA899] transition-colors">Pricing</Link></li>
+                <li><Link href="/pilates/schedule" className="hover:text-[#9BA899] transition-colors">Schedule</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-white/70">
+              <h4 className="font-semibold mb-4 text-[#FAF8F5]">Contact</h4>
+              <ul className="space-y-2 text-sm text-[#B8AFA5]">
                 <li>swiftfitpws@gmail.com</li>
                 <li>2245 E Tioga Street</li>
                 <li>Philadelphia, PA 19134</li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/10 pt-8 text-center text-sm text-white/60">
+          <div className="border-t border-[#B8AFA5]/20 pt-8 text-center text-sm text-[#B8AFA5]">
             <p>© 2025 Swift Fit Pilates + Wellness Studio. All rights reserved.</p>
-            <p className="mt-2">Part of <Link href="/" className="text-primary hover:underline">SwiftFit 215</Link> family</p>
+            <p className="mt-2">Part of <Link href="/" className="text-[#9BA899] hover:underline">SwiftFit 215</Link> family</p>
           </div>
         </div>
       </footer>
