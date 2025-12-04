@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { studentPurchases, memberships, payments } from '@/db/schema';
 import { eq, and, lte, gte } from 'drizzle-orm';
-import { getCurrentUser } from '@/lib/auth';
 
 interface RenewalResult {
   purchaseId: number;
@@ -15,15 +14,6 @@ interface RenewalResult {
 
 export async function POST(request: NextRequest) {
   try {
-    // Authentication check
-    const user = await getCurrentUser(request);
-    if (!user) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
     const now = new Date();
     const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
