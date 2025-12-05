@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { bookings, classes, classTypes, instructors, userProfiles, user, studioInfo, studentPurchases } from '@/db/schema';
-import { eq, and, gte, lte, gt, or, isNull } from 'drizzle-orm';
+import { eq, and, gte, lte, gt, or, isNull, sql } from 'drizzle-orm';
 import { sendBookingConfirmation, sendInstructorNotification, sendAdminNotification } from '@/app/actions/send-booking-emails';
 
 export async function GET(request: NextRequest) {
@@ -155,9 +155,58 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Execute booking creation and credit deduction in a transaction
+    // Execute booking creation with race condition prevention
     const result = await db.transaction(async (tx) => {
-      // If credits are being used, verify and deduct them
+      // 1. Lock the class row for update to prevent race conditions
+      const classData = await tx
+        .select()
+        .from(classes)
+        .where(eq(classes.id, parseInt(classId)))
+        .for('update') // Row-level lock
+        .limit(1);
+
+      if (classData.length === 0) {
+        throw new Error('CLASS_NOT_FOUND: Class does not exist');
+      }
+
+      const classInfo = classData[0];
+
+      // 2. Check for duplicate booking (same student, same class)
+      const existingBooking = await tx
+        .select()
+        .from(bookings)
+        .where(
+          and(
+            eq(bookings.studentProfileId, parseInt(studentProfileId)),
+            eq(bookings.classId, parseInt(classId)),
+            eq(bookings.bookingStatus, 'confirmed')
+          )
+        )
+        .limit(1);
+
+      if (existingBooking.length > 0) {
+        throw new Error('DUPLICATE_BOOKING: You already have a confirmed booking for this class');
+      }
+
+      // 3. Count current confirmed bookings for capacity check
+      const confirmedBookingsResult = await tx
+        .select({ count: sql<number>`count(*)` })
+        .from(bookings)
+        .where(
+          and(
+            eq(bookings.classId, parseInt(classId)),
+            eq(bookings.bookingStatus, 'confirmed')
+          )
+        );
+
+      const currentBookings = Number(confirmedBookingsResult[0]?.count || 0);
+
+      // 4. Check if class is full
+      if (currentBookings >= classInfo.capacity) {
+        throw new Error(`CLASS_FULL: Class is at full capacity (${classInfo.capacity}/${classInfo.capacity})`);
+      }
+
+      // 5. If credits are being used, verify and deduct them
       if (creditsToUse > 0) {
         const currentDate = new Date().toISOString();
         
@@ -176,6 +225,7 @@ export async function POST(request: NextRequest) {
               )
             )
           )
+          .for('update') // Lock credit rows to prevent race conditions
           .orderBy(studentPurchases.expiresAt); // Use credits expiring soonest first
 
         // Calculate total available credits
@@ -210,7 +260,7 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Prepare insert data for booking
+      // 6. Prepare insert data for booking
       const insertData: any = {
         classId: parseInt(classId),
         studentProfileId: parseInt(studentProfileId),
@@ -231,7 +281,7 @@ export async function POST(request: NextRequest) {
         insertData.paymentId = parseInt(paymentId);
       }
 
-      // Create the booking
+      // 7. Create the booking
       const newBooking = await tx.insert(bookings).values(insertData).returning();
 
       return newBooking[0];
@@ -249,11 +299,31 @@ export async function POST(request: NextRequest) {
     console.error('POST error:', error);
     
     // Handle specific error codes
-    if (error instanceof Error && error.message.startsWith('INSUFFICIENT_CREDITS')) {
-      return NextResponse.json(
-        { error: error.message.split(': ')[1], code: 'INSUFFICIENT_CREDITS' },
-        { status: 400 }
-      );
+    if (error instanceof Error) {
+      if (error.message.startsWith('INSUFFICIENT_CREDITS')) {
+        return NextResponse.json(
+          { error: error.message.split(': ')[1], code: 'INSUFFICIENT_CREDITS' },
+          { status: 400 }
+        );
+      }
+      if (error.message.startsWith('CLASS_FULL')) {
+        return NextResponse.json(
+          { error: error.message.split(': ')[1], code: 'CLASS_FULL' },
+          { status: 409 }
+        );
+      }
+      if (error.message.startsWith('CLASS_NOT_FOUND')) {
+        return NextResponse.json(
+          { error: error.message.split(': ')[1], code: 'CLASS_NOT_FOUND' },
+          { status: 404 }
+        );
+      }
+      if (error.message.startsWith('DUPLICATE_BOOKING')) {
+        return NextResponse.json(
+          { error: error.message.split(': ')[1], code: 'DUPLICATE_BOOKING' },
+          { status: 409 }
+        );
+      }
     }
     
     return NextResponse.json(
