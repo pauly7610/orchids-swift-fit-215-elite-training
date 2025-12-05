@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Phone, MapPin, Clock, Dumbbell, Users, Target, Zap, Heart, Trophy, Award, CheckCircle2, Star, Facebook, Instagram, Play, Menu, X } from "lucide-react"
 import { useState } from "react"
+import { sendContactEmail } from "@/app/actions/send-email"
+import { toast } from "sonner"
 
 export default function Home() {
   const [formData, setFormData] = useState({
@@ -22,11 +24,21 @@ export default function Home() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    alert("Thank you for your interest! We'll contact you soon.")
-    setFormData({ name: "", email: "", phone: "", message: "" })
-    setIsSubmitting(false)
+    
+    try {
+      const result = await sendContactEmail(formData)
+      
+      if (result.success) {
+        toast.success("Thank you for your interest! Check your email for confirmation. We'll contact you soon.")
+        setFormData({ name: "", email: "", phone: "", message: "" })
+      } else {
+        toast.error(result.error || "Failed to send message. Please try again or call us directly.")
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred. Please try again or call us at (267) 939-0254.")
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
