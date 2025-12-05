@@ -10,6 +10,7 @@ import { Phone, MapPin, Clock, Dumbbell, Users, Target, Zap, Heart, Trophy, Awar
 import { useState, useEffect, useRef } from "react"
 import { sendContactEmail } from "@/app/actions/send-email"
 import { toast } from "sonner"
+import { GalleryImage } from "@/components/gallery-image"
 
 export default function Home() {
   const [formData, setFormData] = useState({
