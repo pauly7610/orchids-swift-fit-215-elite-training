@@ -602,213 +602,89 @@ export default function Home() {
           <div>
             <h3 className="font-display text-3xl text-secondary mb-8 tracking-wide">FACILITY & TRAINING PHOTOS</h3>
             <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000008-1761154858471.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Mark Webb, Nasir Adderley, and D'Andre Swift - NFL Players trained by SwiftFit215" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">NFL Players - Trained Since Middle School</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000008-1761154858471.jpg?width=8000&height=8000&resize=contain"
+                alt="Mark Webb, Nasir Adderley, and D'Andre Swift - NFL Players trained by SwiftFit215"
+                caption="NFL Players - Trained Since Middle School"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000004-1761157644837.JPG?width=8000&height=8000&resize=contain" 
-                  alt="Swift with NFL Star Alvin Kamara" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">With NFL Star Alvin Kamara</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000004-1761157644837.JPG?width=8000&height=8000&resize=contain"
+                alt="Swift with NFL Star Alvin Kamara"
+                caption="With NFL Star Alvin Kamara"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/6681838086304031860-1761158981369.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Swift with NFL Star D.J. Moore" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">With NFL Star D.J. Moore</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/6681838086304031860-1761158981369.jpg?width=8000&height=8000&resize=contain"
+                alt="Swift with NFL Star D.J. Moore"
+                caption="With NFL Star D.J. Moore"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/IMG_3029-1761152347064.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Women's Group Training Session" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Women's Group Training Session</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/IMG_3029-1761152347064.jpg?width=8000&height=8000&resize=contain"
+                alt="Women's Group Training Session"
+                caption="Women's Group Training Session"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/51EE0F41-EA39-442B-8017-19FAF07E1CBE-1761150357302.JPG?width=8000&height=8000&resize=contain" 
-                  alt="Championship Success" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Championship Winner</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/51EE0F41-EA39-442B-8017-19FAF07E1CBE-1761150357302.JPG?width=8000&height=8000&resize=contain"
+                alt="Championship Success"
+                caption="Championship Winner"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/D0DE188D-D296-4F2E-B29D-47E7E04ED80B-1761152385752.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Client Transformation" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Client Transformation</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/D0DE188D-D296-4F2E-B29D-47E7E04ED80B-1761152385752.jpg?width=8000&height=8000&resize=contain"
+                alt="Client Transformation"
+                caption="Client Transformation"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000006-1761148932677.JPG?width=8000&height=8000&resize=contain" 
-                  alt="Coach Darren Swift" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Coach Darren Swift</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000006-1761148932677.JPG?width=8000&height=8000&resize=contain"
+                alt="Coach Darren Swift"
+                caption="Coach Darren Swift"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/IMG_5516-1761152368498.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Pro Training Connection - Micah Parsons" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">With NFL Star Micah Parsons</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/IMG_5516-1761152368498.jpg?width=8000&height=8000&resize=contain"
+                alt="Pro Training Connection - Micah Parsons"
+                caption="With NFL Star Micah Parsons"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/arsb-1761158486526.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Amon-Ra St. Brown - NFL Star" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">With NFL Star Amon-Ra St. Brown</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/arsb-1761158486526.jpg?width=8000&height=8000&resize=contain"
+                alt="Amon-Ra St. Brown - NFL Star"
+                caption="With NFL Star Amon-Ra St. Brown"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/ryan-clark-1761158486622.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Swift with NFL Legend and Commentator Ryan Clark" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">With NFL Legend Ryan Clark</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/ryan-clark-1761158486622.jpg?width=8000&height=8000&resize=contain"
+                alt="Swift with NFL Legend and Commentator Ryan Clark"
+                caption="With NFL Legend Ryan Clark"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/team-training-photo-1761158486722.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Team Training Session" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Team Training Session</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/team-training-photo-1761158486722.jpg?width=8000&height=8000&resize=contain"
+                alt="Team Training Session"
+                caption="Team Training Session"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/best-athletes-come-to-swift-1761158484815.jpg?width=8000&height=8000&resize=contain" 
-                  alt="The Best Athletes Come to Swift" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">The Best Athletes Come to Swift</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Darren-Swift-coaches-running-backs-at-the-premier-high-school-program-in-the-state-1761158484380.jpg?width=8000&height=8000&resize=contain"
+                alt="Darren Swift - RB Coach at Premier High School Program"
+                caption="RB Coach at Premier High School Program"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/youth-workout-1761158484721.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Youth Workout Session" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Youth Workout Session</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80"
+                alt="Gym Equipment"
+                caption="State-of-the-Art Equipment"
+              />
 
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/Darren-Swift-coaches-running-backs-at-the-premier-high-school-program-in-the-state-1761158484380.jpg?width=8000&height=8000&resize=contain" 
-                  alt="Darren Swift - RB Coach at Premier High School Program" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">RB Coach at Premier High School Program</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80" 
-                  alt="Gym Equipment" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">State-of-the-Art Equipment</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative aspect-square rounded-lg overflow-hidden group cursor-pointer">
-                <img 
-                  src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80" 
-                  alt="Training Floor" 
-                  className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="text-white font-semibold">Open Training Floor</p>
-                  </div>
-                </div>
-              </div>
+              <GalleryImage
+                src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80"
+                alt="Training Floor"
+                caption="Open Training Floor"
+              />
             </div>
           </div>
 
