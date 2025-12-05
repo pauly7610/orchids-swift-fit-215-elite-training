@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { payments } from '@/db/schema';
+import { payments, userProfiles, user, packages, memberships, studentPurchases } from '@/db/schema';
 import { eq, and, gte, lte } from 'drizzle-orm';
+import { sendPaymentConfirmation, sendAdminNotification } from '@/app/actions/send-booking-emails';
 
 export async function GET(request: NextRequest) {
   try {
@@ -170,6 +171,13 @@ export async function POST(request: NextRequest) {
       .values(insertData)
       .returning();
 
+    // Send email notifications asynchronously (don't block the response)
+    if (newPayment[0] && (newPayment[0].status === 'completed' || newPayment[0].status === 'pending')) {
+      sendPaymentEmailNotifications(newPayment[0].id).catch(error => {
+        console.error('Failed to send payment email notifications:', error);
+      });
+    }
+
     return NextResponse.json(newPayment[0], { status: 201 });
   } catch (error) {
     console.error('POST error:', error);
@@ -194,5 +202,113 @@ export async function POST(request: NextRequest) {
       { error: 'Internal server error: ' + (error as Error).message },
       { status: 500 }
     );
+  }
+}
+
+// Helper function to send payment email notifications
+async function sendPaymentEmailNotifications(paymentId: number) {
+  try {
+    // Fetch payment with related data
+    const paymentData = await db
+      .select({
+        payment: payments,
+        studentProfile: userProfiles,
+        studentUser: user,
+      })
+      .from(payments)
+      .innerJoin(userProfiles, eq(payments.studentProfileId, userProfiles.id))
+      .innerJoin(user, eq(userProfiles.userId, user.id))
+      .where(eq(payments.id, paymentId))
+      .limit(1);
+
+    if (paymentData.length === 0) {
+      console.error('Payment data not found for email notifications');
+      return;
+    }
+
+    const data = paymentData[0];
+
+    // Try to find the associated purchase to get package/membership details
+    const purchaseData = await db
+      .select({
+        purchase: studentPurchases,
+        package: packages,
+        membership: memberships,
+      })
+      .from(studentPurchases)
+      .leftJoin(packages, eq(studentPurchases.packageId, packages.id))
+      .leftJoin(memberships, eq(studentPurchases.membershipId, memberships.id))
+      .where(eq(studentPurchases.paymentId, paymentId))
+      .limit(1);
+
+    let packageName = 'SwiftFit 215 Purchase';
+    let purchaseType: 'package' | 'membership' | 'single_class' = 'single_class';
+    let creditsTotal: number | undefined;
+    let expiresAt: string | undefined;
+
+    if (purchaseData.length > 0) {
+      const purchase = purchaseData[0];
+      if (purchase.package) {
+        packageName = purchase.package.name;
+        purchaseType = 'package';
+        creditsTotal = purchase.package.credits;
+        if (purchase.purchase.expiresAt) {
+          expiresAt = new Date(purchase.purchase.expiresAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          });
+        }
+      } else if (purchase.membership) {
+        packageName = purchase.membership.name;
+        purchaseType = 'membership';
+        creditsTotal = purchase.membership.creditsPerMonth || undefined;
+      }
+    }
+
+    const paymentDate = new Date(data.payment.paymentDate).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+
+    // 1. Send payment confirmation to customer
+    await sendPaymentConfirmation({
+      studentEmail: data.studentUser.email,
+      studentName: data.studentUser.name,
+      amount: data.payment.amount,
+      currency: data.payment.currency,
+      paymentMethod: data.payment.paymentMethod,
+      paymentDate: paymentDate,
+      purchaseType: purchaseType,
+      packageName: packageName,
+      creditsTotal: creditsTotal,
+      expiresAt: expiresAt,
+      transactionId: data.payment.squarePaymentId || `SF-${data.payment.id}`,
+    });
+
+    // 2. Send notification to admin
+    await sendAdminNotification({
+      notificationType: 'payment',
+      studentName: data.studentUser.name,
+      studentEmail: data.studentUser.email,
+      amount: data.payment.amount,
+      currency: data.payment.currency,
+      paymentMethod: data.payment.paymentMethod,
+      packageName: packageName,
+      paymentId: data.payment.id,
+      timestamp: new Date().toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+    });
+
+    console.log('Payment email notifications sent successfully for payment:', paymentId);
+  } catch (error) {
+    console.error('Error sending payment email notifications:', error);
+    // Don't throw - we don't want email failures to break the payment
   }
 }
