@@ -1018,6 +1018,18 @@ export default function Home() {
                 Fill out the form below and we'll get back to you within 24 hours
               </p>
               <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Honeypot field - hidden from users, visible to bots */}
+                <div className="absolute left-[-9999px]" aria-hidden="true">
+                  <label htmlFor="website">Website (leave blank)</label>
+                  <input
+                    type="text"
+                    name="website"
+                    id="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+                
                 <div>
                   <Label htmlFor="name">Full Name *</Label>
                   <Input
