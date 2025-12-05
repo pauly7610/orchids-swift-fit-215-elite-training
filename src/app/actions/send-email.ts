@@ -92,7 +92,7 @@ export async function sendContactEmail(
 
     // Send confirmation email to user
     const userEmailResponse = await resend.emails.send({
-      from: 'SwiftFit 215 <onboarding@resend.dev>', // Replace with your verified domain
+      from: 'SwiftFit 215 <noreply@swiftfit215.com>',
       to: data.email,
       subject: 'Thank you for contacting SwiftFit 215',
       react: ContactConfirmation({
@@ -114,7 +114,7 @@ export async function sendContactEmail(
 
     // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
-      from: 'SwiftFit 215 <onboarding@resend.dev>',
+      from: 'SwiftFit 215 <noreply@swiftfit215.com>',
       to: process.env.ADMIN_EMAIL || 'admin@swiftfit215.com',
       subject: `New Contact Form: ${data.name}`,
       html: `
