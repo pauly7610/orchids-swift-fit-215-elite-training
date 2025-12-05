@@ -2,9 +2,29 @@
 
 import { resend } from '@/lib/resend';
 import { BookingConfirmation } from '@/emails/booking-confirmation';
+import { BatchedBookingConfirmation } from '@/emails/batched-booking-confirmation';
+import { PilatesBookingConfirmation } from '@/emails/pilates-booking-confirmation';
 import { PaymentConfirmation } from '@/emails/payment-confirmation';
 import { InstructorNotification } from '@/emails/instructor-notification';
 import { AdminNotification } from '@/emails/admin-notification';
+
+interface BookingDetail {
+  className: string;
+  classDate: string;
+  classTime: string;
+  instructorName: string;
+  creditsUsed?: number;
+}
+
+interface SendBatchedBookingConfirmationParams {
+  studentEmail: string;
+  studentName: string;
+  bookings: BookingDetail[];
+  location: string;
+  totalCreditsUsed: number;
+  cancellationPolicy: string;
+  isPilates: boolean;
+}
 
 interface SendBookingConfirmationParams {
   studentEmail: string;
@@ -16,6 +36,7 @@ interface SendBookingConfirmationParams {
   location: string;
   creditsUsed?: number;
   cancellationPolicy: string;
+  isPilates?: boolean;
 }
 
 interface SendPaymentConfirmationParams {
@@ -62,33 +83,70 @@ interface SendAdminNotificationParams {
   timestamp: string;
 }
 
-export async function sendBookingConfirmation(
-  params: SendBookingConfirmationParams
+export async function sendBatchedBookingConfirmation(
+  params: SendBatchedBookingConfirmationParams
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    const multipleClasses = params.bookings.length > 1;
+    const firstClass = params.bookings[0];
+    
+    const EmailComponent = params.isPilates ? PilatesBookingConfirmation : BatchedBookingConfirmation;
+    const studioName = params.isPilates ? 'Swift Fit Pilates & Wellness Studio' : 'SwiftFit 215';
+    
+    const subject = multipleClasses
+      ? `${params.bookings.length} Classes Confirmed - ${studioName}`
+      : `Class Confirmed - ${firstClass.className} on ${firstClass.classDate}`;
+
     const response = await resend.emails.send({
-      from: 'SwiftFit 215 <onboarding@resend.dev>',
+      from: `${studioName} <onboarding@resend.dev>`,
       to: params.studentEmail,
-      subject: `Class Confirmed - ${params.className} on ${params.classDate}`,
-      react: BookingConfirmation({
+      subject: subject,
+      react: EmailComponent({
         studentName: params.studentName,
-        className: params.className,
-        classDate: params.classDate,
-        classTime: params.classTime,
-        instructorName: params.instructorName,
+        bookings: params.bookings,
         location: params.location,
-        creditsUsed: params.creditsUsed,
+        totalCreditsUsed: params.totalCreditsUsed,
         cancellationPolicy: params.cancellationPolicy,
       }),
-      replyTo: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+      replyTo: params.isPilates 
+        ? 'swiftfitpws@gmail.com'
+        : process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
     });
 
     if (response.error) {
-      console.error('Booking confirmation email error:', response.error);
+      console.error('Batched booking confirmation email error:', response.error);
       return { success: false, error: 'Failed to send booking confirmation' };
     }
 
     return { success: true };
+  } catch (error) {
+    console.error('Batched booking confirmation error:', error);
+    return { success: false, error: 'An unexpected error occurred' };
+  }
+}
+
+export async function sendBookingConfirmation(
+  params: SendBookingConfirmationParams
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const isPilates = params.isPilates || false;
+    
+    // Use batched function for consistency
+    return await sendBatchedBookingConfirmation({
+      studentEmail: params.studentEmail,
+      studentName: params.studentName,
+      bookings: [{
+        className: params.className,
+        classDate: params.classDate,
+        classTime: params.classTime,
+        instructorName: params.instructorName,
+        creditsUsed: params.creditsUsed,
+      }],
+      location: params.location,
+      totalCreditsUsed: params.creditsUsed || 0,
+      cancellationPolicy: params.cancellationPolicy,
+      isPilates: isPilates,
+    });
   } catch (error) {
     console.error('Booking confirmation error:', error);
     return { success: false, error: 'An unexpected error occurred' };
