@@ -135,7 +135,7 @@ export async function sendBatchedBookingConfirmation(
 
     const response = await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: `${studioName} <onboarding@resend.dev>`,
+        from: `${studioName} <noreply@swiftfit215.com>`,
         to: params.studentEmail,
         subject: subject,
         react: EmailComponent({
@@ -198,7 +198,7 @@ export async function sendPaymentConfirmation(
   try {
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'SwiftFit 215 <onboarding@resend.dev>',
+        from: 'SwiftFit 215 <noreply@swiftfit215.com>',
         to: params.studentEmail,
         subject: `Payment Received - ${params.packageName || 'SwiftFit 215'}`,
         react: PaymentConfirmation({
@@ -236,7 +236,7 @@ export async function sendInstructorNotification(
   try {
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'SwiftFit 215 Instructor Portal <onboarding@resend.dev>',
+        from: 'SwiftFit 215 Instructor Portal <noreply@swiftfit215.com>',
         to: params.instructorEmail,
         subject: params.notificationType === 'new_booking' 
           ? `New Student Booked: ${params.className} on ${params.classDate}`
@@ -288,7 +288,7 @@ export async function sendAdminNotification(
 
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'SwiftFit 215 Admin <onboarding@resend.dev>',
+        from: 'SwiftFit 215 Admin <noreply@swiftfit215.com>',
         to: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
         subject: getSubject(),
         react: AdminNotification({
