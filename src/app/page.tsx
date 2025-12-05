@@ -24,6 +24,26 @@ export default function Home() {
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
 
+  // Load saved form data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem('contact-form-data')
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData)
+        setFormData(parsed)
+      } catch (error) {
+        // Ignore invalid data
+      }
+    }
+  }, [])
+
+  // Auto-save form data to localStorage
+  useEffect(() => {
+    if (formData.name || formData.email || formData.phone || formData.message) {
+      localStorage.setItem('contact-form-data', JSON.stringify(formData))
+    }
+  }, [formData])
+
   // Close mobile menu on escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -95,6 +115,10 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Prevent double submission
+    if (isSubmitting) return
+    
     setIsSubmitting(true)
     
     try {
@@ -110,6 +134,8 @@ export default function Home() {
       if (result.success) {
         toast.success("Thank you for your interest! Check your email for confirmation. We'll contact you soon.")
         setFormData({ name: "", email: "", phone: "", message: "" })
+        // Clear saved form data from localStorage
+        localStorage.removeItem('contact-form-data')
       } else {
         toast.error(result.error || "Failed to send message. Please try again or call us directly.")
       }
