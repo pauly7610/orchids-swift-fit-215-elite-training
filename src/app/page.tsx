@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Phone, MapPin, Clock, Dumbbell, Users, Target, Zap, Heart, Trophy, Award, CheckCircle2, Star, Facebook, Instagram, Play, Menu, X } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { sendContactEmail } from "@/app/actions/send-email"
 import { toast } from "sonner"
 
@@ -20,6 +20,43 @@ export default function Home() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+    
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isMobileMenuOpen])
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node) && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isMobileMenuOpen])
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isMobileMenuOpen])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -87,7 +124,7 @@ export default function Home() {
 
         {/* Mobile Navigation Menu */}
         {isMobileMenuOpen && (
-          <div className="md:hidden border-t border-primary/20 bg-secondary/98 backdrop-blur-sm">
+          <div className="md:hidden border-t border-primary/20 bg-secondary/98 backdrop-blur-sm" ref={mobileMenuRef}>
             <nav className="container mx-auto px-4 py-4 flex flex-col gap-4">
               <a 
                 href="#services" 
