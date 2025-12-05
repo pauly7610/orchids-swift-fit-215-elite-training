@@ -233,6 +233,11 @@ async function sendEmailNotifications(bookingId: number, bookingStatus: string) 
 
     const data = bookingData[0];
 
+    // Detect if this is a Pilates class
+    const isPilates = data.classType.name.toLowerCase().includes('pilates') || 
+                      data.classType.name.toLowerCase().includes('yoga') ||
+                      data.classType.name.toLowerCase().includes('meditation');
+
     // Fetch studio info for cancellation policy
     const studioData = await db.select().from(studioInfo).limit(1);
     const cancellationPolicy =
@@ -272,6 +277,7 @@ async function sendEmailNotifications(bookingId: number, bookingStatus: string) 
         location: '2245 E Tioga Street, Philadelphia, PA 19134',
         creditsUsed: data.booking.creditsUsed || 0,
         cancellationPolicy: cancellationPolicy,
+        isPilates: isPilates,
       });
     }
 
