@@ -3,6 +3,7 @@ import { db } from '@/db';
 import { bookings, classes, classTypes, instructors, userProfiles, user, studioInfo, studentPurchases } from '@/db/schema';
 import { eq, and, gte, lte, gt, or, isNull, sql } from 'drizzle-orm';
 import { sendBookingConfirmation, sendInstructorNotification, sendAdminNotification } from '@/app/actions/send-booking-emails';
+import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function GET(request: NextRequest) {
   try {
@@ -94,6 +95,34 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const clientId = getClientIdentifier(request);
+    const rateLimitResult = checkRateLimit(
+      `booking-create:${clientId}`,
+      RATE_LIMITS.BOOKING_CREATE
+    );
+
+    if (!rateLimitResult.success) {
+      const resetTime = new Date(rateLimitResult.reset).toISOString();
+      return NextResponse.json(
+        {
+          error: 'Too many booking requests. Please try again later.',
+          code: 'RATE_LIMIT_EXCEEDED',
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+          resetTime,
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
+
     const body = await request.json();
     const { classId, studentProfileId, bookingStatus, cancelledAt, cancellationType, paymentId, creditsUsed } = body;
 
