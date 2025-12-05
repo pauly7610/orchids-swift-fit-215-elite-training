@@ -124,9 +124,11 @@ export default function Home() {
               >
                 Contact
               </a>
-              <Button size="sm" className="bg-primary hover:bg-primary/90 w-full">
-                <a href="tel:2679390254">Call Now</a>
-              </Button>
+              <a href="tel:2679390254">
+                <Button size="sm" className="bg-primary hover:bg-primary/90 w-full">
+                  Call Now
+                </Button>
+              </a>
             </nav>
           </div>
         )}
@@ -152,12 +154,16 @@ export default function Home() {
               Join Philadelphia's premier boutique gym where champions are made. From beginners to elite athletes, we build stronger bodies and unbreakable mindsets.
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg h-14 px-8">
-                <a href="#contact">Get Free Consultation</a>
-              </Button>
-              <Button size="lg" variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-secondary text-lg h-14 px-8">
-                <a href="#services">View Membership</a>
-              </Button>
+              <a href="#contact">
+                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg h-14 px-8 w-full sm:w-auto">
+                  Get Free Consultation
+                </Button>
+              </a>
+              <a href="#services">
+                <Button size="lg" variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-secondary text-lg h-14 px-8 w-full sm:w-auto">
+                  View Membership
+                </Button>
+              </a>
             </div>
             <div className="flex items-center gap-8 mt-10">
               <div className="text-center">
