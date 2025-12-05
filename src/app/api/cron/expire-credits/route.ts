@@ -15,7 +15,7 @@ import { and, eq, lt, gt } from 'drizzle-orm';
  * 
  * Example cron schedule:
  * - Daily at midnight: 0 0 * * *
- * - Every 6 hours: 0 */6 * * *
+ * - Every 6 hours: 0 [star]/6 * * * (replace [star] with *)
  */
 export async function GET(request: NextRequest) {
   try {
