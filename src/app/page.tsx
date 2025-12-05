@@ -26,7 +26,14 @@ export default function Home() {
     setIsSubmitting(true)
     
     try {
-      const result = await sendContactEmail(formData)
+      // Get honeypot value from form
+      const form = e.target as HTMLFormElement
+      const honeypot = form.querySelector<HTMLInputElement>('input[name="website"]')?.value || ''
+      
+      const result = await sendContactEmail({
+        ...formData,
+        honeypot
+      })
       
       if (result.success) {
         toast.success("Thank you for your interest! Check your email for confirmation. We'll contact you soon.")
