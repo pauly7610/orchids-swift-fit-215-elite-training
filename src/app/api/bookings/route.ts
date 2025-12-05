@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { bookings, classes, classTypes, instructors, userProfiles, user, studioInfo } from '@/db/schema';
-import { eq, and, gte, lte } from 'drizzle-orm';
+import { bookings, classes, classTypes, instructors, userProfiles, user, studioInfo, studentPurchases } from '@/db/schema';
+import { eq, and, gte, lte, gt, or, isNull } from 'drizzle-orm';
 import { sendBookingConfirmation, sendInstructorNotification, sendAdminNotification } from '@/app/actions/send-booking-emails';
 
 export async function GET(request: NextRequest) {
@@ -147,46 +147,115 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate creditsUsed if provided
-    if (creditsUsed !== undefined && creditsUsed !== null && isNaN(parseInt(creditsUsed))) {
+    const creditsToUse = creditsUsed !== undefined && creditsUsed !== null ? parseInt(creditsUsed) : 0;
+    if (creditsUsed !== undefined && creditsUsed !== null && isNaN(creditsToUse)) {
       return NextResponse.json(
         { error: 'creditsUsed must be a valid integer', code: 'INVALID_CREDITS_USED' },
         { status: 400 }
       );
     }
 
-    // Prepare insert data
-    const insertData: any = {
-      classId: parseInt(classId),
-      studentProfileId: parseInt(studentProfileId),
-      bookingStatus: bookingStatus || 'confirmed',
-      bookedAt: new Date().toISOString(),
-      creditsUsed: creditsUsed !== undefined && creditsUsed !== null ? parseInt(creditsUsed) : 0,
-    };
+    // Execute booking creation and credit deduction in a transaction
+    const result = await db.transaction(async (tx) => {
+      // If credits are being used, verify and deduct them
+      if (creditsToUse > 0) {
+        const currentDate = new Date().toISOString();
+        
+        // Find active purchases with available credits
+        const activePurchases = await tx
+          .select()
+          .from(studentPurchases)
+          .where(
+            and(
+              eq(studentPurchases.studentProfileId, parseInt(studentProfileId)),
+              eq(studentPurchases.isActive, true),
+              gt(studentPurchases.creditsRemaining, 0),
+              or(
+                isNull(studentPurchases.expiresAt),
+                gt(studentPurchases.expiresAt, currentDate)
+              )
+            )
+          )
+          .orderBy(studentPurchases.expiresAt); // Use credits expiring soonest first
 
-    if (cancelledAt) {
-      insertData.cancelledAt = cancelledAt;
-    }
+        // Calculate total available credits
+        const totalAvailableCredits = activePurchases.reduce(
+          (sum, purchase) => sum + (purchase.creditsRemaining || 0),
+          0
+        );
 
-    if (cancellationType) {
-      insertData.cancellationType = cancellationType;
-    }
+        if (totalAvailableCredits < creditsToUse) {
+          throw new Error(`INSUFFICIENT_CREDITS: Required ${creditsToUse}, available ${totalAvailableCredits}`);
+        }
 
-    if (paymentId !== undefined && paymentId !== null) {
-      insertData.paymentId = parseInt(paymentId);
-    }
+        // Deduct credits from purchases (FIFO - first expiring first)
+        let creditsToDeduct = creditsToUse;
+        for (const purchase of activePurchases) {
+          if (creditsToDeduct <= 0) break;
 
-    const newBooking = await db.insert(bookings).values(insertData).returning();
+          const availableInThisPurchase = purchase.creditsRemaining || 0;
+          const deductFromThis = Math.min(creditsToDeduct, availableInThisPurchase);
+          const newRemaining = availableInThisPurchase - deductFromThis;
+
+          await tx
+            .update(studentPurchases)
+            .set({ 
+              creditsRemaining: newRemaining,
+              // Deactivate if no credits remaining
+              isActive: newRemaining > 0
+            })
+            .where(eq(studentPurchases.id, purchase.id));
+
+          creditsToDeduct -= deductFromThis;
+        }
+      }
+
+      // Prepare insert data for booking
+      const insertData: any = {
+        classId: parseInt(classId),
+        studentProfileId: parseInt(studentProfileId),
+        bookingStatus: bookingStatus || 'confirmed',
+        bookedAt: new Date().toISOString(),
+        creditsUsed: creditsToUse,
+      };
+
+      if (cancelledAt) {
+        insertData.cancelledAt = cancelledAt;
+      }
+
+      if (cancellationType) {
+        insertData.cancellationType = cancellationType;
+      }
+
+      if (paymentId !== undefined && paymentId !== null) {
+        insertData.paymentId = parseInt(paymentId);
+      }
+
+      // Create the booking
+      const newBooking = await tx.insert(bookings).values(insertData).returning();
+
+      return newBooking[0];
+    });
 
     // Send email notifications asynchronously (don't block the response)
-    if (newBooking[0]) {
-      sendEmailNotifications(newBooking[0].id, insertData.bookingStatus).catch(error => {
+    if (result) {
+      sendEmailNotifications(result.id, result.bookingStatus).catch(error => {
         console.error('Failed to send email notifications:', error);
       });
     }
 
-    return NextResponse.json(newBooking[0], { status: 201 });
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
     console.error('POST error:', error);
+    
+    // Handle specific error codes
+    if (error instanceof Error && error.message.startsWith('INSUFFICIENT_CREDITS')) {
+      return NextResponse.json(
+        { error: error.message.split(': ')[1], code: 'INSUFFICIENT_CREDITS' },
+        { status: 400 }
+      );
+    }
+    
     return NextResponse.json(
       { error: 'Internal server error: ' + (error instanceof Error ? error.message : 'Unknown error') },
       { status: 500 }
