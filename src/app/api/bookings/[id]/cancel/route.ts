@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { bookings, classes, studioInfo } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { bookings, classes, studioInfo, studentPurchases } from '@/db/schema';
+import { eq, and, or, isNull, gt } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
 
 export async function POST(
@@ -113,59 +113,107 @@ export async function POST(
     let cancellationType: 'on_time' | 'late' | 'no_show';
     let newBookingStatus: string;
     let penaltyInfo: string | null = null;
+    let shouldRefundCredits = false;
 
     if (hoursUntilClass < 0) {
       // Class has already started or passed
       cancellationType = 'no_show';
       newBookingStatus = 'no_show';
       penaltyInfo = studio.noShowPenalty || 'lose_credit';
+      shouldRefundCredits = false;
     } else if (hoursUntilClass < cancellationWindowHours) {
       // Within cancellation window (late cancel)
       cancellationType = 'late';
       newBookingStatus = 'late_cancel';
       penaltyInfo = studio.lateCancelPenalty || 'lose_credit';
+      shouldRefundCredits = false;
     } else {
       // Outside cancellation window (on time)
       cancellationType = 'on_time';
       newBookingStatus = 'cancelled';
       penaltyInfo = null; // No penalty for on-time cancellation
+      shouldRefundCredits = true;
     }
 
-    // Update the booking
-    const updatedBooking = await db
-      .update(bookings)
-      .set({
-        bookingStatus: newBookingStatus,
-        cancelledAt: new Date().toISOString(),
-        cancellationType: cancellationType,
-      })
-      .where(eq(bookings.id, bookingId))
-      .returning();
+    // Execute cancellation and credit refund in a transaction
+    const result = await db.transaction(async (tx) => {
+      // Update the booking
+      const updatedBooking = await tx
+        .update(bookings)
+        .set({
+          bookingStatus: newBookingStatus,
+          cancelledAt: new Date().toISOString(),
+          cancellationType: cancellationType,
+        })
+        .where(eq(bookings.id, bookingId))
+        .returning();
 
-    if (updatedBooking.length === 0) {
-      return NextResponse.json(
-        { error: 'Failed to update booking', code: 'UPDATE_FAILED' },
-        { status: 500 }
-      );
-    }
+      if (updatedBooking.length === 0) {
+        throw new Error('Failed to update booking');
+      }
+
+      // Refund credits if on-time cancellation and credits were used
+      if (shouldRefundCredits && booking.creditsUsed && booking.creditsUsed > 0) {
+        const currentDate = new Date().toISOString();
+        
+        // Find the most recent active purchase to refund to
+        // Prioritize the one with the furthest expiration date
+        const activePurchases = await tx
+          .select()
+          .from(studentPurchases)
+          .where(
+            and(
+              eq(studentPurchases.studentProfileId, booking.studentProfileId),
+              eq(studentPurchases.isActive, true),
+              or(
+                isNull(studentPurchases.expiresAt),
+                gt(studentPurchases.expiresAt, currentDate)
+              )
+            )
+          )
+          .orderBy(studentPurchases.expiresAt); // Refund to the one expiring soonest first
+
+        if (activePurchases.length > 0) {
+          // Refund to the first active purchase
+          const purchaseToRefund = activePurchases[0];
+          const newCredits = (purchaseToRefund.creditsRemaining || 0) + booking.creditsUsed;
+
+          await tx
+            .update(studentPurchases)
+            .set({
+              creditsRemaining: newCredits,
+              isActive: true, // Ensure it's active since we're adding credits
+            })
+            .where(eq(studentPurchases.id, purchaseToRefund.id));
+        } else {
+          // No active purchase found - log warning but don't fail the cancellation
+          console.warn(
+            `No active purchase found to refund ${booking.creditsUsed} credits for booking ${bookingId}`
+          );
+        }
+      }
+
+      return updatedBooking[0];
+    });
 
     // Prepare response with cancellation details
     const response = {
-      booking: updatedBooking[0],
+      booking: result,
       cancellationDetails: {
         cancellationType,
         hoursUntilClass: Math.max(0, hoursUntilClass),
         cancellationWindowHours,
         penalty: penaltyInfo,
+        creditsRefunded: shouldRefundCredits ? booking.creditsUsed : 0,
         classDateTime: classDateTime.toISOString(),
-        cancelledAt: updatedBooking[0].cancelledAt,
+        cancelledAt: result.cancelledAt,
       },
       message:
         cancellationType === 'on_time'
-          ? 'Booking cancelled successfully. No penalty applied.'
+          ? `Booking cancelled successfully. ${booking.creditsUsed || 0} credit(s) refunded.`
           : cancellationType === 'late'
-            ? `Late cancellation recorded. Penalty: ${penaltyInfo}`
-            : `No-show recorded. Penalty: ${penaltyInfo}`,
+            ? `Late cancellation recorded. Penalty: ${penaltyInfo}. No credits refunded.`
+            : `No-show recorded. Penalty: ${penaltyInfo}. No credits refunded.`,
     };
 
     return NextResponse.json(response, { status: 200 });
