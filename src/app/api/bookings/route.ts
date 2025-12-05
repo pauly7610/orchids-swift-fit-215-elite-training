@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { bookings } from '@/db/schema';
+import { bookings, classes, classTypes, instructors, userProfiles, user, studioInfo } from '@/db/schema';
 import { eq, and, gte, lte } from 'drizzle-orm';
+import { sendBookingConfirmation, sendInstructorNotification, sendAdminNotification } from '@/app/actions/send-booking-emails';
 
 export async function GET(request: NextRequest) {
   try {
@@ -176,6 +177,13 @@ export async function POST(request: NextRequest) {
 
     const newBooking = await db.insert(bookings).values(insertData).returning();
 
+    // Send email notifications asynchronously (don't block the response)
+    if (newBooking[0]) {
+      sendEmailNotifications(newBooking[0].id, insertData.bookingStatus).catch(error => {
+        console.error('Failed to send email notifications:', error);
+      });
+    }
+
     return NextResponse.json(newBooking[0], { status: 201 });
   } catch (error) {
     console.error('POST error:', error);
@@ -183,5 +191,124 @@ export async function POST(request: NextRequest) {
       { error: 'Internal server error: ' + (error instanceof Error ? error.message : 'Unknown error') },
       { status: 500 }
     );
+  }
+}
+
+// Helper function to send all email notifications
+async function sendEmailNotifications(bookingId: number, bookingStatus: string) {
+  try {
+    // Fetch booking with all related data
+    const bookingData = await db
+      .select({
+        booking: bookings,
+        class: classes,
+        classType: classTypes,
+        instructor: instructors,
+        instructorProfile: userProfiles,
+        instructorUser: user,
+        studentProfile: userProfiles,
+        studentUser: user,
+      })
+      .from(bookings)
+      .innerJoin(classes, eq(bookings.classId, classes.id))
+      .innerJoin(classTypes, eq(classes.classTypeId, classTypes.id))
+      .innerJoin(instructors, eq(classes.instructorId, instructors.id))
+      .innerJoin(userProfiles, eq(instructors.userProfileId, userProfiles.id))
+      .innerJoin(user, eq(userProfiles.userId, user.id))
+      .innerJoin(
+        { studentProfile: userProfiles },
+        eq(bookings.studentProfileId, userProfiles.id)
+      )
+      .innerJoin(
+        { studentUser: user },
+        eq(userProfiles.userId, user.id)
+      )
+      .where(eq(bookings.id, bookingId))
+      .limit(1);
+
+    if (bookingData.length === 0) {
+      console.error('Booking data not found for email notifications');
+      return;
+    }
+
+    const data = bookingData[0];
+
+    // Fetch studio info for cancellation policy
+    const studioData = await db.select().from(studioInfo).limit(1);
+    const cancellationPolicy =
+      studioData[0]?.cancellationPolicyText ||
+      'Please cancel at least 24 hours in advance to avoid losing your credit.';
+
+    // Format date and time
+    const classDate = new Date(data.class.date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    // Get current capacity
+    const currentBookings = await db
+      .select()
+      .from(bookings)
+      .where(
+        and(
+          eq(bookings.classId, data.class.id),
+          eq(bookings.bookingStatus, 'confirmed')
+        )
+      );
+
+    const currentCapacity = currentBookings.length;
+
+    // 1. Send confirmation to student
+    if (bookingStatus === 'confirmed') {
+      await sendBookingConfirmation({
+        studentEmail: data.studentUser.email,
+        studentName: data.studentUser.name,
+        className: data.classType.name,
+        classDate: classDate,
+        classTime: data.class.startTime,
+        instructorName: data.instructorUser.name,
+        location: '2245 E Tioga Street, Philadelphia, PA 19134',
+        creditsUsed: data.booking.creditsUsed || 0,
+        cancellationPolicy: cancellationPolicy,
+      });
+    }
+
+    // 2. Send notification to instructor
+    await sendInstructorNotification({
+      instructorEmail: data.instructorUser.email,
+      instructorName: data.instructorUser.name,
+      studentName: data.studentUser.name,
+      className: data.classType.name,
+      classDate: classDate,
+      classTime: data.class.startTime,
+      currentCapacity: currentCapacity,
+      maxCapacity: data.class.capacity,
+      bookingId: data.booking.id,
+      notificationType: bookingStatus === 'confirmed' ? 'new_booking' : 'cancellation',
+    });
+
+    // 3. Send notification to admin
+    await sendAdminNotification({
+      notificationType: bookingStatus === 'confirmed' ? 'new_booking' : 'cancellation',
+      studentName: data.studentUser.name,
+      studentEmail: data.studentUser.email,
+      className: data.classType.name,
+      classDate: classDate,
+      classTime: data.class.startTime,
+      instructorName: data.instructorUser.name,
+      bookingId: data.booking.id,
+      timestamp: new Date().toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+    });
+
+    console.log('Email notifications sent successfully for booking:', bookingId);
+  } catch (error) {
+    console.error('Error sending email notifications:', error);
+    // Don't throw - we don't want email failures to break the booking
   }
 }
