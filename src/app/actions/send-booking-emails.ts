@@ -83,6 +83,42 @@ interface SendAdminNotificationParams {
   timestamp: string;
 }
 
+/**
+ * Retry helper with exponential backoff
+ * @param fn Function to retry
+ * @param maxRetries Maximum number of retry attempts
+ * @param baseDelay Base delay in milliseconds (doubles each retry)
+ */
+async function retryWithBackoff<T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error('Unknown error');
+      
+      // Don't retry on last attempt
+      if (attempt === maxRetries) {
+        break;
+      }
+      
+      // Calculate exponential backoff delay
+      const delay = baseDelay * Math.pow(2, attempt);
+      console.warn(`Email send attempt ${attempt + 1} failed, retrying in ${delay}ms...`, lastError.message);
+      
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw lastError || new Error('Max retries exceeded');
+}
+
 export async function sendBatchedBookingConfirmation(
   params: SendBatchedBookingConfirmationParams
 ): Promise<{ success: boolean; error?: string }> {
@@ -97,31 +133,34 @@ export async function sendBatchedBookingConfirmation(
       ? `${params.bookings.length} Classes Confirmed - ${studioName}`
       : `Class Confirmed - ${firstClass.className} on ${firstClass.classDate}`;
 
-    const response = await resend.emails.send({
-      from: `${studioName} <onboarding@resend.dev>`,
-      to: params.studentEmail,
-      subject: subject,
-      react: EmailComponent({
-        studentName: params.studentName,
-        bookings: params.bookings,
-        location: params.location,
-        totalCreditsUsed: params.totalCreditsUsed,
-        cancellationPolicy: params.cancellationPolicy,
-      }),
-      replyTo: params.isPilates 
-        ? 'swiftfitpws@gmail.com'
-        : process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
-    });
+    const response = await retryWithBackoff(async () => {
+      const result = await resend.emails.send({
+        from: `${studioName} <onboarding@resend.dev>`,
+        to: params.studentEmail,
+        subject: subject,
+        react: EmailComponent({
+          studentName: params.studentName,
+          bookings: params.bookings,
+          location: params.location,
+          totalCreditsUsed: params.totalCreditsUsed,
+          cancellationPolicy: params.cancellationPolicy,
+        }),
+        replyTo: params.isPilates 
+          ? 'swiftfitpws@gmail.com'
+          : process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+      });
 
-    if (response.error) {
-      console.error('Batched booking confirmation email error:', response.error);
-      return { success: false, error: 'Failed to send booking confirmation' };
-    }
+      if (result.error) {
+        throw new Error(result.error.message || 'Failed to send email');
+      }
+
+      return result;
+    }, 3, 1000);
 
     return { success: true };
   } catch (error) {
-    console.error('Batched booking confirmation error:', error);
-    return { success: false, error: 'An unexpected error occurred' };
+    console.error('Batched booking confirmation error after retries:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 }
 
@@ -157,34 +196,37 @@ export async function sendPaymentConfirmation(
   params: SendPaymentConfirmationParams
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const response = await resend.emails.send({
-      from: 'SwiftFit 215 <onboarding@resend.dev>',
-      to: params.studentEmail,
-      subject: `Payment Received - ${params.packageName || 'SwiftFit 215'}`,
-      react: PaymentConfirmation({
-        studentName: params.studentName,
-        amount: params.amount,
-        currency: params.currency,
-        paymentMethod: params.paymentMethod,
-        paymentDate: params.paymentDate,
-        purchaseType: params.purchaseType,
-        packageName: params.packageName,
-        creditsTotal: params.creditsTotal,
-        expiresAt: params.expiresAt,
-        transactionId: params.transactionId,
-      }),
-      replyTo: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
-    });
+    await retryWithBackoff(async () => {
+      const result = await resend.emails.send({
+        from: 'SwiftFit 215 <onboarding@resend.dev>',
+        to: params.studentEmail,
+        subject: `Payment Received - ${params.packageName || 'SwiftFit 215'}`,
+        react: PaymentConfirmation({
+          studentName: params.studentName,
+          amount: params.amount,
+          currency: params.currency,
+          paymentMethod: params.paymentMethod,
+          paymentDate: params.paymentDate,
+          purchaseType: params.purchaseType,
+          packageName: params.packageName,
+          creditsTotal: params.creditsTotal,
+          expiresAt: params.expiresAt,
+          transactionId: params.transactionId,
+        }),
+        replyTo: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+      });
 
-    if (response.error) {
-      console.error('Payment confirmation email error:', response.error);
-      return { success: false, error: 'Failed to send payment confirmation' };
-    }
+      if (result.error) {
+        throw new Error(result.error.message || 'Failed to send email');
+      }
+
+      return result;
+    }, 3, 1000);
 
     return { success: true };
   } catch (error) {
-    console.error('Payment confirmation error:', error);
-    return { success: false, error: 'An unexpected error occurred' };
+    console.error('Payment confirmation error after retries:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 }
 
@@ -192,35 +234,38 @@ export async function sendInstructorNotification(
   params: SendInstructorNotificationParams
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const response = await resend.emails.send({
-      from: 'SwiftFit 215 Instructor Portal <onboarding@resend.dev>',
-      to: params.instructorEmail,
-      subject: params.notificationType === 'new_booking' 
-        ? `New Student Booked: ${params.className} on ${params.classDate}`
-        : `Cancellation: ${params.className} on ${params.classDate}`,
-      react: InstructorNotification({
-        instructorName: params.instructorName,
-        studentName: params.studentName,
-        className: params.className,
-        classDate: params.classDate,
-        classTime: params.classTime,
-        currentCapacity: params.currentCapacity,
-        maxCapacity: params.maxCapacity,
-        bookingId: params.bookingId,
-        notificationType: params.notificationType,
-      }),
-      replyTo: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
-    });
+    await retryWithBackoff(async () => {
+      const result = await resend.emails.send({
+        from: 'SwiftFit 215 Instructor Portal <onboarding@resend.dev>',
+        to: params.instructorEmail,
+        subject: params.notificationType === 'new_booking' 
+          ? `New Student Booked: ${params.className} on ${params.classDate}`
+          : `Cancellation: ${params.className} on ${params.classDate}`,
+        react: InstructorNotification({
+          instructorName: params.instructorName,
+          studentName: params.studentName,
+          className: params.className,
+          classDate: params.classDate,
+          classTime: params.classTime,
+          currentCapacity: params.currentCapacity,
+          maxCapacity: params.maxCapacity,
+          bookingId: params.bookingId,
+          notificationType: params.notificationType,
+        }),
+        replyTo: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+      });
 
-    if (response.error) {
-      console.error('Instructor notification email error:', response.error);
-      return { success: false, error: 'Failed to send instructor notification' };
-    }
+      if (result.error) {
+        throw new Error(result.error.message || 'Failed to send email');
+      }
+
+      return result;
+    }, 3, 1000);
 
     return { success: true };
   } catch (error) {
-    console.error('Instructor notification error:', error);
-    return { success: false, error: 'An unexpected error occurred' };
+    console.error('Instructor notification error after retries:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 }
 
@@ -241,36 +286,39 @@ export async function sendAdminNotification(
       }
     };
 
-    const response = await resend.emails.send({
-      from: 'SwiftFit 215 Admin <onboarding@resend.dev>',
-      to: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
-      subject: getSubject(),
-      react: AdminNotification({
-        notificationType: params.notificationType,
-        studentName: params.studentName,
-        studentEmail: params.studentEmail,
-        className: params.className,
-        classDate: params.classDate,
-        classTime: params.classTime,
-        instructorName: params.instructorName,
-        amount: params.amount,
-        currency: params.currency,
-        paymentMethod: params.paymentMethod,
-        packageName: params.packageName,
-        bookingId: params.bookingId,
-        paymentId: params.paymentId,
-        timestamp: params.timestamp,
-      }),
-    });
+    await retryWithBackoff(async () => {
+      const result = await resend.emails.send({
+        from: 'SwiftFit 215 Admin <onboarding@resend.dev>',
+        to: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+        subject: getSubject(),
+        react: AdminNotification({
+          notificationType: params.notificationType,
+          studentName: params.studentName,
+          studentEmail: params.studentEmail,
+          className: params.className,
+          classDate: params.classDate,
+          classTime: params.classTime,
+          instructorName: params.instructorName,
+          amount: params.amount,
+          currency: params.currency,
+          paymentMethod: params.paymentMethod,
+          packageName: params.packageName,
+          bookingId: params.bookingId,
+          paymentId: params.paymentId,
+          timestamp: params.timestamp,
+        }),
+      });
 
-    if (response.error) {
-      console.error('Admin notification email error:', response.error);
-      return { success: false, error: 'Failed to send admin notification' };
-    }
+      if (result.error) {
+        throw new Error(result.error.message || 'Failed to send email');
+      }
+
+      return result;
+    }, 3, 1000);
 
     return { success: true };
   } catch (error) {
-    console.error('Admin notification error:', error);
-    return { success: false, error: 'An unexpected error occurred' };
+    console.error('Admin notification error after retries:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 }
