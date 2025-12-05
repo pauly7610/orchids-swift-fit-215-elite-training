@@ -843,9 +843,11 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-              <Button size="lg" className="bg-primary hover:bg-primary/90">
-                <a href="#contact">Start Your Transformation</a>
-              </Button>
+              <a href="#contact">
+                <Button size="lg" className="bg-primary hover:bg-primary/90">
+                  Start Your Transformation
+                </Button>
+              </a>
             </div>
             <div className="relative">
               <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-muted relative">
