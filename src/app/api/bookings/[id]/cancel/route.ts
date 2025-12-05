@@ -3,12 +3,41 @@ import { db } from '@/db';
 import { bookings, classes, studioInfo, studentPurchases } from '@/db/schema';
 import { eq, and, or, isNull, gt } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
+import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Apply rate limiting
+    const clientId = getClientIdentifier(request);
+    const rateLimitResult = checkRateLimit(
+      `booking-cancel:${clientId}`,
+      RATE_LIMITS.BOOKING_CANCEL
+    );
+
+    if (!rateLimitResult.success) {
+      const resetTime = new Date(rateLimitResult.reset).toISOString();
+      return NextResponse.json(
+        {
+          error: 'Too many cancellation requests. Please try again later.',
+          code: 'RATE_LIMIT_EXCEEDED',
+          retryAfter: Math.ceil((rateLimitResult.reset - Date.now()) / 1000),
+          resetTime,
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Limit': rateLimitResult.limit.toString(),
+            'X-RateLimit-Remaining': rateLimitResult.remaining.toString(),
+            'X-RateLimit-Reset': rateLimitResult.reset.toString(),
+            'Retry-After': Math.ceil((rateLimitResult.reset - Date.now()) / 1000).toString(),
+          },
+        }
+      );
+    }
+
     const user = await getCurrentUser(request);
     if (!user) {
       return NextResponse.json(
