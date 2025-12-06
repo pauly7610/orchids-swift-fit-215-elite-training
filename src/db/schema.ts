@@ -232,3 +232,26 @@ export const notifications = sqliteTable('notifications', {
   status: text('status').notNull().default('pending'), // 'pending', 'sent', 'failed'
   createdAt: text('created_at').notNull(),
 });
+
+// Email subscribers table for newsletter/marketing
+export const emailSubscribers = sqliteTable('email_subscribers', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  email: text('email').notNull().unique(),
+  name: text('name'),
+  phone: text('phone'),
+  source: text('source').notNull(),
+  subscribedAt: text('subscribed_at').notNull(),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+});
+
+// Class reminder tracking for 30-day follow-up system
+export const classReminderTracking = sqliteTable('class_reminder_tracking', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  studentProfileId: integer('student_profile_id').references(() => userProfiles.id),
+  email: text('email'),
+  lastClassDate: text('last_class_date').notNull(),
+  reminderScheduledFor: text('reminder_scheduled_for').notNull(),
+  reminderSent: integer('reminder_sent', { mode: 'boolean' }).notNull().default(false),
+  reminderSentAt: text('reminder_sent_at'),
+  createdAt: text('created_at').notNull(),
+});
