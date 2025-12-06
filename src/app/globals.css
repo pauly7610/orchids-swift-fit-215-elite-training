@@ -88,6 +88,7 @@
   --color-pilates-sage: oklch(0.7 0.03 130);
   --color-pilates-warm: oklch(0.95 0.015 80);
   --color-pilates-text: oklch(0.35 0.01 75);
+  --color-pilates-pink: oklch(0.88 0.08 15);
 }
 
 :root {
