@@ -119,6 +119,27 @@ export default function Home() {
     // Prevent double submission
     if (isSubmitting) return
     
+    // Client-side validation
+    if (!formData.name.trim()) {
+      toast.error("Please enter your name")
+      return
+    }
+    
+    if (!formData.email.trim()) {
+      toast.error("Please enter your email")
+      return
+    }
+    
+    if (!formData.phone.trim()) {
+      toast.error("Please enter your phone number")
+      return
+    }
+    
+    if (!formData.message.trim()) {
+      toast.error("Please enter a message")
+      return
+    }
+    
     setIsSubmitting(true)
     
     try {
