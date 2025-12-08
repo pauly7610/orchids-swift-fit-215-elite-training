@@ -9,6 +9,7 @@ interface ContactFormData {
   phone: string;
   message: string;
   honeypot?: string; // Spam prevention field
+  adminEmail?: string; // Optional: specify which admin email to send to
 }
 
 interface SendEmailResponse {
@@ -112,10 +113,13 @@ export async function sendContactEmail(
       };
     }
 
+    // Use custom admin email if provided, otherwise fall back to env variable
+    const recipientEmail = data.adminEmail || process.env.ADMIN_EMAIL || 'admin@swiftfit215.com';
+
     // Send notification email to admin
     const adminEmailResponse = await resend.emails.send({
       from: 'SwiftFit 215 <noreply@swiftfit215.com>',
-      to: process.env.ADMIN_EMAIL || 'admin@swiftfit215.com',
+      to: recipientEmail,
       subject: `New Contact Form: ${data.name}`,
       html: `
         <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
