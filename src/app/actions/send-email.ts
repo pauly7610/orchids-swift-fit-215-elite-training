@@ -2,6 +2,7 @@
 
 import { resend } from '@/lib/resend';
 import { ContactConfirmation } from '@/emails/contact-confirmation';
+import { GymContactNotification } from '@/emails/gym-contact-notification';
 
 interface ContactFormData {
   name: string;
@@ -116,33 +117,18 @@ export async function sendContactEmail(
     // Use custom admin email if provided, otherwise fall back to env variable
     const recipientEmail = data.adminEmail || process.env.ADMIN_EMAIL || 'admin@swiftfit215.com';
 
-    // Send notification email to admin
+    // Send notification email to admin using React component
     const adminEmailResponse = await resend.emails.send({
       from: 'SwiftFit 215 <noreply@swiftfit215.com>',
       to: recipientEmail,
       subject: `New Contact Form: ${data.name}`,
-      html: `
-        <div style="font-family: Inter, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-          <h2 style="color: #1a1a1a; border-bottom: 3px solid #FF6B35; padding-bottom: 10px;">
-            New Contact Form Submission
-          </h2>
-          
-          <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p style="margin: 8px 0;"><strong>Name:</strong> ${escapeHtml(data.name)}</p>
-            <p style="margin: 8px 0;"><strong>Email:</strong> <a href="mailto:${escapeHtml(data.email)}">${escapeHtml(data.email)}</a></p>
-            <p style="margin: 8px 0;"><strong>Phone:</strong> <a href="tel:${escapeHtml(data.phone)}">${escapeHtml(data.phone)}</a></p>
-          </div>
-          
-          <div style="margin: 20px 0;">
-            <strong style="color: #666;">Message:</strong>
-            <pre style="background: #f9f9f9; padding: 16px; border-radius: 8px; border-left: 4px solid #FF6B35; white-space: pre-wrap; font-family: Inter, sans-serif; line-height: 1.6;">${escapeHtml(data.message)}</pre>
-          </div>
-          
-          <p style="color: #999; font-size: 12px; margin-top: 30px;">
-            Received: ${new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })} EST
-          </p>
-        </div>
-      `,
+      react: GymContactNotification({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: data.message,
+        timestamp: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }) + ' EST',
+      }),
       replyTo: data.email,
     });
 
