@@ -158,12 +158,12 @@ export default function Home() {
 
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-secondary/95 backdrop-blur-sm border-b border-primary/20">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="container mx-auto px-4 py-3 md:py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Dumbbell className="h-8 w-8 text-primary" aria-hidden="true" />
+            <Dumbbell className="h-6 w-6 md:h-8 md:w-8 text-primary" aria-hidden="true" />
             <div>
-              <h1 className="font-display text-2xl text-white tracking-wider">SWIFTFIT 215</h1>
-              <p className="text-xs text-primary/80 -mt-1">Speed & Strength Training</p>
+              <h1 className="font-display text-xl md:text-2xl text-white tracking-wider">SWIFTFIT 215</h1>
+              <p className="text-[10px] md:text-xs text-primary/80 -mt-1">Speed & Strength Training</p>
             </div>
           </div>
           
@@ -252,50 +252,50 @@ export default function Home() {
       {/* Main Content */}
       <main id="main-content">
         {/* Hero Section */}
-        <section className="relative pt-24 pb-20 md:pt-32 md:pb-32 overflow-hidden bg-gradient-to-br from-secondary via-secondary/95 to-black" aria-labelledby="hero-heading">
+        <section className="relative pt-20 pb-16 md:pt-32 md:pb-32 overflow-hidden bg-gradient-to-br from-secondary via-secondary/95 to-black" aria-labelledby="hero-heading">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80')] bg-cover bg-center opacity-20" role="img" aria-label="Gym equipment background"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/90 to-transparent"></div>
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl">
-              <Badge className="mb-6 bg-primary/20 text-primary border-primary/30 text-sm px-4 py-1">
+              <Badge className="mb-4 md:mb-6 bg-primary/20 text-primary border-primary/30 text-xs md:text-sm px-3 md:px-4 py-1">
                 Featured on 3CBS, 6ABC, 10NBC & FOX29
               </Badge>
-              <h1 className="font-display text-5xl md:text-7xl text-white mb-6 leading-tight tracking-wide" id="hero-heading">
+              <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white mb-4 md:mb-6 leading-tight tracking-wide" id="hero-heading">
                 Elite Speed & Strength Training in the Heart of Philadelphia
               </h1>
-              <h2 className="font-display text-4xl md:text-6xl text-primary mb-4 leading-tight tracking-wide">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-primary mb-3 md:mb-4 leading-tight tracking-wide">
                 TRANSFORM YOUR BODY TODAY
               </h2>
-              <p className="text-lg text-white/70 mb-8 max-w-2xl">
+              <p className="text-base md:text-lg text-white/70 mb-6 md:mb-8 max-w-2xl">
                 Join Philadelphia's premier boutique gym where champions are made. From beginners to elite athletes, we build stronger bodies and unbreakable mindsets.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <a href="#contact">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-lg h-14 px-8 w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                <a href="#contact" className="w-full sm:w-auto">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 text-white text-base md:text-lg h-12 md:h-14 px-6 md:px-8 w-full">
                     Get Free Consultation
                   </Button>
                 </a>
-                <a href="#services">
-                  <Button size="lg" variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-secondary text-lg h-14 px-8 w-full sm:w-auto">
+                <a href="#services" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="border-white bg-white/10 text-white hover:bg-white hover:text-secondary text-base md:text-lg h-12 md:h-14 px-6 md:px-8 w-full">
                     View Membership
                   </Button>
                 </a>
               </div>
-              <div className="flex items-center gap-8 mt-10">
+              <div className="flex flex-wrap items-center gap-4 md:gap-8 mt-8 md:mt-10">
                 <div className="text-center">
-                  <div className="font-display text-4xl text-primary">$45</div>
-                  <div className="text-sm text-white/60">Per Month</div>
+                  <div className="font-display text-3xl md:text-4xl text-primary">$45</div>
+                  <div className="text-xs md:text-sm text-white/60">Per Month</div>
                 </div>
-                <div className="h-12 w-px bg-white/20"></div>
+                <div className="h-10 md:h-12 w-px bg-white/20"></div>
                 <div className="text-center">
-                  <div className="font-display text-4xl text-primary">A+</div>
-                  <div className="text-sm text-white/60">BBB Rating</div>
+                  <div className="font-display text-3xl md:text-4xl text-primary">A+</div>
+                  <div className="text-xs md:text-sm text-white/60">BBB Rating</div>
                 </div>
-                <div className="h-12 w-px bg-white/20"></div>
+                <div className="h-10 md:h-12 w-px bg-white/20"></div>
                 <div className="text-center">
-                  <div className="font-display text-4xl text-primary">20K+</div>
-                  <div className="text-sm text-white/60">Community</div>
+                  <div className="font-display text-3xl md:text-4xl text-primary">20K+</div>
+                  <div className="text-xs md:text-sm text-white/60">Community</div>
                 </div>
               </div>
             </div>
@@ -303,16 +303,16 @@ export default function Home() {
         </section>
 
         {/* Services Section */}
-        <section id="services" className="py-20 bg-background" aria-labelledby="services-heading">
+        <section id="services" className="py-16 md:py-20 bg-background" aria-labelledby="services-heading">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide" id="services-heading">OUR SERVICES</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-secondary mb-3 md:mb-4 tracking-wide" id="services-heading">OUR SERVICES</h2>
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
                 State-of-the-art facility with elite training programs designed for your success
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
               <Card className="border-2 hover:border-primary transition-colors group">
                 <CardHeader>
                   <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
@@ -429,47 +429,47 @@ export default function Home() {
         </section>
 
         {/* Social Proof Section */}
-        <section className="py-20 bg-muted/30" aria-labelledby="social-proof-heading">
+        <section className="py-16 md:py-20 bg-muted/30" aria-labelledby="social-proof-heading">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide" id="social-proof-heading">TRUSTED BY THE BEST</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-secondary mb-3 md:mb-4 tracking-wide" id="social-proof-heading">TRUSTED BY THE BEST</h2>
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
                 Join a community of champions and achievers
               </p>
             </div>
             
             {/* Proven Track Record Banner */}
-            <Card className="mb-12 overflow-hidden border-2 border-primary/20 bg-gradient-to-r from-secondary via-secondary/95 to-black">
-              <div className="p-8 md:p-12 text-center">
-                <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">PROVEN TRACK RECORD</Badge>
-                <h3 className="font-display text-3xl md:text-5xl text-white mb-4 tracking-wide">
+            <Card className="mb-8 md:mb-12 overflow-hidden border-2 border-primary/20 bg-gradient-to-r from-secondary via-secondary/95 to-black">
+              <div className="p-6 md:p-12 text-center">
+                <Badge className="mb-3 md:mb-4 bg-primary/20 text-primary border-primary/30 text-xs md:text-sm">PROVEN TRACK RECORD</Badge>
+                <h3 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white mb-3 md:mb-4 tracking-wide px-2">
                   BUILDING CHAMPIONS, CREATING FUTURES
                 </h3>
-                <p className="text-white/80 text-lg mb-8 max-w-3xl mx-auto">
+                <p className="text-white/80 text-sm md:text-lg mb-6 md:mb-8 max-w-3xl mx-auto px-2">
                   Coach Darren Swift has transformed hundreds of athletes into college competitors and NFL professionals
                 </p>
-                <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <div className="grid sm:grid-cols-3 gap-6 md:gap-8 max-w-4xl mx-auto">
                   <div className="text-center">
-                    <div className="font-display text-6xl md:text-7xl text-primary mb-2">100s</div>
-                    <div className="text-white text-lg font-semibold mb-1">College Athletes</div>
-                    <div className="text-white/60 text-sm">Sent to compete at the collegiate level</div>
+                    <div className="font-display text-5xl md:text-6xl lg:text-7xl text-primary mb-2">100s</div>
+                    <div className="text-white text-base md:text-lg font-semibold mb-1">College Athletes</div>
+                    <div className="text-white/60 text-xs md:text-sm px-2">Sent to compete at the collegiate level</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-display text-6xl md:text-7xl text-primary mb-2">Dozens</div>
-                    <div className="text-white text-lg font-semibold mb-1">NFL Players</div>
-                    <div className="text-white/60 text-sm">Trained to play at the highest level</div>
+                    <div className="font-display text-5xl md:text-6xl lg:text-7xl text-primary mb-2">Dozens</div>
+                    <div className="text-white text-base md:text-lg font-semibold mb-1">NFL Players</div>
+                    <div className="text-white/60 text-xs md:text-sm px-2">Trained to play at the highest level</div>
                   </div>
                   <div className="text-center">
-                    <div className="font-display text-6xl md:text-7xl text-primary mb-2">20+</div>
-                    <div className="text-white text-lg font-semibold mb-1">Years Experience</div>
-                    <div className="text-white/60 text-sm">Dedicated to elite athlete development</div>
+                    <div className="font-display text-5xl md:text-6xl lg:text-7xl text-primary mb-2">20+</div>
+                    <div className="text-white text-base md:text-lg font-semibold mb-1">Years Experience</div>
+                    <div className="text-white/60 text-xs md:text-sm px-2">Dedicated to elite athlete development</div>
                   </div>
                 </div>
               </div>
             </Card>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-              <Card className="text-center p-8 border-2">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-8 md:mb-12">
+              <Card className="text-center p-6 md:p-8 border-2">
                 <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Award className="h-8 w-8 text-primary" />
                 </div>
@@ -480,7 +480,7 @@ export default function Home() {
                 </p>
               </Card>
 
-              <Card className="text-center p-8 border-2">
+              <Card className="text-center p-6 md:p-8 border-2">
                 <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Trophy className="h-8 w-8 text-primary" />
                 </div>
@@ -497,7 +497,7 @@ export default function Home() {
                 </p>
               </Card>
 
-              <Card className="text-center p-8 border-2">
+              <Card className="text-center p-6 md:p-8 border-2 sm:col-span-2 lg:col-span-1">
                 <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
                   <Users className="h-8 w-8 text-primary" />
                 </div>
@@ -509,43 +509,43 @@ export default function Home() {
               </Card>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <Card className="p-6 bg-card">
+            <div className="grid md:grid-cols-2 gap-4 md:gap-6">
+              <Card className="p-5 md:p-6 bg-card">
                 <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 fill-primary text-primary" />
                   ))}
                 </div>
-                <p className="text-lg mb-4 italic">
+                <p className="text-base md:text-lg mb-4 italic">
                   "Trust the vision that your trainer has for you. Always be comfortable with being uncomfortable. This is where champions are made."
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="font-display text-primary">DS</span>
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span className="font-display text-primary text-sm">DS</span>
                   </div>
                   <div>
-                    <div className="font-semibold">Darren Swift</div>
-                    <div className="text-sm text-muted-foreground">Owner & Head Trainer</div>
+                    <div className="font-semibold text-sm md:text-base">Darren Swift</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">Owner & Head Trainer</div>
                   </div>
                 </div>
               </Card>
 
-              <Card className="p-6 bg-card">
+              <Card className="p-5 md:p-6 bg-card">
                 <div className="flex gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-5 w-5 fill-primary text-primary" />
+                    <Star key={i} className="h-4 w-4 md:h-5 md:w-5 fill-primary text-primary" />
                   ))}
                 </div>
-                <p className="text-lg mb-4 italic">
+                <p className="text-base md:text-lg mb-4 italic">
                   "SwiftFit is more than a gym—it's a family. The personalized attention and elite training programs have transformed not just my body, but my entire mindset."
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                    <span className="font-display text-primary">AT</span>
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span className="font-display text-primary text-sm">AT</span>
                   </div>
                   <div>
-                    <div className="font-semibold">Athlete Testimonial</div>
-                    <div className="text-sm text-muted-foreground">Youth Basketball Player</div>
+                    <div className="font-semibold text-sm md:text-base">Athlete Testimonial</div>
+                    <div className="text-xs md:text-sm text-muted-foreground">Youth Basketball Player</div>
                   </div>
                 </div>
               </Card>
@@ -554,19 +554,19 @@ export default function Home() {
         </section>
 
         {/* Gallery Section */}
-        <section id="gallery" className="py-20 bg-background" aria-labelledby="gallery-heading">
+        <section id="gallery" className="py-16 md:py-20 bg-background" aria-labelledby="gallery-heading">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 id="gallery-heading" className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide">SEE US IN ACTION</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <div className="text-center mb-12 md:mb-16">
+              <h2 id="gallery-heading" className="font-display text-4xl md:text-5xl lg:text-6xl text-secondary mb-3 md:mb-4 tracking-wide">SEE US IN ACTION</h2>
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
                 Experience the energy, dedication, and transformations happening at SwiftFit 215
               </p>
             </div>
 
             {/* Videos Section */}
-            <div className="mb-16">
-              <h3 className="font-display text-3xl text-secondary mb-8 tracking-wide">TRAINING VIDEOS</h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="mb-12 md:mb-16">
+              <h3 className="font-display text-2xl md:text-3xl text-secondary mb-6 md:mb-8 tracking-wide">TRAINING VIDEOS</h3>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
                 <Card className="overflow-hidden border-2 hover:border-primary transition-colors group">
                   <div className="relative aspect-video bg-muted">
                     <iframe
@@ -580,8 +580,8 @@ export default function Home() {
                     ></iframe>
                   </div>
                   <CardHeader>
-                    <CardTitle>1 on 1 Training</CardTitle>
-                    <CardDescription>Personalized coaching and individualized training sessions</CardDescription>
+                    <CardTitle className="text-lg md:text-xl">1 on 1 Training</CardTitle>
+                    <CardDescription className="text-sm">Personalized coaching and individualized training sessions</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -598,8 +598,8 @@ export default function Home() {
                     ></iframe>
                   </div>
                   <CardHeader>
-                    <CardTitle>Team Training</CardTitle>
-                    <CardDescription>Group training sessions and team athletic development</CardDescription>
+                    <CardTitle className="text-lg md:text-xl">Team Training</CardTitle>
+                    <CardDescription className="text-sm">Group training sessions and team athletic development</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -616,8 +616,8 @@ export default function Home() {
                     ></iframe>
                   </div>
                   <CardHeader>
-                    <CardTitle>Youth Training</CardTitle>
-                    <CardDescription>Elite development programs for young athletes</CardDescription>
+                    <CardTitle className="text-lg md:text-xl">Youth Training</CardTitle>
+                    <CardDescription className="text-sm">Elite development programs for young athletes</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -634,8 +634,8 @@ export default function Home() {
                     ></iframe>
                   </div>
                   <CardHeader>
-                    <CardTitle>Group Training Session</CardTitle>
-                    <CardDescription>High-energy group workouts and community training</CardDescription>
+                    <CardTitle className="text-lg md:text-xl">Group Training Session</CardTitle>
+                    <CardDescription className="text-sm">High-energy group workouts and community training</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -652,8 +652,8 @@ export default function Home() {
                     ></iframe>
                   </div>
                   <CardHeader>
-                    <CardTitle>Speed Training</CardTitle>
-                    <CardDescription>Elite speed development and acceleration drills</CardDescription>
+                    <CardTitle className="text-lg md:text-xl">Speed Training</CardTitle>
+                    <CardDescription className="text-sm">Elite speed development and acceleration drills</CardDescription>
                   </CardHeader>
                 </Card>
 
@@ -670,8 +670,8 @@ export default function Home() {
                     ></iframe>
                   </div>
                   <CardHeader>
-                    <CardTitle>Cryotherapy Wellness</CardTitle>
-                    <CardDescription>Advanced recovery and wellness therapy</CardDescription>
+                    <CardTitle className="text-lg md:text-xl">Cryotherapy Wellness</CardTitle>
+                    <CardDescription className="text-sm">Advanced recovery and wellness therapy</CardDescription>
                   </CardHeader>
                 </Card>
               </div>
@@ -679,8 +679,8 @@ export default function Home() {
 
             {/* Photos Section */}
             <div>
-              <h3 className="font-display text-3xl text-secondary mb-8 tracking-wide">FACILITY & TRAINING PHOTOS</h3>
-              <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <h3 className="font-display text-2xl md:text-3xl text-secondary mb-6 md:mb-8 tracking-wide">FACILITY & TRAINING PHOTOS</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
                 <GalleryImage
                   src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image000008-1761154858471.jpg?width=8000&height=8000&resize=contain"
                   alt="NFL players Mark Webb, Nasir Adderley, and D'Andre Swift standing together at SwiftFit 215, showcasing athletes trained by Coach Darren Swift since middle school"
@@ -767,16 +767,17 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="mt-12 text-center">
-              <p className="text-muted-foreground mb-6">Follow us on social media for daily training content and updates</p>
-              <div className="flex justify-center gap-4">
+            <div className="mt-10 md:mt-12 text-center">
+              <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6 px-4">Follow us on social media for daily training content and updates</p>
+              <div className="flex flex-col sm:flex-row justify-center gap-3 md:gap-4 px-4">
                 <a 
                   href="https://www.instagram.com/swiftfit215/" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   aria-label="Follow SwiftFit 215 on Instagram"
+                  className="w-full sm:w-auto"
                 >
-                  <Button className="bg-primary hover:bg-primary/90">
+                  <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
                     <Instagram className="h-5 w-5 mr-2" aria-hidden="true" />
                     Follow on Instagram
                   </Button>
@@ -786,8 +787,9 @@ export default function Home() {
                   target="_blank" 
                   rel="noopener noreferrer"
                   aria-label="Like SwiftFit 215 on Facebook"
+                  className="w-full sm:w-auto"
                 >
-                  <Button variant="outline" className="border-primary text-primary hover:bg-primary/10">
+                  <Button variant="outline" className="border-primary text-primary hover:bg-primary/10 w-full sm:w-auto">
                     <Facebook className="h-5 w-5 mr-2" aria-hidden="true" />
                     Like on Facebook
                   </Button>
@@ -798,53 +800,53 @@ export default function Home() {
         </section>
 
         {/* About/Philosophy Section */}
-        <section id="about" className="py-20 bg-background" aria-labelledby="about-heading">
+        <section id="about" className="py-16 md:py-20 bg-background" aria-labelledby="about-heading">
           <div className="container mx-auto px-4">
-            <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
               <div>
-                <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">Est. May 2021</Badge>
-                <h2 className="font-display text-5xl md:text-6xl text-secondary mb-6 tracking-wide" id="about-heading">
+                <Badge className="mb-3 md:mb-4 bg-primary/20 text-primary border-primary/30 text-xs md:text-sm">Est. May 2021</Badge>
+                <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-secondary mb-4 md:mb-6 tracking-wide" id="about-heading">
                   WHERE VISION MEETS REALITY
                 </h2>
-                <p className="text-lg text-muted-foreground mb-6">
+                <p className="text-base md:text-lg text-muted-foreground mb-4 md:mb-6">
                   Founded by <span className="text-foreground font-semibold">Darren Swift</span>, SwiftFit 215 is Philadelphia's premier boutique gym specializing in elite speed and strength training. Located in the heart of the Harrowgate community, we've been transforming bodies and building champions since 2021.
                 </p>
-                <div className="space-y-4 mb-8">
+                <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                     </div>
                     <div>
-                      <div className="font-semibold mb-1">Elite Athletic Training</div>
-                      <p className="text-sm text-muted-foreground">Training top youth athletes including nationally ranked basketball players</p>
+                      <div className="font-semibold mb-1 text-sm md:text-base">Elite Athletic Training</div>
+                      <p className="text-xs md:text-sm text-muted-foreground">Training top youth athletes including nationally ranked basketball players</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                     </div>
                     <div>
-                      <div className="font-semibold mb-1">Holistic Approach</div>
-                      <p className="text-sm text-muted-foreground">Combining strength, wellness, recovery, and mindset coaching</p>
+                      <div className="font-semibold mb-1 text-sm md:text-base">Holistic Approach</div>
+                      <p className="text-xs md:text-sm text-muted-foreground">Combining strength, wellness, recovery, and mindset coaching</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                     </div>
                     <div>
-                      <div className="font-semibold mb-1">Community-Focused</div>
-                      <p className="text-sm text-muted-foreground">Building a family atmosphere with personalized attention</p>
+                      <div className="font-semibold mb-1 text-sm md:text-base">Community-Focused</div>
+                      <p className="text-xs md:text-sm text-muted-foreground">Building a family atmosphere with personalized attention</p>
                     </div>
                   </div>
                 </div>
                 <a href="#contact">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
                     Start Your Transformation
                   </Button>
                 </a>
               </div>
-              <div className="relative">
+              <div className="relative order-first lg:order-last">
                 <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-muted relative">
                   <img 
                     src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1761152758760.png?width=8000&height=8000&resize=contain" 
@@ -853,94 +855,94 @@ export default function Home() {
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent"></div>
                 </div>
-                <Card className="absolute -bottom-6 -left-6 p-6 bg-secondary text-white border-0 max-w-xs">
-                  <div className="font-display text-3xl text-primary mb-2">IT GETS GREATER, LATER</div>
-                  <p className="text-sm text-white/80">
+                <Card className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 p-4 md:p-6 bg-secondary text-white border-0 max-w-[280px] md:max-w-xs">
+                  <div className="font-display text-2xl md:text-3xl text-primary mb-2">IT GETS GREATER, LATER</div>
+                  <p className="text-xs md:text-sm text-white/80">
                     Trust the process. Your success is our mission.
                   </p>
                 </Card>
               </div>
             </div>
 
-            <div className="mt-20 grid md:grid-cols-4 gap-8">
+            <div className="mt-16 md:mt-20 grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
               <div className="text-center">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Target className="h-8 w-8 text-primary" />
+                <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <Target className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                 </div>
-                <div className="font-display text-2xl mb-2">VISION</div>
-                <p className="text-sm text-muted-foreground">Trust in the vision your trainer has designed for you</p>
+                <div className="font-display text-xl md:text-2xl mb-1 md:mb-2">VISION</div>
+                <p className="text-xs md:text-sm text-muted-foreground px-2">Trust in the vision your trainer has designed for you</p>
               </div>
               <div className="text-center">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Zap className="h-8 w-8 text-primary" />
+                <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <Zap className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                 </div>
-                <div className="font-display text-2xl mb-2">INTENSITY</div>
-                <p className="text-sm text-muted-foreground">Always be comfortable with being uncomfortable</p>
+                <div className="font-display text-xl md:text-2xl mb-1 md:mb-2">INTENSITY</div>
+                <p className="text-xs md:text-sm text-muted-foreground px-2">Always be comfortable with being uncomfortable</p>
               </div>
               <div className="text-center">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Trophy className="h-8 w-8 text-primary" />
+                <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <Trophy className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                 </div>
-                <div className="font-display text-2xl mb-2">RESULTS</div>
-                <p className="text-sm text-muted-foreground">Your success is our goal—we track every milestone</p>
+                <div className="font-display text-xl md:text-2xl mb-1 md:mb-2">RESULTS</div>
+                <p className="text-xs md:text-sm text-muted-foreground px-2">Your success is our goal—we track every milestone</p>
               </div>
               <div className="text-center">
-                <div className="h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                  <Heart className="h-8 w-8 text-primary" />
+                <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-3 md:mb-4">
+                  <Heart className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                 </div>
-                <div className="font-display text-2xl mb-2">LIFESTYLE</div>
-                <p className="text-sm text-muted-foreground">Fitness as a lifestyle, not just a hobby</p>
+                <div className="font-display text-xl md:text-2xl mb-1 md:mb-2">LIFESTYLE</div>
+                <p className="text-xs md:text-sm text-muted-foreground px-2">Fitness as a lifestyle, not just a hobby</p>
               </div>
             </div>
 
             {/* Darren's Philosophy Quotes */}
-            <div className="mt-20">
-              <div className="text-center mb-12">
-                <h3 className="font-display text-4xl md:text-5xl text-secondary mb-3 tracking-wide">WORDS FROM DARREN</h3>
-                <p className="text-muted-foreground">Motivation and mindset from our founder</p>
+            <div className="mt-16 md:mt-20">
+              <div className="text-center mb-8 md:mb-12">
+                <h3 className="font-display text-3xl md:text-4xl lg:text-5xl text-secondary mb-2 md:mb-3 tracking-wide">WORDS FROM DARREN</h3>
+                <p className="text-sm md:text-base text-muted-foreground px-4">Motivation and mindset from our founder</p>
               </div>
               
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <Card className="p-6 border-l-4 border-l-primary">
-                  <p className="text-lg font-medium mb-3 text-foreground italic">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                <Card className="p-5 md:p-6 border-l-4 border-l-primary">
+                  <p className="text-base md:text-lg font-medium mb-3 text-foreground italic">
                     "Your success is our goal. We don't just track numbers—we build champions."
                   </p>
-                  <p className="text-sm text-muted-foreground">— Darren Swift</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">— Darren Swift</p>
                 </Card>
 
-                <Card className="p-6 border-l-4 border-l-primary">
-                  <p className="text-lg font-medium mb-3 text-foreground italic">
+                <Card className="p-5 md:p-6 border-l-4 border-l-primary">
+                  <p className="text-base md:text-lg font-medium mb-3 text-foreground italic">
                     "Where else would I be? This isn't just a job—it's my calling, my lifestyle, my family."
                   </p>
-                  <p className="text-sm text-muted-foreground">— Darren Swift</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">— Darren Swift</p>
                 </Card>
 
-                <Card className="p-6 border-l-4 border-l-primary">
-                  <p className="text-lg font-medium mb-3 text-foreground italic">
+                <Card className="p-5 md:p-6 border-l-4 border-l-primary">
+                  <p className="text-base md:text-lg font-medium mb-3 text-foreground italic">
                     "It gets greater, later. Trust the process and watch yourself transform."
                   </p>
-                  <p className="text-sm text-muted-foreground">— Darren Swift</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">— Darren Swift</p>
                 </Card>
 
-                <Card className="p-6 border-l-4 border-l-primary">
-                  <p className="text-lg font-medium mb-3 text-foreground italic">
+                <Card className="p-5 md:p-6 border-l-4 border-l-primary">
+                  <p className="text-base md:text-lg font-medium mb-3 text-foreground italic">
                     "We're not just building bodies—we're shifting mindsets and changing lives."
                   </p>
-                  <p className="text-sm text-muted-foreground">— Darren Swift</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">— Darren Swift</p>
                 </Card>
 
-                <Card className="p-6 border-l-4 border-l-primary">
-                  <p className="text-lg font-medium mb-3 text-foreground italic">
+                <Card className="p-5 md:p-6 border-l-4 border-l-primary">
+                  <p className="text-base md:text-lg font-medium mb-3 text-foreground italic">
                     "Fitness isn't a hobby here—it's a lifestyle. We live it, breathe it, embody it."
                   </p>
-                  <p className="text-sm text-muted-foreground">— Darren Swift</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">— Darren Swift</p>
                 </Card>
 
-                <Card className="p-6 border-l-4 border-l-primary">
-                  <p className="text-lg font-medium mb-3 text-foreground italic">
+                <Card className="p-5 md:p-6 border-l-4 border-l-primary">
+                  <p className="text-base md:text-lg font-medium mb-3 text-foreground italic">
                     "This is where champions are made. Elite training, personal attention, unbreakable results."
                   </p>
-                  <p className="text-sm text-muted-foreground">— Darren Swift</p>
+                  <p className="text-xs md:text-sm text-muted-foreground">— Darren Swift</p>
                 </Card>
               </div>
             </div>
@@ -948,52 +950,52 @@ export default function Home() {
         </section>
 
         {/* Contact/Location Section */}
-        <section id="contact" className="py-20 bg-muted/30" aria-labelledby="contact-heading">
+        <section id="contact" className="py-16 md:py-20 bg-muted/30" aria-labelledby="contact-heading">
           <div className="container mx-auto px-4">
-            <div className="text-center mb-16">
-              <h2 className="font-display text-5xl md:text-6xl text-secondary mb-4 tracking-wide" id="contact-heading">GET STARTED TODAY</h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <div className="text-center mb-12 md:mb-16">
+              <h2 className="font-display text-4xl md:text-5xl lg:text-6xl text-secondary mb-3 md:mb-4 tracking-wide" id="contact-heading">GET STARTED TODAY</h2>
+              <p className="text-base md:text-lg text-muted-foreground max-w-2xl mx-auto px-4">
                 Visit us in Philadelphia or reach out for your free consultation
               </p>
             </div>
 
-            <div className="grid lg:grid-cols-2 gap-12">
-              <div>
-                <Card className="p-8 mb-6">
-                  <h3 className="font-display text-3xl mb-6 tracking-wide">LOCATION & HOURS</h3>
-                  <div className="space-y-6">
-                    <div className="flex gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <MapPin className="h-6 w-6 text-primary" />
+            <div className="grid lg:grid-cols-2 gap-8 md:gap-12">
+              <div className="space-y-6">
+                <Card className="p-6 md:p-8">
+                  <h3 className="font-display text-2xl md:text-3xl mb-4 md:mb-6 tracking-wide">LOCATION & HOURS</h3>
+                  <div className="space-y-4 md:space-y-6">
+                    <div className="flex gap-3 md:gap-4">
+                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <MapPin className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                       <div>
-                        <div className="font-semibold mb-1">Address</div>
-                        <p className="text-muted-foreground">2245 E Tioga Street</p>
-                        <p className="text-muted-foreground">Philadelphia, PA 19134</p>
-                        <p className="text-sm text-muted-foreground mt-1">(Entrance on Weikel Street)</p>
+                        <div className="font-semibold mb-1 text-sm md:text-base">Address</div>
+                        <p className="text-sm md:text-base text-muted-foreground">2245 E Tioga Street</p>
+                        <p className="text-sm md:text-base text-muted-foreground">Philadelphia, PA 19134</p>
+                        <p className="text-xs md:text-sm text-muted-foreground mt-1">(Entrance on Weikel Street)</p>
                       </div>
                     </div>
-                    <div className="flex gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Phone className="h-6 w-6 text-primary" />
+                    <div className="flex gap-3 md:gap-4">
+                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Phone className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                       <div>
-                        <div className="font-semibold mb-1">Phone</div>
-                        <a href="tel:2679390254" className="text-primary hover:underline block">(267) 939-0254</a>
+                        <div className="font-semibold mb-1 text-sm md:text-base">Phone</div>
+                        <a href="tel:2679390254" className="text-primary hover:underline block text-sm md:text-base">(267) 939-0254</a>
                       </div>
                     </div>
-                    <div className="flex gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Clock className="h-6 w-6 text-primary" />
+                    <div className="flex gap-3 md:gap-4">
+                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Clock className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                       <div>
-                        <div className="font-semibold mb-2">Hours of Operation</div>
-                        <div className="space-y-1 text-sm">
-                          <div className="flex justify-between gap-8">
+                        <div className="font-semibold mb-2 text-sm md:text-base">Hours of Operation</div>
+                        <div className="space-y-1 text-xs md:text-sm">
+                          <div className="flex justify-between gap-4 md:gap-8">
                             <span className="text-muted-foreground">Monday - Friday</span>
                             <span className="font-medium">7:00 AM - 8:00 PM</span>
                           </div>
-                          <div className="flex justify-between gap-8">
+                          <div className="flex justify-between gap-4 md:gap-8">
                             <span className="text-muted-foreground">Saturday - Sunday</span>
                             <span className="font-medium">8:00 AM - 5:00 PM</span>
                           </div>
@@ -1017,9 +1019,9 @@ export default function Home() {
                 </div>
               </div>
 
-              <Card className="p-8">
-                <h3 className="font-display text-3xl mb-2 tracking-wide">REQUEST A FREE CONSULTATION</h3>
-                <p className="text-muted-foreground mb-6">
+              <Card className="p-6 md:p-8">
+                <h3 className="font-display text-2xl md:text-3xl mb-2 tracking-wide">REQUEST A FREE CONSULTATION</h3>
+                <p className="text-sm md:text-base text-muted-foreground mb-4 md:mb-6">
                   Fill out the form below and we'll get back to you within 24 hours
                 </p>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -1036,18 +1038,18 @@ export default function Home() {
                   </div>
                   
                   <div>
-                    <Label htmlFor="name">Full Name *</Label>
+                    <Label htmlFor="name" className="text-sm md:text-base">Full Name *</Label>
                     <Input
                       id="name"
                       value={formData.name}
                       onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                       required
                       placeholder="John Doe"
-                      className="mt-1"
+                      className="mt-1 h-10 md:h-11"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email *</Label>
+                    <Label htmlFor="email" className="text-sm md:text-base">Email *</Label>
                     <Input
                       id="email"
                       type="email"
@@ -1055,11 +1057,11 @@ export default function Home() {
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       required
                       placeholder="john@example.com"
-                      className="mt-1"
+                      className="mt-1 h-10 md:h-11"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="phone">Phone Number *</Label>
+                    <Label htmlFor="phone" className="text-sm md:text-base">Phone Number *</Label>
                     <Input
                       id="phone"
                       type="tel"
@@ -1067,11 +1069,11 @@ export default function Home() {
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                       required
                       placeholder="(215) 555-0123"
-                      className="mt-1"
+                      className="mt-1 h-10 md:h-11"
                     />
                   </div>
                   <div>
-                    <Label htmlFor="message">Message</Label>
+                    <Label htmlFor="message" className="text-sm md:text-base">Message</Label>
                     <Textarea
                       id="message"
                       value={formData.message}
@@ -1083,12 +1085,12 @@ export default function Home() {
                   </div>
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 h-12 text-lg"
+                    className="w-full bg-primary hover:bg-primary/90 h-11 md:h-12 text-base md:text-lg"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Sending..." : "Get Your Free Consultation"}
                   </Button>
-                  <p className="text-xs text-center text-muted-foreground">
+                  <p className="text-[10px] md:text-xs text-center text-muted-foreground">
                     By submitting this form, you agree to be contacted by SwiftFit 215
                   </p>
                 </form>
@@ -1099,17 +1101,17 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer className="bg-secondary text-white py-12" role="contentinfo">
+      <footer className="bg-secondary text-white py-10 md:py-12" role="contentinfo">
         <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <Dumbbell className="h-8 w-8 text-primary" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 mb-6 md:mb-8">
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2 mb-3 md:mb-4">
+                <Dumbbell className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                 <div>
-                  <h3 className="font-display text-2xl tracking-wider">SWIFTFIT 215</h3>
+                  <h3 className="font-display text-xl md:text-2xl tracking-wider">SWIFTFIT 215</h3>
                 </div>
               </div>
-              <p className="text-white/70 text-sm mb-4">
+              <p className="text-white/70 text-xs md:text-sm mb-3 md:mb-4">
                 Philadelphia's premier speed and strength training academy
               </p>
               <div className="flex gap-3">
@@ -1117,33 +1119,33 @@ export default function Home() {
                   href="https://www.instagram.com/swiftfit215/" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors"
+                  className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors"
                   aria-label="Follow us on Instagram"
                 >
-                  <Instagram className="h-5 w-5" />
+                  <Instagram className="h-4 w-4 md:h-5 md:w-5" />
                 </a>
                 <a 
                   href="https://www.facebook.com/SwiftFit215/" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="h-10 w-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors"
+                  className="h-9 w-9 md:h-10 md:w-10 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors"
                   aria-label="Follow us on Facebook"
                 >
-                  <Facebook className="h-5 w-5" />
+                  <Facebook className="h-4 w-4 md:h-5 md:w-5" />
                 </a>
               </div>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-white/70">
+              <h4 className="font-semibold mb-3 md:mb-4 text-sm md:text-base">Quick Links</h4>
+              <ul className="space-y-2 text-xs md:text-sm text-white/70">
                 <li><a href="#services" className="hover:text-primary transition-colors">Services</a></li>
                 <li><a href="#about" className="hover:text-primary transition-colors">About</a></li>
                 <li><a href="#contact" className="hover:text-primary transition-colors">Contact</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Services</h4>
-              <ul className="space-y-2 text-sm text-white/70">
+              <h4 className="font-semibold mb-3 md:mb-4 text-sm md:text-base">Services</h4>
+              <ul className="space-y-2 text-xs md:text-sm text-white/70">
                 <li>Gym Membership</li>
                 <li>Personal Training</li>
                 <li>Athletic Training</li>
@@ -1151,17 +1153,17 @@ export default function Home() {
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold mb-4">Contact</h4>
-              <ul className="space-y-2 text-sm text-white/70">
+              <h4 className="font-semibold mb-3 md:mb-4 text-sm md:text-base">Contact</h4>
+              <ul className="space-y-2 text-xs md:text-sm text-white/70">
                 <li>(267) 939-0254</li>
                 <li>2245 E Tioga Street</li>
                 <li>Philadelphia, PA 19134</li>
               </ul>
             </div>
           </div>
-          <div className="border-t border-white/10 pt-8 text-center text-sm text-white/60">
+          <div className="border-t border-white/10 pt-6 md:pt-8 text-center text-xs md:text-sm text-white/60">
             <p>© 2025 SwiftFit 215. All rights reserved. | Established May 2021</p>
-            <p className="mt-2 font-display text-primary">TRANSFORM YOUR BODY TODAY</p>
+            <p className="mt-2 font-display text-primary text-sm md:text-base">TRANSFORM YOUR BODY TODAY</p>
           </div>
         </div>
       </footer>
