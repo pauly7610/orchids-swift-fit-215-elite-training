@@ -198,79 +198,167 @@ Body: {
 
 ## Setting Up 30-Day Reminders
 
-### Automatic Reminder System
+### ✅ Fully Automated System
 
-The system automatically tracks when students attend classes and sends them a reminder 30 days later if they haven't signed up for another session.
+The 30-day reminder system is **now fully automated** and will:
+- Track when students attend classes
+- Automatically send beautiful email reminders 30 days after their last class
+- Include a special "Welcome Back" 10% discount offer
+- Send you (admin) a daily summary report of reminders sent
 
 ### How It Works
 
-1. **When a class is completed**, the system should call:
-   ```bash
-   POST /api/class-reminders/schedule
-   Headers: Authorization: Bearer <admin_token>
-   Body: {
-     "studentProfileId": 123,
-     "lastClassDate": "2024-12-01"
-   }
-   ```
-
-2. **The system calculates** `reminderScheduledFor` as `lastClassDate + 30 days` automatically
-
-3. **A cron job checks daily** for due reminders:
-   ```bash
-   GET /api/class-reminders/due
-   ```
-
-4. **Send reminder emails/texts** to students in the response
-
-5. **Mark reminders as sent**:
-   ```bash
-   POST /api/class-reminders/mark-sent
-   Body: {
-     "reminderId": 456
-   }
-   ```
+1. **Automatic Tracking**: When a class is completed, the system schedules a reminder for 30 days later
+2. **Daily Email Sending**: A cron job runs every day at 9:00 AM to send due reminders
+3. **Beautiful Emails**: Students receive a warm, branded email with:
+   - Personalized greeting with their name
+   - Days since their last class
+   - Special welcome-back offer (10% off next package)
+   - Direct booking link to schedule page
+   - Studio updates and new class offerings
 
 ### Setting Up the Cron Job
 
-Create a cron job that runs daily at 9:00 AM:
+#### Option 1: Vercel Cron Jobs (Recommended)
 
-```bash
-# In your server or using a service like Vercel Cron Jobs
-0 9 * * * curl -X GET https://yourdomain.com/api/class-reminders/due
-```
+If you're hosting on Vercel, add this to `vercel.json`:
 
-**Better approach**: Create a dedicated API route that handles the entire reminder process:
-
-```typescript
-// src/app/api/cron/send-reminders/route.ts
-import { NextResponse } from 'next/server';
-
-export async function GET() {
-  // Get due reminders
-  const response = await fetch('/api/class-reminders/due');
-  const { dueReminders } = await response.json();
-
-  // Send emails/texts to each student
-  for (const reminder of dueReminders) {
-    const email = reminder.email || reminder.studentEmail;
-    
-    // Send reminder email
-    await sendReminderEmail(email, {
-      subject: "We miss you! Come back to Swift Fit",
-      message: "It's been 30 days since your last class..."
-    });
-
-    // Mark as sent
-    await fetch('/api/class-reminders/mark-sent', {
-      method: 'POST',
-      body: JSON.stringify({ reminderId: reminder.id })
-    });
-  }
-
-  return NextResponse.json({ success: true, sent: dueReminders.length });
+```json
+{
+  "crons": [
+    {
+      "path": "/api/cron/send-class-reminders",
+      "schedule": "0 9 * * *"
+    }
+  ]
 }
 ```
+
+Then add your cron secret to environment variables:
+```bash
+CRON_SECRET=your-random-secret-here
+```
+
+#### Option 2: External Cron Service
+
+Use a service like [cron-job.org](https://cron-job.org) or [EasyCron](https://easycron.com):
+
+1. **Create new cron job** that runs daily at 9:00 AM
+2. **Set URL**: `https://yourdomain.com/api/cron/send-class-reminders`
+3. **Add Header**: `Authorization: Bearer your-cron-secret`
+4. **Save and activate**
+
+#### Option 3: Manual Testing
+
+To manually trigger the reminder sending (for testing):
+
+```bash
+curl -X GET https://yourdomain.com/api/cron/send-class-reminders \
+  -H "Authorization: Bearer your-cron-secret"
+```
+
+### Email Configuration
+
+The reminder system uses **Resend** for email delivery. Make sure you have:
+
+```bash
+# In your .env file
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+CRON_SECRET=your-random-secret-here
+```
+
+Get your Resend API key from [resend.com](https://resend.com)
+
+### Admin Notification
+
+Every time reminders are sent, you'll receive an email summary at `swiftfitpws@gmail.com` containing:
+- Date of the run
+- Total reminders due
+- Successfully sent count
+- Failed count (if any)
+- Detailed error messages
+
+### Customizing the Reminder Email
+
+The email template is located at:
+```
+src/emails/pilates-class-reminder.tsx
+```
+
+You can customize:
+- Message text and tone
+- Special offers or promotions
+- Studio updates section
+- Colors and branding
+- Call-to-action buttons
+
+### Monitoring Reminders
+
+To see pending reminders:
+
+```bash
+GET /api/class-reminders/due
+```
+
+To manually mark a reminder as sent:
+
+```bash
+POST /api/class-reminders/mark-sent
+Body: { "reminderId": 123 }
+```
+
+### Troubleshooting
+
+**Problem: Reminders not sending**
+- Check that RESEND_API_KEY is set correctly
+- Verify cron job is running (check logs)
+- Test manually with curl command above
+
+**Problem: Students not receiving emails**
+- Check spam/junk folders
+- Verify email addresses in database are correct
+- Check Resend dashboard for delivery status
+
+**Problem: Admin summary not arriving**
+- Verify swiftfitpws@gmail.com is correct in the code
+- Check your spam folder
+- Review Resend logs
+
+---
+
+## Common Workflows
+
+### Workflow 1: Adding a New Teacher for Monday Morning Classes
+
+1. Have teacher register at `/register`
+2. Admin logs in and goes to `/admin/instructors/create`
+3. Select the user from dropdown
+4. Add bio: "Certified Pilates instructor, specializing in core strength"
+5. Add specialties: ["Mat Pilates", "Core Work"]
+6. Upload headshot
+7. Save instructor
+8. Go to `/admin/classes/create`
+9. Create recurring Monday 9 AM class with new instructor
+
+### Workflow 2: Instructor Change for a Specific Date
+
+1. Admin goes to `/admin/classes`
+2. Find the class on the schedule
+3. Click "Edit"
+4. Change instructor dropdown to substitute teacher
+5. Save changes
+6. System notifies students of instructor change
+
+### Workflow 3: Managing Email List & Automated Reminders
+
+1. **Students sign up** via popup on `/pilates` page → stored in `email_subscribers` table
+2. **After each class completion**, system automatically calls `/api/class-reminders/schedule`
+3. **Daily at 9 AM**, cron job runs `/api/cron/send-class-reminders`
+4. **System sends** beautiful reminder emails with 10% welcome-back offer
+5. **Admin receives** daily summary report of reminders sent
+6. **Students click** booking link and return to schedule page
+
+**✨ Completely hands-free after setup!**
 
 ---
 
@@ -304,40 +392,6 @@ Authorization: Bearer <token>
 Get the token from:
 - Admin login session: `localStorage.getItem('bearer_token')`
 - Better-auth session API
-
----
-
-## Common Workflows
-
-### Workflow 1: Adding a New Teacher for Monday Morning Classes
-
-1. Have teacher register at `/register`
-2. Admin logs in and goes to `/admin/instructors/create`
-3. Select the user from dropdown
-4. Add bio: "Certified Pilates instructor, specializing in core strength"
-5. Add specialties: ["Mat Pilates", "Core Work"]
-6. Upload headshot
-7. Save instructor
-8. Go to `/admin/classes/create`
-9. Create recurring Monday 9 AM class with new instructor
-
-### Workflow 2: Instructor Change for a Specific Date
-
-1. Admin goes to `/admin/classes`
-2. Find the class on the schedule
-3. Click "Edit"
-4. Change instructor dropdown to substitute teacher
-5. Save changes
-6. System notifies students of instructor change
-
-### Workflow 3: Managing Email List & Reminders
-
-1. Students sign up via popup on `/pilates` page
-2. Emails stored in `email_subscribers` table
-3. After each class, system calls `/api/class-reminders/schedule`
-4. Daily cron job at 9 AM checks `/api/class-reminders/due`
-5. System sends "We miss you!" emails to students
-6. Marks reminders as sent
 
 ---
 
