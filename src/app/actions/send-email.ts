@@ -1,7 +1,7 @@
 'use server';
 
 import { resend } from '@/lib/resend';
-import { ContactConfirmation } from '@/emails/contact-confirmation';
+import { GymContactConfirmation } from '@/emails/gym-contact-confirmation';
 import { GymContactNotification } from '@/emails/gym-contact-notification';
 
 interface ContactFormData {
@@ -97,7 +97,7 @@ export async function sendContactEmail(
       from: 'SwiftFit 215 <noreply@swiftfit215.com>',
       to: data.email,
       subject: 'Thank you for contacting SwiftFit 215',
-      react: ContactConfirmation({
+      react: GymContactConfirmation({
         name: data.name,
         email: data.email,
         phone: data.phone,
