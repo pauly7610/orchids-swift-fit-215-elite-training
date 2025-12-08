@@ -149,7 +149,8 @@ export default function Home() {
       
       const result = await sendContactEmail({
         ...formData,
-        honeypot
+        honeypot,
+        adminEmail: 'swiftfit215@gmail.com' // Gym submissions go to swiftfit215@gmail.com
       })
       
       if (result.success) {
