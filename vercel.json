@@ -1,16 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/send-class-reminders",
-      "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/expire-credits",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/memberships/process-renewals",
-      "schedule": "0 1 * * *"
+      "path": "/api/cron/daily-tasks",
+      "schedule": "0 2 * * *"
     }
   ]
 }
