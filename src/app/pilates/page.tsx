@@ -7,6 +7,7 @@ import { Heart, Users, Zap, Calendar, DollarSign, Clock, ArrowRight, Sparkles, M
 import Link from "next/link"
 import Image from "next/image"
 import { PilatesEmailPopup } from "@/components/pilates-email-popup"
+import { SoftOpeningBanner, WeeklyClassSchedule } from "@/components/weekly-class-schedule"
 import { useState, useRef, useEffect } from "react"
 
 export default function PilatesLanding() {
@@ -239,6 +240,26 @@ export default function PilatesLanding() {
             <p className="text-lg md:text-base font-serif italic md:text-xl text-[#5A5550] px-4">
               At Swift Fit, it's not about being perfect. It's about showing up, moving with purpose, and becoming the best version of yourself, one day at a time.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Schedule Preview Section */}
+      <section className="py-16 md:py-20 bg-[#FAF8F5]">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12 md:mb-16">
+            <Badge className="mb-4 bg-[#E8B4B8]/20 text-[#5A5550] border-[#E8B4B8]">Coming Soon</Badge>
+            <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-[#5A5550] mb-3 md:mb-4 font-light px-4">
+              Upcoming Classes
+            </h2>
+            <p className="text-sm md:text-base text-[#7A736B] max-w-2xl mx-auto px-4">
+              Mark your calendars! Our soft opening is December 13, and regular classes begin December 15.
+            </p>
+          </div>
+
+          <div className="max-w-4xl mx-auto space-y-12">
+            <SoftOpeningBanner />
+            <WeeklyClassSchedule />
           </div>
         </div>
       </section>
