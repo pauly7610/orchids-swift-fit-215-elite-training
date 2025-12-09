@@ -136,6 +136,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+        <Script
+          id="orchids-browser-logs"
+          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts/orchids-browser-logs.js"
+          strategy="afterInteractive"
+          data-orchids-project-id="be273153-c1dd-4408-ae26-98e756590a92"
+        />
         <ErrorReporter />
         <Script
           id="schema-markup"
