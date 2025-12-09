@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Activity, Wind, Flame, Brain, Music } from "lucide-react"
+import { Heart, Activity, Wind, Flame, Brain, Music, Users } from "lucide-react"
 import Link from "next/link"
 
 const classTypes = [
@@ -52,7 +52,7 @@ const classTypes = [
   {
     name: "Fitness & Strength Training",
     icon: Flame,
-    instructor: "Drelle, Tyra",
+    instructor: "Drelle, Jewlz, Tyra",
     description: "Break a sweat in dynamic workout classes that build endurance, power, and confidence. Combining athletic training with strength-building exercises for a full-body workout that challenges you physically and mentally.",
     benefits: [
       "Increased strength and muscle tone",
@@ -66,7 +66,7 @@ const classTypes = [
   {
     name: "Dance Fitness",
     icon: Music,
-    instructor: "Des, Drelle",
+    instructor: "Des",
     description: "Build strength, confidence, and inner peace through movement. Dance and Release fitness classes combine the joy of dance with effective fitness training, helping you find freedom through rhythm and movement.",
     benefits: [
       "Full-body cardio workout",
@@ -76,6 +76,20 @@ const classTypes = [
       "Community and connection"
     ],
     bestFor: "All levels - no dance experience required"
+  },
+  {
+    name: "Group Fitness / Zumba",
+    icon: Users,
+    instructor: "Ivori",
+    description: "High-energy group fitness classes that combine dance moves with cardio for a fun, full-body workout. Get moving to upbeat music while burning calories and building endurance in a supportive group environment.",
+    benefits: [
+      "High-energy cardio workout",
+      "Fun, dance-based movements",
+      "Community and group motivation",
+      "Full-body conditioning",
+      "Stress relief through movement"
+    ],
+    bestFor: "All levels - come ready to move and have fun"
   },
   {
     name: "HIIT",

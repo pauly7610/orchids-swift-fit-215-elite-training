@@ -55,6 +55,22 @@ const instructors = [
     bio: "Quadrelle Drelle Jin Harris, 29. A graduate of Communications and Psychology but also making her mark in athletics (track and gymnastics) and a signed model & dancer. Fitness has brought more than physical gains and community; it has also challenged her mentally which she has been able to travel the US to talk into with brands like Nike, UnderArmour and even Roc Nation. The feel good endorphins of dance fitness, strength training and working with professional Athletes is just the beginning of her purpose and you get to come along on the ride through her classes and training sessions.",
     classes: ["Fitness", "Strength Training", "Athletic Training"],
     image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788663358.png?width=8000&height=8000&resize=contain"
+  },
+  {
+    name: "Ivori",
+    specialty: "Group Fitness & Zumba",
+    badge: "Group Fitness Instructor",
+    bio: "Bringing high-energy and positive vibes to every class! Ivori specializes in group fitness and Zumba, creating an inclusive environment where everyone can move, sweat, and have fun together.",
+    classes: ["Group Fitness", "Zumba"],
+    image: ""
+  },
+  {
+    name: "Jewlz",
+    specialty: "Fitness",
+    badge: "Fitness Instructor",
+    bio: "Jewlz brings passion and dedication to every fitness class, helping you build strength and confidence through dynamic workouts designed to challenge and inspire.",
+    classes: ["Fitness"],
+    image: ""
   }
 ]
 
@@ -114,14 +130,18 @@ export default function InstructorsPage() {
               {instructors.map((instructor, index) => (
                 <Card key={index} className="p-8 border-2 border-[#B8AFA5]/30 hover:border-[#9BA899] transition-all bg-[#FAF8F5]">
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="h-24 w-24 rounded-full overflow-hidden flex-shrink-0 bg-muted border-2 border-[#B8AFA5]">
-                      <Image
-                        src={instructor.image}
-                        alt={instructor.name}
-                        width={96}
-                        height={96}
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="h-24 w-24 rounded-full overflow-hidden flex-shrink-0 bg-muted border-2 border-[#B8AFA5] flex items-center justify-center">
+                      {instructor.image ? (
+                        <Image
+                          src={instructor.image}
+                          alt={instructor.name}
+                          width={96}
+                          height={96}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-2xl font-serif text-[#9BA899]">{instructor.name.charAt(0)}</span>
+                      )}
                     </div>
                     <div className="flex-1">
                       <h3 className="text-2xl font-serif text-[#5A5550] mb-1 font-light">

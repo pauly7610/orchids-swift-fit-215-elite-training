@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+import { betterAuth } from "better-auth";
 
 export async function middleware(request: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() });
+  // For protected routes, check for session cookie
+  const sessionCookie = request.cookies.get("better-auth.session_token");
+  
+  if (!sessionCookie) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+  
+  return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin", "/instructor", "/student"],
+  matcher: ["/admin/:path*", "/instructor/:path*", "/student/:path*"],
 };
