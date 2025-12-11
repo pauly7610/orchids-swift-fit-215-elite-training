@@ -50,10 +50,45 @@ export const auth = betterAuth({
 	}),
 	emailAndPassword: {    
 		enabled: true,
-		// Email verification enabled
 		requireEmailVerification: true,
-		// Send verification email on signup
-		sendVerificationEmail: async ({ user, url, token }) => {
+		// Password reset email
+		sendResetPassword: async ({ user, url }) => {
+			console.log('=== PASSWORD RESET EMAIL ===');
+			console.log('Sending to:', user.email);
+			try {
+				const content = `
+					<p style="color: #7A736B; font-size: 15px; line-height: 1.6; text-align: center;">
+						Hi ${user.name || 'there'},
+					</p>
+					<p style="color: #7A736B; font-size: 15px; line-height: 1.6; text-align: center;">
+						We received a request to reset your password. Click the button below to create a new password.
+					</p>
+					<p style="color: #B8AFA5; font-size: 13px; text-align: center; margin-top: 20px;">
+						This link will expire in 1 hour for security reasons.
+					</p>
+					<p style="color: #B8AFA5; font-size: 13px; text-align: center;">
+						If you didn't request this, you can safely ignore this email.
+					</p>
+				`;
+				
+				const result = await resend.emails.send({
+					from: "Swift Fit Pilates <noreply@swiftfit215.com>",
+					to: user.email,
+					subject: "Reset Your Password - Swift Fit Pilates",
+					html: getEmailTemplate("Reset Your Password", content, "Reset Password", url),
+				});
+				console.log('Password reset email result:', result);
+			} catch (error) {
+				console.error('Failed to send password reset email:', error);
+				throw error;
+			}
+		},
+	},
+	// Email verification configuration - MUST be separate from emailAndPassword
+	emailVerification: {
+		sendOnSignUp: true,
+		autoSignInAfterVerification: true,
+		sendVerificationEmail: async ({ user, url, token }, request) => {
 			console.log('=== VERIFICATION EMAIL ATTEMPT ===');
 			console.log('User email:', user.email);
 			console.log('User name:', user.name);
@@ -84,48 +119,15 @@ export const auth = betterAuth({
 				
 				if (result.error) {
 					console.error('Resend error:', result.error);
-					// Don't throw - let signup succeed, user can request new verification email
 				} else {
 					console.log('Verification email sent successfully to:', user.email);
 				}
 			} catch (error) {
 				console.error('Failed to send verification email:', error);
-				// Don't throw - let signup succeed, user can request new verification email
-			}
-		},
-		// Enable password reset
-		sendResetPassword: async ({ user, url }) => {
-			try {
-				const content = `
-					<p style="color: #7A736B; font-size: 15px; line-height: 1.6; text-align: center;">
-						Hi ${user.name || 'there'},
-					</p>
-					<p style="color: #7A736B; font-size: 15px; line-height: 1.6; text-align: center;">
-						We received a request to reset your password. Click the button below to create a new password.
-					</p>
-					<p style="color: #B8AFA5; font-size: 13px; text-align: center; margin-top: 20px;">
-						This link will expire in 1 hour for security reasons.
-					</p>
-					<p style="color: #B8AFA5; font-size: 13px; text-align: center;">
-						If you didn't request this, you can safely ignore this email.
-					</p>
-				`;
-				
-				await resend.emails.send({
-					from: "Swift Fit Pilates <noreply@swiftfit215.com>",
-					to: user.email,
-					subject: "Reset Your Password - Swift Fit Pilates",
-					html: getEmailTemplate("Reset Your Password", content, "Reset Password", url),
-				});
-				console.log('Password reset email sent to:', user.email);
-			} catch (error) {
-				console.error('Failed to send password reset email:', error);
-				throw error;
 			}
 		},
 	},
 	plugins: [bearer()],
-	// Automatically create user profile on signup
 	user: {
 		additionalFields: {},
 		changeEmail: {
@@ -138,7 +140,6 @@ export const auth = betterAuth({
 			create: {
 				after: async (user) => {
 					try {
-						// Check if profile already exists
 						const existingProfile = await db.select()
 							.from(userProfiles)
 							.where(eq(userProfiles.userId, user.id))
@@ -148,7 +149,7 @@ export const auth = betterAuth({
 							const now = new Date().toISOString();
 							await db.insert(userProfiles).values({
 								userId: user.id,
-								role: 'student', // Default role for new signups
+								role: 'student',
 								phone: null,
 								profileImage: null,
 								emailReminders: true,
@@ -161,8 +162,6 @@ export const auth = betterAuth({
 						}
 					} catch (error) {
 						console.error('Failed to create user profile:', error);
-						// Don't throw - we don't want to break the signup flow
-						// Profile can be created on first login if this fails
 					}
 				}
 			}
