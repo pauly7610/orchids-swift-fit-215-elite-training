@@ -6,8 +6,10 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check } from "lucide-react"
+import { Check, ArrowLeft, Sparkles } from "lucide-react"
 import { toast } from "sonner"
+import Link from "next/link"
+import Image from "next/image"
 
 interface Package {
   id: number
@@ -129,26 +131,44 @@ export default function PurchasePage() {
 
   if (isPending || loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F5]">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#9BA899] mx-auto mb-4"></div>
+          <p className="text-[#7A736B]">Loading...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-[#FAF8F5]">
       {/* Header */}
-      <header className="border-b bg-card sticky top-0 z-50">
+      <header className="border-b border-[#B8AFA5]/20 bg-white sticky top-0 z-50">
         <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex items-center justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <h1 className="font-display text-xl sm:text-2xl md:text-3xl text-primary truncate">PURCHASE CREDITS</h1>
-              <p className="text-xs sm:text-sm text-muted-foreground">Choose a package or membership</p>
+            <div className="flex items-center gap-3">
+              <Link href="/pilates" className="flex items-center gap-2">
+                <div className="relative w-8 h-8 md:w-10 md:h-10">
+                  <Image
+                    src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1765052969010.png?width=8000&height=8000&resize=contain"
+                    alt="Swift Fit"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              </Link>
+              <div className="min-w-0">
+                <h1 className="font-serif text-lg sm:text-xl md:text-2xl text-[#5A5550]">Purchase Credits</h1>
+                <p className="text-xs text-[#9BA899] hidden sm:block">Choose a package or membership</p>
+              </div>
             </div>
-            <Button variant="outline" size="sm" className="shrink-0" onClick={() => router.push("/student")}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="shrink-0 border-[#B8AFA5] text-[#5A5550] hover:bg-[#9BA899]/10 rounded-full" 
+              onClick={() => router.push("/student")}
+            >
+              <ArrowLeft className="h-4 w-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Back to </span>Dashboard
             </Button>
           </div>
@@ -156,52 +176,73 @@ export default function PurchasePage() {
       </header>
 
       <div className="container mx-auto px-4 py-6 md:py-12">
+        {/* New Student Intro Offer */}
+        <section className="mb-10 md:mb-16">
+          <Card className="border-2 border-[#E8B4B8] bg-gradient-to-r from-[#FFF5F7] via-white to-[#F5F9F5] max-w-2xl mx-auto">
+            <CardContent className="p-6 md:p-8 text-center">
+              <div className="inline-flex items-center gap-2 bg-[#E8B4B8]/20 rounded-full px-4 py-1.5 mb-4">
+                <Sparkles className="h-4 w-4 text-[#E8B4B8]" />
+                <span className="text-sm font-medium text-[#5A5550]">New Student Special</span>
+              </div>
+              <h2 className="font-serif text-2xl md:text-3xl text-[#5A5550] mb-2">3 Classes for $49</h2>
+              <p className="text-[#7A736B] mb-6">Perfect for trying out different class types and instructors</p>
+              <Button 
+                className="bg-[#E8B4B8] hover:bg-[#D9A5A9] text-white rounded-full px-8"
+                onClick={() => handlePurchase("package", 1, 49)}
+                disabled={purchasing}
+              >
+                {purchasing ? "Processing..." : "Get Started"}
+              </Button>
+            </CardContent>
+          </Card>
+        </section>
+
         {/* Memberships */}
         <section className="mb-10 md:mb-16">
           <div className="text-center mb-6 md:mb-8">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-secondary mb-2">MONTHLY MEMBERSHIPS</h2>
-            <p className="text-sm md:text-base text-muted-foreground px-4">Unlimited access to all Pilates classes</p>
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-[#5A5550] mb-2 font-light">Monthly Memberships</h2>
+            <p className="text-sm md:text-base text-[#7A736B] px-4">Unlimited access to all classes</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
             {memberships.map((membership) => (
-              <Card key={membership.id} className="border-2 hover:border-primary transition-colors">
-                <CardHeader>
-                  <CardTitle className="text-2xl">{membership.name}</CardTitle>
-                  <CardDescription>{membership.description}</CardDescription>
+              <Card key={membership.id} className="border-[#B8AFA5]/30 hover:border-[#9BA899] transition-all hover:shadow-lg bg-white">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl font-serif font-normal text-[#5A5550]">{membership.name}</CardTitle>
+                  <CardDescription className="text-[#7A736B]">{membership.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="mb-6">
-                    <div className="text-4xl font-bold mb-2">
+                    <div className="text-4xl font-serif font-light text-[#9BA899] mb-2">
                       ${membership.priceMonthly}
-                      <span className="text-lg font-normal text-muted-foreground">/month</span>
+                      <span className="text-lg text-[#B8AFA5]">/month</span>
                     </div>
                     {membership.isUnlimited ? (
-                      <Badge className="bg-primary/10 text-primary">Unlimited Classes</Badge>
+                      <Badge className="bg-[#9BA899]/20 text-[#5A5550] border-[#9BA899] rounded-full">Unlimited Classes</Badge>
                     ) : (
-                      <Badge variant="outline">{membership.creditsPerMonth} credits/month</Badge>
+                      <Badge variant="outline" className="border-[#B8AFA5] text-[#7A736B] rounded-full">{membership.creditsPerMonth} credits/month</Badge>
                     )}
                   </div>
 
                   <ul className="space-y-3 mb-6">
                     <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">
+                      <Check className="h-5 w-5 text-[#9BA899] mt-0.5 shrink-0" />
+                      <span className="text-sm text-[#5A5550]">
                         {membership.isUnlimited ? "Unlimited classes per month" : `${membership.creditsPerMonth} classes per month`}
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Priority booking</span>
+                      <Check className="h-5 w-5 text-[#9BA899] mt-0.5 shrink-0" />
+                      <span className="text-sm text-[#5A5550]">Priority booking</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <Check className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                      <span className="text-sm">Cancel anytime</span>
+                      <Check className="h-5 w-5 text-[#9BA899] mt-0.5 shrink-0" />
+                      <span className="text-sm text-[#5A5550]">Cancel anytime</span>
                     </li>
                   </ul>
 
                   <Button 
-                    className="w-full" 
+                    className="w-full bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full" 
                     onClick={() => handlePurchase("membership", membership.id, membership.priceMonthly)}
                     disabled={purchasing}
                   >
@@ -216,47 +257,47 @@ export default function PurchasePage() {
         {/* Class Packages */}
         <section>
           <div className="text-center mb-6 md:mb-8">
-            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-secondary mb-2">CLASS PACKAGES</h2>
-            <p className="text-sm md:text-base text-muted-foreground px-4">Pay as you go with flexible credit packages</p>
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl text-[#5A5550] mb-2 font-light">Class Packages</h2>
+            <p className="text-sm md:text-base text-[#7A736B] px-4">Pay as you go with flexible credit packages</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
             {packages.map((pkg) => (
-              <Card key={pkg.id} className="border-2 hover:border-primary transition-colors">
-                <CardHeader>
-                  <CardTitle className="text-xl">{pkg.name}</CardTitle>
-                  <CardDescription>{pkg.description}</CardDescription>
+              <Card key={pkg.id} className="border-[#B8AFA5]/30 hover:border-[#9BA899] transition-all hover:shadow-lg bg-white">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg font-serif font-normal text-[#5A5550]">{pkg.name}</CardTitle>
+                  <CardDescription className="text-[#7A736B] text-sm">{pkg.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="mb-6">
-                    <div className="text-3xl font-bold mb-1">${pkg.price}</div>
-                    <div className="text-sm text-muted-foreground mb-2">
+                    <div className="text-3xl font-serif font-light text-[#5A5550] mb-1">${pkg.price}</div>
+                    <div className="text-sm text-[#9BA899] mb-1">
                       {pkg.credits} {pkg.credits === 1 ? "class" : "classes"}
                     </div>
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-[#B8AFA5]">
                       ${(pkg.price / pkg.credits).toFixed(2)} per class
                     </div>
                   </div>
 
                   <ul className="space-y-2 mb-6 text-sm">
                     <li className="flex items-start gap-2">
-                      <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>{pkg.credits} class credits</span>
+                      <Check className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
+                      <span className="text-[#5A5550]">{pkg.credits} class credits</span>
                     </li>
                     {pkg.expirationDays && (
                       <li className="flex items-start gap-2">
-                        <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                        <span>Valid for {pkg.expirationDays} days</span>
+                        <Check className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
+                        <span className="text-[#5A5550]">Valid for {pkg.expirationDays} days</span>
                       </li>
                     )}
                     <li className="flex items-start gap-2">
-                      <Check className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
-                      <span>All class types</span>
+                      <Check className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
+                      <span className="text-[#5A5550]">All class types</span>
                     </li>
                   </ul>
 
                   <Button 
-                    className="w-full" 
+                    className="w-full rounded-full border-[#9BA899] text-[#9BA899] hover:bg-[#9BA899]/10" 
                     variant="outline"
                     onClick={() => handlePurchase("package", pkg.id, pkg.price)}
                     disabled={purchasing}
@@ -271,8 +312,8 @@ export default function PurchasePage() {
 
         {/* Note */}
         <div className="max-w-2xl mx-auto mt-8 md:mt-12 px-2">
-          <Card className="bg-muted/50">
-            <CardContent className="p-4 md:p-6 text-center text-xs md:text-sm text-muted-foreground">
+          <Card className="bg-[#9BA899]/10 border-[#9BA899]/20">
+            <CardContent className="p-4 md:p-6 text-center text-xs md:text-sm text-[#7A736B]">
               <p>
                 All purchases are processed securely through Square. You can manage your subscription 
                 and payment methods from your dashboard.
@@ -281,6 +322,15 @@ export default function PurchasePage() {
           </Card>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-[#5A5550] text-[#FAF8F5] py-8 mt-12">
+        <div className="container mx-auto px-4 text-center">
+          <p className="text-sm text-[#B8AFA5]">
+            © 2025 Swift Fit Pilates & Wellness Studio. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }
