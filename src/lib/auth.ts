@@ -50,7 +50,8 @@ export const auth = betterAuth({
 	}),
 	emailAndPassword: {    
 		enabled: true,
-		requireEmailVerification: true,
+		// We handle email verification ourselves via custom endpoints
+		requireEmailVerification: false,
 		// Password reset email
 		sendResetPassword: async ({ user, url }) => {
 			console.log('=== PASSWORD RESET EMAIL ===');

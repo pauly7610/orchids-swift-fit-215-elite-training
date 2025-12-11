@@ -64,12 +64,14 @@ function VerifyEmailContent() {
 
     setIsResending(true)
     try {
-      const { error } = await authClient.sendVerificationEmail({
-        email: email,
-        callbackURL: "/verify-email",
+      // Use our custom endpoint instead of better-auth's
+      const response = await fetch("/api/auth/send-verification", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
       })
 
-      if (error) {
+      if (!response.ok) {
         toast.error("Failed to resend verification email")
         return
       }

@@ -57,6 +57,17 @@ export default function RegisterPage() {
       }
 
       // Profile is automatically created server-side via auth hook
+      // Send verification email using our custom endpoint
+      try {
+        await fetch("/api/auth/send-verification", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: formData.email }),
+        })
+      } catch (emailError) {
+        console.error("Failed to send verification email:", emailError)
+      }
+
       toast.success("Account created! Please check your email to verify.")
       router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`)
     } catch (error) {
