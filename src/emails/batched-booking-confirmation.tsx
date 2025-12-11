@@ -104,7 +104,7 @@ export const BatchedBookingConfirmation = ({
                     <Text style={{ margin: '4px 0 0 0', color: '#1a1a1a', fontSize: '16px', fontWeight: '500' }}>{booking.instructorName}</Text>
                   </td>
                 </tr>
-                {booking.creditsUsed && booking.creditsUsed > 0 && (
+                {booking.creditsUsed !== undefined && booking.creditsUsed > 0 && (
                   <tr>
                     <td>
                       <Text style={{ margin: '0', color: '#999', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Credits Used</Text>

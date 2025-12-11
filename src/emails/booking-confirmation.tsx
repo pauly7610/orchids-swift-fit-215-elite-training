@@ -99,7 +99,7 @@ export const BookingConfirmation = ({
                   <Text style={{ margin: '4px 0 0 0', color: '#1a1a1a', fontSize: '16px', fontWeight: '500' }}>{location}</Text>
                 </td>
               </tr>
-              {creditsUsed && creditsUsed > 0 && (
+              {creditsUsed !== undefined && creditsUsed > 0 && (
                 <tr>
                   <td>
                     <Text style={{ margin: '0', color: '#999', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>Credits Used</Text>

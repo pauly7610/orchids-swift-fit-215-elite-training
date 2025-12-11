@@ -194,8 +194,7 @@ export const PilatesBookingConfirmation = ({
                     </Text>
                   </td>
                 </tr>
-                {booking.creditsUsed && booking.creditsUsed > 0 && (
-                  <tr>
+                <tr>
                     <td>
                       <Text style={{ 
                         margin: '0', 
@@ -205,19 +204,20 @@ export const PilatesBookingConfirmation = ({
                         letterSpacing: '1px',
                         fontWeight: '500'
                       }}>
-                        Credits Used
+                        {booking.creditsUsed !== undefined && booking.creditsUsed > 0 ? 'Credits Used' : 'Cost'}
                       </Text>
                       <Text style={{ 
                         margin: '4px 0 0 0', 
-                        color: '#9BA899', 
+                        color: booking.creditsUsed !== undefined && booking.creditsUsed > 0 ? '#9BA899' : '#E8B4B8', 
                         fontSize: '16px', 
                         fontWeight: '600'
                       }}>
-                        {booking.creditsUsed} credit{booking.creditsUsed > 1 ? 's' : ''}
+                        {booking.creditsUsed !== undefined && booking.creditsUsed > 0 
+                          ? `${booking.creditsUsed} credit${booking.creditsUsed > 1 ? 's' : ''}`
+                          : 'FREE ✨'}
                       </Text>
                     </td>
                   </tr>
-                )}
               </table>
             </Section>
           ))}
