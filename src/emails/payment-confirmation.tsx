@@ -171,7 +171,7 @@ export const PaymentConfirmation = ({
           
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfitpws.com/student"
+              href="https://swiftfit215.com/student"
               style={{
                 backgroundColor: '#FF6B35',
                 color: '#ffffff',
@@ -187,7 +187,7 @@ export const PaymentConfirmation = ({
               Book a Class
             </Button>
             <Button
-              href="https://swiftfitpws.com/student/purchase"
+              href="https://swiftfit215.com/student/purchase"
               style={{
                 backgroundColor: '#ffffff',
                 color: '#1a1a1a',

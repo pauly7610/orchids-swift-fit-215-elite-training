@@ -224,7 +224,7 @@ export const AdminNotification = ({
           
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfitpws.com/admin"
+              href="https://swiftfit215.com/admin"
               style={{
                 backgroundColor: '#FF6B35',
                 color: '#ffffff',

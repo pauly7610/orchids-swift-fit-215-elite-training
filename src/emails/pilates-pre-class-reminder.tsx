@@ -226,7 +226,7 @@ export const PilatesPreClassReminder = ({
           {/* CTA Buttons */}
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfitpws.com/student"
+              href="https://swiftfit215.com/student"
               style={{
                 backgroundColor: '#9BA899',
                 color: '#ffffff',
@@ -309,7 +309,7 @@ export const PilatesPreClassReminder = ({
             textAlign: 'center'
           }}>
             Don't want class reminders?{' '}
-            <a href="https://swiftfitpws.com/student" style={{ color: '#9BA899', textDecoration: 'underline' }}>
+            <a href="https://swiftfit215.com/student" style={{ color: '#9BA899', textDecoration: 'underline' }}>
               Update your preferences
             </a>
           </Text>

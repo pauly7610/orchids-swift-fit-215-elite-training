@@ -138,7 +138,7 @@ export const InstructorNotification = ({
           
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfitpws.com/instructor"
+              href="https://swiftfit215.com/instructor"
               style={{
                 backgroundColor: '#FF6B35',
                 color: '#ffffff',

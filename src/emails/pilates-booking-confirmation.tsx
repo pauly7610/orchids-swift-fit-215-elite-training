@@ -273,7 +273,7 @@ export const PilatesBookingConfirmation = ({
           
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfitpws.com/student"
+              href="https://swiftfit215.com/student"
               style={{
                 backgroundColor: '#9BA899',
                 color: '#ffffff',
@@ -337,7 +337,7 @@ export const PilatesBookingConfirmation = ({
             marginTop: '16px', 
             textAlign: 'center'
           }}>
-            <a href="https://swiftfitpws.com/student" style={{ color: '#9BA899', textDecoration: 'underline' }}>
+            <a href="https://swiftfit215.com/student" style={{ color: '#9BA899', textDecoration: 'underline' }}>
               Manage notification preferences
             </a>
           </Text>

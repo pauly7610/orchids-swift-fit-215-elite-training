@@ -228,7 +228,7 @@ export const PilatesCancellationConfirmation = ({
               Ready to book another class?
             </Text>
             <Button
-              href="https://swiftfitpws.com/pilates/schedule"
+              href="https://swiftfit215.com/pilates/schedule"
               style={{
                 backgroundColor: '#9BA899',
                 color: '#ffffff',

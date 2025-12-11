@@ -108,7 +108,7 @@ export const PilatesClassReminder = ({
 
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfitpws.com/pilates/schedule"
+              href="https://swiftfit215.com/pilates/schedule"
               style={{
                 backgroundColor: '#9BA899',
                 color: '#ffffff',
@@ -167,7 +167,7 @@ export const PilatesClassReminder = ({
 
           <Text style={{ color: '#B8AFA5', fontSize: '11px', marginTop: '16px', textAlign: 'center' }}>
             Don't want to receive these reminders?{' '}
-            <a href="https://swiftfitpws.com/pilates" style={{ color: '#9BA899', textDecoration: 'underline' }}>
+            <a href="https://swiftfit215.com/pilates" style={{ color: '#9BA899', textDecoration: 'underline' }}>
               Update your preferences
             </a>
           </Text>

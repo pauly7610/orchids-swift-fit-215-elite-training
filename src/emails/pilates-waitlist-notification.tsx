@@ -222,7 +222,7 @@ export const PilatesWaitlistNotification = ({
           {/* Book Now CTA */}
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfitpws.com/student"
+              href="https://swiftfit215.com/student"
               style={{
                 backgroundColor: '#9BA899',
                 color: '#ffffff',
@@ -304,7 +304,7 @@ export const PilatesWaitlistNotification = ({
             textAlign: 'center'
           }}>
             You received this because you're on the waitlist for this class.{' '}
-            <a href="https://swiftfitpws.com/student" style={{ color: '#9BA899', textDecoration: 'underline' }}>
+            <a href="https://swiftfit215.com/student" style={{ color: '#9BA899', textDecoration: 'underline' }}>
               Manage your waitlist
             </a>
           </Text>
