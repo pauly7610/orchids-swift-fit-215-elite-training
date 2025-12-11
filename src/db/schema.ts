@@ -74,6 +74,10 @@ export const userProfiles = sqliteTable('user_profiles', {
   role: text('role').notNull(), // 'admin', 'instructor', 'student'
   phone: text('phone'),
   profileImage: text('profile_image'),
+  // Notification preferences
+  emailReminders: integer('email_reminders', { mode: 'boolean' }).notNull().default(true),
+  reminderHoursBefore: integer('reminder_hours_before').notNull().default(24),
+  marketingEmails: integer('marketing_emails', { mode: 'boolean' }).notNull().default(true),
   createdAt: text('created_at').notNull(),
   updatedAt: text('updated_at').notNull(),
 });

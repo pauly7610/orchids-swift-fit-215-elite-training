@@ -15,6 +15,21 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
+    const userIdFilter = searchParams.get('userId');
+
+    // If no filters provided, return the current user's profile
+    if (!id && !userIdFilter && !searchParams.get('role') && !searchParams.get('search')) {
+      const profile = await db.select()
+        .from(userProfiles)
+        .where(eq(userProfiles.userId, user.id))
+        .limit(1);
+
+      if (profile.length === 0) {
+        return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
+      }
+
+      return NextResponse.json(profile[0], { status: 200 });
+    }
 
     // Single record by ID
     if (id) {
@@ -45,7 +60,6 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') ?? '0');
     const search = searchParams.get('search');
     const roleFilter = searchParams.get('role');
-    const userIdFilter = searchParams.get('userId');
 
     let query = db.select().from(userProfiles);
     const conditions = [];
@@ -102,7 +116,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { userId, role, phone, profileImage } = body;
+    const { userId, role, phone, profileImage, emailReminders, reminderHoursBefore, marketingEmails } = body;
 
     // Security check: reject if any user identifier fields are in the body
     if ('userId' in body && body.userId !== userId) {
@@ -155,6 +169,9 @@ export async function POST(request: NextRequest) {
       role: role.trim(),
       phone: phone ? phone.trim() : null,
       profileImage: profileImage ? profileImage.trim() : null,
+      emailReminders: emailReminders ?? true,
+      reminderHoursBefore: reminderHoursBefore ?? 24,
+      marketingEmails: marketingEmails ?? true,
       createdAt: now,
       updatedAt: now,
     };
@@ -181,14 +198,6 @@ export async function PUT(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
-
-    if (!id || isNaN(parseInt(id))) {
-      return NextResponse.json({ 
-        error: "Valid ID is required",
-        code: "INVALID_ID" 
-      }, { status: 400 });
-    }
-
     const body = await request.json();
 
     // Security check: reject if userId is in the body
@@ -199,10 +208,37 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 });
     }
 
+    let profileId: number;
+
+    // If no id provided, update current user's profile
+    if (!id) {
+      const userProfile = await db.select()
+        .from(userProfiles)
+        .where(eq(userProfiles.userId, user.id))
+        .limit(1);
+
+      if (userProfile.length === 0) {
+        return NextResponse.json({ 
+          error: 'User profile not found',
+          code: 'NOT_FOUND' 
+        }, { status: 404 });
+      }
+
+      profileId = userProfile[0].id;
+    } else {
+      if (isNaN(parseInt(id))) {
+        return NextResponse.json({ 
+          error: "Valid ID is required",
+          code: "INVALID_ID" 
+        }, { status: 400 });
+      }
+      profileId = parseInt(id);
+    }
+
     // Check if record exists
     const existing = await db.select()
       .from(userProfiles)
-      .where(eq(userProfiles.id, parseInt(id)))
+      .where(eq(userProfiles.id, profileId))
       .limit(1);
 
     if (existing.length === 0) {
@@ -246,9 +282,25 @@ export async function PUT(request: NextRequest) {
       updates.profileImage = body.profileImage ? body.profileImage.trim() : null;
     }
 
+    // Add notification preferences if provided
+    if ('emailReminders' in body) {
+      updates.emailReminders = Boolean(body.emailReminders);
+    }
+
+    if ('reminderHoursBefore' in body) {
+      const hours = parseInt(body.reminderHoursBefore);
+      if (!isNaN(hours) && hours >= 1 && hours <= 48) {
+        updates.reminderHoursBefore = hours;
+      }
+    }
+
+    if ('marketingEmails' in body) {
+      updates.marketingEmails = Boolean(body.marketingEmails);
+    }
+
     const updated = await db.update(userProfiles)
       .set(updates)
-      .where(eq(userProfiles.id, parseInt(id)))
+      .where(eq(userProfiles.id, profileId))
       .returning();
 
     if (updated.length === 0) {

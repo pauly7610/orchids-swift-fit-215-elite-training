@@ -57,8 +57,8 @@ export default function RegisterPage() {
       }
 
       // Profile is automatically created server-side via auth hook
-      toast.success("Account created successfully!")
-      router.push("/login?registered=true")
+      toast.success("Account created! Please check your email to verify.")
+      router.push(`/verify-email?email=${encodeURIComponent(formData.email)}`)
     } catch (error) {
       toast.error("An error occurred during registration")
       setIsLoading(false)

@@ -29,6 +29,9 @@ function LoginForm() {
     if (searchParams.get('reset') === 'true') {
       toast.success("Password reset successfully! Please log in with your new password.")
     }
+    if (searchParams.get('verified') === 'true') {
+      toast.success("Email verified! You can now log in.")
+    }
   }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
