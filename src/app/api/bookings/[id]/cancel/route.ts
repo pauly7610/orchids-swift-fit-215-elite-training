@@ -117,21 +117,17 @@ export async function POST(
 
     const classData = classResult[0];
 
-    // Fetch studio info for cancellation policy
+    // Fetch studio info for cancellation policy (with fallback defaults)
     const studioInfoResult = await db.select().from(studioInfo).limit(1);
 
-    if (studioInfoResult.length === 0) {
-      return NextResponse.json(
-        {
-          error: 'Studio information not configured',
-          code: 'STUDIO_INFO_MISSING',
-        },
-        { status: 500 }
-      );
-    }
-
-    const studio = studioInfoResult[0];
-    const cancellationWindowHours = studio.cancellationWindowHours;
+    // Use fallback defaults if studio info not configured
+    const studio = studioInfoResult[0] || {
+      cancellationWindowHours: 24,
+      lateCancelPenalty: 'lose_credit',
+      noShowPenalty: 'lose_credit',
+      cancellationPolicyText: 'Please cancel at least 24 hours in advance to receive a credit refund.'
+    };
+    const cancellationWindowHours = studio.cancellationWindowHours || 24;
 
     // Calculate hours until class starts
     const classDateTime = new Date(`${classData.date}T${classData.startTime}`);

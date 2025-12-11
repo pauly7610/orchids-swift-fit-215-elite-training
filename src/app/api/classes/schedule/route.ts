@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { classes, classTypes, instructors, userProfiles, user, bookings, waitlist } from '@/db/schema';
-import { eq, and, gte, lte, asc, sql } from 'drizzle-orm';
+import { eq, and, gte, lte, asc, sql, inArray } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 
@@ -67,20 +67,23 @@ export async function GET(request: NextRequest) {
     // Get booking counts for all classes
     const classIds = classResults.map(c => c.id);
     
-    // Get confirmed booking counts per class
-    const bookingCounts = await db
-      .select({
-        classId: bookings.classId,
-        count: sql<number>`count(*)`.as('count'),
-      })
-      .from(bookings)
-      .where(
-        and(
-          sql`${bookings.classId} IN (${classIds.length > 0 ? classIds.join(',') : '0'})`,
-          eq(bookings.bookingStatus, 'confirmed')
+    // Get confirmed booking counts per class (using parameterized query)
+    let bookingCounts: { classId: number; count: number }[] = [];
+    if (classIds.length > 0) {
+      bookingCounts = await db
+        .select({
+          classId: bookings.classId,
+          count: sql<number>`count(*)`.as('count'),
+        })
+        .from(bookings)
+        .where(
+          and(
+            inArray(bookings.classId, classIds),
+            eq(bookings.bookingStatus, 'confirmed')
+          )
         )
-      )
-      .groupBy(bookings.classId);
+        .groupBy(bookings.classId);
+    }
     
     // Create a map of classId -> booking count
     const bookingCountMap = new Map<number, number>();
@@ -92,8 +95,8 @@ export async function GET(request: NextRequest) {
     const userBookedClassIds = new Set<number>();
     const userWaitlistPositions = new Map<number, number>();
     
-    if (currentUserProfileId) {
-      // Get user's confirmed bookings
+    if (currentUserProfileId && classIds.length > 0) {
+      // Get user's confirmed bookings (using parameterized query)
       const userBookings = await db
         .select({ classId: bookings.classId })
         .from(bookings)
@@ -101,20 +104,20 @@ export async function GET(request: NextRequest) {
           and(
             eq(bookings.studentProfileId, currentUserProfileId),
             eq(bookings.bookingStatus, 'confirmed'),
-            sql`${bookings.classId} IN (${classIds.length > 0 ? classIds.join(',') : '0'})`
+            inArray(bookings.classId, classIds)
           )
         );
       
       userBookings.forEach(b => userBookedClassIds.add(b.classId));
       
-      // Get user's waitlist positions
+      // Get user's waitlist positions (using parameterized query)
       const userWaitlists = await db
         .select({ classId: waitlist.classId, position: waitlist.position })
         .from(waitlist)
         .where(
           and(
             eq(waitlist.studentProfileId, currentUserProfileId),
-            sql`${waitlist.classId} IN (${classIds.length > 0 ? classIds.join(',') : '0'})`
+            inArray(waitlist.classId, classIds)
           )
         );
       

@@ -179,9 +179,17 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Get current user's profile ID from session for security
+    const currentUserProfileId = await getCurrentUserProfileId();
+    if (!currentUserProfileId) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please log in.', code: 'UNAUTHORIZED' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
     const {
-      studentProfileId,
       purchaseType,
       paymentId,
       packageId,
@@ -194,13 +202,8 @@ export async function POST(request: NextRequest) {
       squareCustomerId,
     } = body;
 
-    // Validate required fields
-    if (!studentProfileId) {
-      return NextResponse.json(
-        { error: 'studentProfileId is required', code: 'MISSING_STUDENT_PROFILE_ID' },
-        { status: 400 }
-      );
-    }
+    // Use authenticated user's profile ID (ignore any provided studentProfileId for security)
+    const studentProfileId = currentUserProfileId;
 
     if (!purchaseType) {
       return NextResponse.json(
@@ -244,13 +247,6 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate numeric fields
-    if (isNaN(parseInt(studentProfileId))) {
-      return NextResponse.json(
-        { error: 'studentProfileId must be a valid integer', code: 'INVALID_STUDENT_PROFILE_ID' },
-        { status: 400 }
-      );
-    }
-
     if (isNaN(parseInt(paymentId))) {
       return NextResponse.json(
         { error: 'paymentId must be a valid integer', code: 'INVALID_PAYMENT_ID' },
@@ -302,7 +298,7 @@ export async function POST(request: NextRequest) {
       nextBillingDate?: string;
       squareCustomerId?: string;
     } = {
-      studentProfileId: parseInt(studentProfileId),
+      studentProfileId: studentProfileId, // Already a number from getCurrentUserProfileId()
       purchaseType,
       paymentId: parseInt(paymentId),
       purchasedAt: new Date().toISOString(),

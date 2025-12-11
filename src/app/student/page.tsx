@@ -118,6 +118,10 @@ export default function StudentDashboard() {
   const [bookingClass, setBookingClass] = useState<Class | null>(null)
   const [isBooking, setIsBooking] = useState(false)
   
+  // Cancel confirmation modal state
+  const [cancellingBooking, setCancellingBooking] = useState<{ id: number; className: string; date: string; time: string } | null>(null)
+  const [isCancelling, setIsCancelling] = useState(false)
+  
   // Profile editing state
   const [isEditingProfile, setIsEditingProfile] = useState(false)
   const [profileForm, setProfileForm] = useState({
@@ -213,10 +217,13 @@ export default function StudentDashboard() {
     }
   }
 
-  const handleCancelBooking = async (bookingId: number) => {
+  const confirmCancelBooking = async () => {
+    if (!cancellingBooking) return
+    
+    setIsCancelling(true)
     try {
       const token = localStorage.getItem("bearer_token")
-      const res = await fetch(`/api/bookings/${bookingId}/cancel`, {
+      const res = await fetch(`/api/bookings/${cancellingBooking.id}/cancel`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       })
@@ -224,14 +231,26 @@ export default function StudentDashboard() {
       const data = await res.json()
       
       if (res.ok) {
-        toast.success(data.message || "Booking cancelled")
+        toast.success(data.message || "Booking cancelled successfully")
         fetchData()
+        setCancellingBooking(null)
       } else {
         toast.error(data.error || "Failed to cancel booking")
       }
     } catch (error) {
       toast.error("Failed to cancel booking")
+    } finally {
+      setIsCancelling(false)
     }
+  }
+
+  const handleCancelBooking = (booking: Booking) => {
+    setCancellingBooking({
+      id: booking.id,
+      className: booking.class.classType.name,
+      date: booking.class.date,
+      time: booking.class.startTime
+    })
   }
 
   const handleJoinWaitlist = async (classId: number) => {
@@ -560,7 +579,7 @@ export default function StudentDashboard() {
                                   size="sm"
                                   onClick={() => {
                                     const booking = bookings.find(b => b.class.id === cls.id && b.bookingStatus === "confirmed")
-                                    if (booking) handleCancelBooking(booking.id)
+                                    if (booking) handleCancelBooking(booking)
                                   }}
                                   className="flex-1 sm:flex-none sm:w-28 border-[#B8AFA5] text-[#5A5550] hover:bg-[#FAF8F5] rounded-full"
                                 >
@@ -635,7 +654,7 @@ export default function StudentDashboard() {
                             variant="outline" 
                             size="sm"
                             className="w-full sm:w-auto shrink-0 border-[#B8AFA5] text-[#5A5550] hover:bg-[#FAF8F5] rounded-full"
-                            onClick={() => handleCancelBooking(booking.id)}
+                            onClick={() => handleCancelBooking(booking)}
                           >
                             Cancel
                           </Button>
@@ -1013,6 +1032,66 @@ export default function StudentDashboard() {
                 </>
               ) : (
                 "Confirm Booking"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Confirmation Modal */}
+      <Dialog open={!!cancellingBooking} onOpenChange={() => setCancellingBooking(null)}>
+        <DialogContent className="bg-white border-[#B8AFA5]/30 max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif font-normal text-[#5A5550]">Cancel Booking</DialogTitle>
+            <DialogDescription className="text-[#7A736B]">
+              Are you sure you want to cancel this class?
+            </DialogDescription>
+          </DialogHeader>
+          
+          {cancellingBooking && (
+            <div className="py-4">
+              <div className="bg-[#FAF8F5] rounded-lg p-4 space-y-2">
+                <h4 className="font-serif text-lg text-[#5A5550]">{cancellingBooking.className}</h4>
+                <div className="text-sm text-[#7A736B] space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-4 w-4 text-[#9BA899]" />
+                    <span>{format(parseISO(cancellingBooking.date), "EEEE, MMMM d, yyyy")}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Clock className="h-4 w-4 text-[#9BA899]" />
+                    <span>{cancellingBooking.time}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-4 p-3 bg-[#E8B4B8]/10 border border-[#E8B4B8]/30 rounded-lg">
+                <p className="text-sm text-[#7A736B]">
+                  <span className="font-medium text-[#5A5550]">Cancellation Policy:</span> Cancel at least 24 hours in advance to receive a credit refund. Late cancellations may forfeit your credit.
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setCancellingBooking(null)}
+              className="border-[#B8AFA5] text-[#5A5550] rounded-full"
+            >
+              Keep Booking
+            </Button>
+            <Button 
+              onClick={confirmCancelBooking}
+              disabled={isCancelling}
+              className="bg-[#E8B4B8] hover:bg-[#D4A3A7] text-white rounded-full"
+            >
+              {isCancelling ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Cancelling...
+                </>
+              ) : (
+                "Cancel Booking"
               )}
             </Button>
           </DialogFooter>
