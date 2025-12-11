@@ -6,6 +6,15 @@ import { getCurrentUser } from '@/lib/auth';
 
 const VALID_ROLES = ['admin', 'instructor', 'student'] as const;
 
+// Helper function to get current user's profile and role
+async function getCurrentUserProfile(userId: string) {
+  const profile = await db.select()
+    .from(userProfiles)
+    .where(eq(userProfiles.userId, userId))
+    .limit(1);
+  return profile.length > 0 ? profile[0] : null;
+}
+
 export async function GET(request: NextRequest) {
   try {
     const user = await getCurrentUser(request);
@@ -31,6 +40,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(profile[0], { status: 200 });
     }
 
+    // For accessing other users' profiles or listing, check if user is admin
+    const currentUserProfile = await getCurrentUserProfile(user.id);
+    const isAdmin = currentUserProfile?.role === 'admin';
+
     // Single record by ID
     if (id) {
       if (!id || isNaN(parseInt(id))) {
@@ -52,10 +65,28 @@ export async function GET(request: NextRequest) {
         }, { status: 404 });
       }
 
+      // Non-admins can only access their own profile
+      if (!isAdmin && profile[0].userId !== user.id) {
+        return NextResponse.json({ 
+          error: 'Access denied',
+          code: 'FORBIDDEN' 
+        }, { status: 403 });
+      }
+
       return NextResponse.json(profile[0], { status: 200 });
     }
 
-    // List with pagination, search, and filtering
+    // List with pagination, search, and filtering (admin only for listing all)
+    if (!isAdmin) {
+      // Non-admin users can only filter by their own userId
+      if (userIdFilter && userIdFilter !== user.id) {
+        return NextResponse.json({ 
+          error: 'Access denied',
+          code: 'FORBIDDEN' 
+        }, { status: 403 });
+      }
+    }
+
     const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
     const offset = parseInt(searchParams.get('offset') ?? '0');
     const search = searchParams.get('search');
@@ -208,23 +239,23 @@ export async function PUT(request: NextRequest) {
       }, { status: 400 });
     }
 
+    // Get current user's profile to check role
+    const currentUserProfile = await getCurrentUserProfile(user.id);
+    const isAdmin = currentUserProfile?.role === 'admin';
+
     let profileId: number;
+    let targetProfile: typeof userProfiles.$inferSelect | null = null;
 
     // If no id provided, update current user's profile
     if (!id) {
-      const userProfile = await db.select()
-        .from(userProfiles)
-        .where(eq(userProfiles.userId, user.id))
-        .limit(1);
-
-      if (userProfile.length === 0) {
+      if (!currentUserProfile) {
         return NextResponse.json({ 
           error: 'User profile not found',
           code: 'NOT_FOUND' 
         }, { status: 404 });
       }
-
-      profileId = userProfile[0].id;
+      profileId = currentUserProfile.id;
+      targetProfile = currentUserProfile;
     } else {
       if (isNaN(parseInt(id))) {
         return NextResponse.json({ 
@@ -233,19 +264,31 @@ export async function PUT(request: NextRequest) {
         }, { status: 400 });
       }
       profileId = parseInt(id);
+
+      // Check if record exists
+      const existing = await db.select()
+        .from(userProfiles)
+        .where(eq(userProfiles.id, profileId))
+        .limit(1);
+
+      if (existing.length === 0) {
+        return NextResponse.json({ 
+          error: 'User profile not found',
+          code: 'NOT_FOUND' 
+        }, { status: 404 });
+      }
+      targetProfile = existing[0];
     }
 
-    // Check if record exists
-    const existing = await db.select()
-      .from(userProfiles)
-      .where(eq(userProfiles.id, profileId))
-      .limit(1);
+    // Determine if user is updating their own profile or someone else's
+    const isOwnProfile = targetProfile?.userId === user.id;
 
-    if (existing.length === 0) {
+    // Non-admins can only update their own profile
+    if (!isAdmin && !isOwnProfile) {
       return NextResponse.json({ 
-        error: 'User profile not found',
-        code: 'NOT_FOUND' 
-      }, { status: 404 });
+        error: 'Access denied. You can only update your own profile.',
+        code: 'FORBIDDEN' 
+      }, { status: 403 });
     }
 
     // Prepare update data
@@ -253,8 +296,15 @@ export async function PUT(request: NextRequest) {
       updatedAt: new Date().toISOString()
     };
 
-    // Validate and add role if provided
+    // Role changes are ADMIN ONLY
     if ('role' in body) {
+      if (!isAdmin) {
+        return NextResponse.json({ 
+          error: "Only administrators can change user roles",
+          code: "ADMIN_REQUIRED" 
+        }, { status: 403 });
+      }
+
       if (!body.role || typeof body.role !== 'string') {
         return NextResponse.json({ 
           error: "role must be a non-empty string",
@@ -326,6 +376,15 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
+    // Only admins can delete profiles
+    const currentUserProfile = await getCurrentUserProfile(user.id);
+    if (!currentUserProfile || currentUserProfile.role !== 'admin') {
+      return NextResponse.json({ 
+        error: 'Access denied. Admin privileges required.',
+        code: 'ADMIN_REQUIRED' 
+      }, { status: 403 });
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 
@@ -347,6 +406,14 @@ export async function DELETE(request: NextRequest) {
         error: 'User profile not found',
         code: 'NOT_FOUND' 
       }, { status: 404 });
+    }
+
+    // Prevent deleting own admin profile
+    if (existing[0].userId === user.id) {
+      return NextResponse.json({ 
+        error: 'Cannot delete your own profile',
+        code: 'SELF_DELETE_FORBIDDEN' 
+      }, { status: 400 });
     }
 
     const deleted = await db.delete(userProfiles)

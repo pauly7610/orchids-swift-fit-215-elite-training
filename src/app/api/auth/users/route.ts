@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { user } from '@/db/schema';
+import { user, userProfiles } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
@@ -10,7 +11,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    // Fetch all users
+    // Verify admin role
+    const profile = await db.select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, currentUser.id))
+      .limit(1);
+
+    if (!profile.length || profile[0].role !== 'admin') {
+      return NextResponse.json({ 
+        error: 'Access denied. Admin privileges required.',
+        code: 'ADMIN_REQUIRED'
+      }, { status: 403 });
+    }
+
+    // Fetch all users (admin only)
     const users = await db.select({
       id: user.id,
       name: user.name,
