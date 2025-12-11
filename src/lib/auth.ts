@@ -50,10 +50,15 @@ export const auth = betterAuth({
 	}),
 	emailAndPassword: {    
 		enabled: true,
-		// Temporarily disabled for soft opening - users can sign up immediately
-		requireEmailVerification: false,
+		// Email verification enabled
+		requireEmailVerification: true,
 		// Send verification email on signup
 		sendVerificationEmail: async ({ user, url, token }) => {
+			console.log('=== VERIFICATION EMAIL ATTEMPT ===');
+			console.log('User email:', user.email);
+			console.log('User name:', user.name);
+			console.log('Verification URL:', url);
+			
 			try {
 				const content = `
 					<p style="color: #7A736B; font-size: 15px; line-height: 1.6; text-align: center;">
@@ -67,6 +72,7 @@ export const auth = betterAuth({
 					</p>
 				`;
 				
+				console.log('Sending email via Resend...');
 				const result = await resend.emails.send({
 					from: "Swift Fit Pilates <noreply@swiftfit215.com>",
 					to: user.email,
@@ -74,11 +80,13 @@ export const auth = betterAuth({
 					html: getEmailTemplate("Verify Your Email", content, "Verify Email", url),
 				});
 				
+				console.log('Resend result:', JSON.stringify(result, null, 2));
+				
 				if (result.error) {
 					console.error('Resend error:', result.error);
 					// Don't throw - let signup succeed, user can request new verification email
 				} else {
-					console.log('Verification email sent to:', user.email);
+					console.log('Verification email sent successfully to:', user.email);
 				}
 			} catch (error) {
 				console.error('Failed to send verification email:', error);
