@@ -25,6 +25,9 @@ function LoginForm() {
     if (searchParams.get('registered') === 'true') {
       toast.success("Account created! Please log in.")
     }
+    if (searchParams.get('reset') === 'true') {
+      toast.success("Password reset successfully! Please log in with your new password.")
+    }
   }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -157,17 +160,22 @@ function LoginForm() {
             />
           </div>
 
-          <div className="flex items-center">
-            <input
-              id="rememberMe"
-              type="checkbox"
-              checked={formData.rememberMe}
-              onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
-            />
-            <Label htmlFor="rememberMe" className="ml-2 text-sm cursor-pointer">
-              Remember me
-            </Label>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                id="rememberMe"
+                type="checkbox"
+                checked={formData.rememberMe}
+                onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <Label htmlFor="rememberMe" className="ml-2 text-sm cursor-pointer">
+                Remember me
+              </Label>
+            </div>
+            <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+              Forgot password?
+            </Link>
           </div>
 
           <Button 
