@@ -50,8 +50,8 @@ export const auth = betterAuth({
 	}),
 	emailAndPassword: {    
 		enabled: true,
-		// Require email verification
-		requireEmailVerification: true,
+		// Temporarily disabled for soft opening - users can sign up immediately
+		requireEmailVerification: false,
 		// Send verification email on signup
 		sendVerificationEmail: async ({ user, url, token }) => {
 			try {
