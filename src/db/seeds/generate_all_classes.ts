@@ -106,47 +106,45 @@ async function main() {
         return `${year}-${month}-${day}`;
     }
 
-    // Delete all future classes to regenerate
-    const today = formatDate(new Date());
-    await db.delete(classes).where(gte(classes.date, today));
-    console.log('Deleted existing future classes');
+    // Delete ALL classes to start fresh
+    await db.delete(classes);
+    console.log('Deleted all existing classes');
 
     const classesToInsert = [];
     
-    // Generate classes for the next 6 weeks (42 days)
-    const startDate = new Date('2025-12-13'); // Start from soft opening
+    // SOFT OPENING: December 13, 2025 (special 30-minute free classes)
+    const softOpeningDate = '2025-12-13';
+    for (const classSession of softOpeningSchedule) {
+        const classTypeData = classTypeMap.get(classSession.type);
+        const instructorId = instructorMap.get(classSession.instructor);
+
+        if (classTypeData && instructorId) {
+            const endTime = calculateEndTime(classSession.time, classSession.duration);
+            classesToInsert.push({
+                classTypeId: classTypeData.id,
+                instructorId: instructorId,
+                date: softOpeningDate,
+                startTime: classSession.time,
+                endTime: endTime,
+                capacity: 50, // Larger capacity for soft opening
+                price: 0, // Free for soft opening
+                status: 'scheduled',
+                createdAt: new Date().toISOString(),
+            });
+        }
+    }
+    console.log(`Added ${classesToInsert.length} soft opening classes for Dec 13`);
+
+    // REGULAR SCHEDULE: Starts December 15, 2025 (6 weeks)
+    const regularStartDate = new Date('2025-12-15');
     
     for (let dayOffset = 0; dayOffset < 42; dayOffset++) {
-        const currentDate = new Date(startDate);
-        currentDate.setDate(startDate.getDate() + dayOffset);
+        const currentDate = new Date(regularStartDate);
+        currentDate.setDate(regularStartDate.getDate() + dayOffset);
         const dateStr = formatDate(currentDate);
         const dayOfWeek = currentDate.getDay();
 
-        // Special handling for December 13th (soft opening)
-        if (dateStr === '2025-12-13') {
-            for (const classSession of softOpeningSchedule) {
-                const classTypeData = classTypeMap.get(classSession.type);
-                const instructorId = instructorMap.get(classSession.instructor);
-
-                if (classTypeData && instructorId) {
-                    const endTime = calculateEndTime(classSession.time, classSession.duration);
-                    classesToInsert.push({
-                        classTypeId: classTypeData.id,
-                        instructorId: instructorId,
-                        date: dateStr,
-                        startTime: classSession.time,
-                        endTime: endTime,
-                        capacity: 50, // Larger capacity for soft opening
-                        price: 0, // Free for soft opening
-                        status: 'scheduled',
-                        createdAt: new Date().toISOString(),
-                    });
-                }
-            }
-            continue; // Skip regular schedule for soft opening day
-        }
-
-        // Regular schedule for other days
+        // Regular schedule
         const schedule = weeklySchedule[dayOfWeek];
         if (schedule) {
             for (const classSession of schedule) {
