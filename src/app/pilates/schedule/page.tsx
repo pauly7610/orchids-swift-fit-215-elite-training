@@ -21,6 +21,7 @@ interface Class {
   capacity: number
   status: string
   price: number
+  isFree?: boolean
   classType: { id: number; name: string; description: string; durationMinutes: number }
   instructor: { id: number; name: string; bio: string; headshotUrl: string }
   registeredCount: number
@@ -459,12 +460,17 @@ export default function SchedulePage() {
                                     <span className="truncate">{cls.instructor.name}</span>
                                   </div>
                                 </div>
-                                {cls.price && (
+                                {cls.isFree ? (
+                                  <div className="text-left sm:text-right">
+                                    <div className="text-xl md:text-2xl font-serif font-light text-[#E8B4B8]">FREE ✨</div>
+                                    <div className="text-xs text-[#7A736B]">soft opening</div>
+                                  </div>
+                                ) : cls.price ? (
                                   <div className="text-left sm:text-right">
                                     <div className="text-xl md:text-2xl font-serif font-light text-[#9BA899]">${cls.price.toFixed(2)}</div>
                                     <div className="text-xs text-[#7A736B]">per class</div>
                                   </div>
-                                )}
+                                ) : null}
                               </div>
 
                               <p className="text-xs md:text-sm text-[#7A736B] mb-4 line-clamp-2">

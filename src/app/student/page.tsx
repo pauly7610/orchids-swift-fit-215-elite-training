@@ -32,6 +32,7 @@ interface Class {
   spotsRemaining: number
   isUserBooked: boolean
   waitlistPosition: number | null
+  isFree?: boolean
 }
 
 interface Booking {
@@ -563,7 +564,9 @@ export default function StudentDashboard() {
                                 >
                                   {cls.spotsRemaining > 0 ? `${cls.spotsRemaining} spots left` : "Full"}
                                 </Badge>
-                                {cls.price > 0 && (
+                                {cls.isFree ? (
+                                  <Badge className="bg-[#E8B4B8] text-white rounded-full">FREE ✨</Badge>
+                                ) : cls.price > 0 && (
                                   <span className="font-medium text-sm text-[#5A5550]">${cls.price.toFixed(2)}</span>
                                 )}
                                 {cls.price === 0 && (
@@ -602,11 +605,11 @@ export default function StudentDashboard() {
                                 )
                               ) : (
                                 <Button 
-                                  size="sm"
-                                  onClick={() => totalCredits > 0 ? setBookingClass(cls) : router.push("/student/purchase")}
+                                  size="sm" 
+                                  onClick={() => (cls.isFree || totalCredits > 0) ? setBookingClass(cls) : router.push("/student/purchase")}
                                   className="flex-1 sm:flex-none sm:w-auto sm:min-w-[120px] bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full"
                                 >
-                                  {totalCredits > 0 ? "Book Class" : "Buy Credits"}
+                                  {cls.isFree ? "Book FREE Class" : totalCredits > 0 ? "Book Class" : "Buy Credits"}
                                 </Button>
                               )}
                             </div>
@@ -981,7 +984,9 @@ export default function StudentDashboard() {
           <DialogHeader>
             <DialogTitle className="font-serif font-normal text-[#5A5550]">Confirm Booking</DialogTitle>
             <DialogDescription className="text-[#7A736B]">
-              You're about to book a class. This will use 1 credit.
+              {bookingClass?.isFree 
+                ? "You're about to book a FREE soft opening class! No credits required."
+                : "You're about to book a class. This will use 1 credit."}
             </DialogDescription>
           </DialogHeader>
           

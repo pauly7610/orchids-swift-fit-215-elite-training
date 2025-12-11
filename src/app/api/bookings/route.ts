@@ -273,6 +273,12 @@ export async function POST(request: NextRequest) {
 
       const classInfo = classData[0];
 
+      // Check if this is a soft opening class (December 13th) - these are FREE
+      const classDate = new Date(classInfo.date);
+      const isSoftOpeningDay = classDate.getFullYear() === 2024 && 
+                               classDate.getMonth() === 11 && // December is month 11 (0-indexed)
+                               classDate.getDate() === 13;
+
       // 2. Check for duplicate booking (same student, same class)
       const existingBooking = await tx
         .select()
@@ -308,60 +314,69 @@ export async function POST(request: NextRequest) {
         throw new Error(`CLASS_FULL: Class is at full capacity (${classInfo.capacity}/${classInfo.capacity})`);
       }
 
-      // 5. Check available credits and deduct them
-      const currentDate = new Date().toISOString();
+      // 5. Check available credits and deduct them (skip for soft opening FREE classes)
+      let actualCreditsUsed = creditsToUse;
       
-      // Find active purchases with available credits
-      const activePurchases = await tx
-        .select()
-        .from(studentPurchases)
-        .where(
-          and(
-            eq(studentPurchases.studentProfileId, studentProfileId),
-            eq(studentPurchases.isActive, true),
-            gt(studentPurchases.creditsRemaining, 0),
-            or(
-              isNull(studentPurchases.expiresAt),
-              gt(studentPurchases.expiresAt, currentDate)
+      if (isSoftOpeningDay) {
+        // Soft opening classes are FREE - no credits required
+        actualCreditsUsed = 0;
+        console.log(`Soft opening class booking - FREE for student ${studentProfileId}`);
+      } else {
+        // Normal booking - require and deduct credits
+        const currentDate = new Date().toISOString();
+        
+        // Find active purchases with available credits
+        const activePurchases = await tx
+          .select()
+          .from(studentPurchases)
+          .where(
+            and(
+              eq(studentPurchases.studentProfileId, studentProfileId),
+              eq(studentPurchases.isActive, true),
+              gt(studentPurchases.creditsRemaining, 0),
+              or(
+                isNull(studentPurchases.expiresAt),
+                gt(studentPurchases.expiresAt, currentDate)
+              )
             )
           )
-        )
-        .orderBy(studentPurchases.expiresAt); // Use credits expiring soonest first
+          .orderBy(studentPurchases.expiresAt); // Use credits expiring soonest first
 
-      // Calculate total available credits
-      const totalAvailableCredits = activePurchases.reduce(
-        (sum, purchase) => sum + (purchase.creditsRemaining || 0),
-        0
-      );
+        // Calculate total available credits
+        const totalAvailableCredits = activePurchases.reduce(
+          (sum, purchase) => sum + (purchase.creditsRemaining || 0),
+          0
+        );
 
-      // User must have credits to book - no free bookings allowed
-      if (totalAvailableCredits === 0) {
-        throw new Error('INSUFFICIENT_CREDITS: You have no credits available. Please purchase a package first.');
-      }
+        // User must have credits to book - no free bookings allowed
+        if (totalAvailableCredits === 0) {
+          throw new Error('INSUFFICIENT_CREDITS: You have no credits available. Please purchase a package first.');
+        }
 
-      if (totalAvailableCredits < creditsToUse) {
-        throw new Error(`INSUFFICIENT_CREDITS: Required ${creditsToUse} credit(s), but you only have ${totalAvailableCredits}`);
-      }
+        if (totalAvailableCredits < creditsToUse) {
+          throw new Error(`INSUFFICIENT_CREDITS: Required ${creditsToUse} credit(s), but you only have ${totalAvailableCredits}`);
+        }
 
-      // Deduct credits from purchases (FIFO - first expiring first)
-      let creditsToDeduct = creditsToUse;
-      for (const purchase of activePurchases) {
-        if (creditsToDeduct <= 0) break;
+        // Deduct credits from purchases (FIFO - first expiring first)
+        let creditsToDeduct = creditsToUse;
+        for (const purchase of activePurchases) {
+          if (creditsToDeduct <= 0) break;
 
-        const availableInThisPurchase = purchase.creditsRemaining || 0;
-        const deductFromThis = Math.min(creditsToDeduct, availableInThisPurchase);
-        const newRemaining = availableInThisPurchase - deductFromThis;
+          const availableInThisPurchase = purchase.creditsRemaining || 0;
+          const deductFromThis = Math.min(creditsToDeduct, availableInThisPurchase);
+          const newRemaining = availableInThisPurchase - deductFromThis;
 
-        await tx
-          .update(studentPurchases)
-          .set({ 
-            creditsRemaining: newRemaining,
-            // Deactivate if no credits remaining
-            isActive: newRemaining > 0
-          })
-          .where(eq(studentPurchases.id, purchase.id));
+          await tx
+            .update(studentPurchases)
+            .set({ 
+              creditsRemaining: newRemaining,
+              // Deactivate if no credits remaining
+              isActive: newRemaining > 0
+            })
+            .where(eq(studentPurchases.id, purchase.id));
 
-        creditsToDeduct -= deductFromThis;
+          creditsToDeduct -= deductFromThis;
+        }
       }
 
       // 6. Prepare insert data for booking
@@ -379,7 +394,7 @@ export async function POST(request: NextRequest) {
         studentProfileId: studentProfileId,
         bookingStatus: bookingStatus || 'confirmed',
         bookedAt: new Date().toISOString(),
-        creditsUsed: creditsToUse,
+        creditsUsed: actualCreditsUsed, // 0 for soft opening, normal for other days
       };
 
       if (cancelledAt) {
