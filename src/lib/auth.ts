@@ -70,7 +70,7 @@ export const auth = betterAuth({
 				`;
 				
 				await resend.emails.send({
-					from: "Swift Fit Pilates <noreply@swiftfitpws.com>",
+					from: "Swift Fit Pilates <noreply@swiftfit215.com>",
 					to: user.email,
 					subject: "Verify Your Email - Swift Fit Pilates",
 					html: getEmailTemplate("Verify Your Email", content, "Verify Email", url),
@@ -100,7 +100,7 @@ export const auth = betterAuth({
 				`;
 				
 				await resend.emails.send({
-					from: "Swift Fit Pilates <noreply@swiftfitpws.com>",
+					from: "Swift Fit Pilates <noreply@swiftfit215.com>",
 					to: user.email,
 					subject: "Reset Your Password - Swift Fit Pilates",
 					html: getEmailTemplate("Reset Your Password", content, "Reset Password", url),

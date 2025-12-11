@@ -94,7 +94,7 @@ export async function sendContactEmail(
 
     // Send confirmation email to user
     const userEmailResponse = await resend.emails.send({
-      from: 'Swift Fit <noreply@swiftfitpws.com>',
+      from: 'Swift Fit <noreply@swiftfit215.com>',
       to: data.email,
       subject: 'Thank you for contacting SwiftFit 215',
       react: GymContactConfirmation({
@@ -119,7 +119,7 @@ export async function sendContactEmail(
 
     // Send notification email to admin using React component
     const adminEmailResponse = await resend.emails.send({
-      from: 'Swift Fit <noreply@swiftfitpws.com>',
+      from: 'Swift Fit <noreply@swiftfit215.com>',
       to: recipientEmail,
       subject: `New Contact Form: ${data.name}`,
       react: GymContactNotification({

@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
           );
 
           await resend.emails.send({
-            from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+            from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
             to: recipientEmail,
             subject: `We miss you at Swift Fit! 💕 Time to return to your practice`,
             html: emailHtml,
@@ -203,7 +203,7 @@ export async function GET(request: NextRequest) {
     // ============================================
     try {
       await resend.emails.send({
-        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
         to: process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com',
         subject: `Daily Tasks Report - ${today}`,
         html: `

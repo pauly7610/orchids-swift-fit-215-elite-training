@@ -141,7 +141,7 @@ export async function GET(request: NextRequest) {
 
         // Send email
         await resend.emails.send({
-          from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+          from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
           to: booking.studentEmail,
           subject: `🧘 Reminder: ${booking.className} in ${Math.round(hoursUntilClass)} hours`,
           html: emailHtml,
@@ -164,7 +164,7 @@ export async function GET(request: NextRequest) {
     if (results.sent > 0 || results.failed > 0) {
       try {
         await resend.emails.send({
-          from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+          from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
           to: process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com',
           subject: `Pre-Class Reminders: ${results.sent} sent, ${results.failed} failed`,
           html: `

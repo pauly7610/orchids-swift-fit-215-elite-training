@@ -161,7 +161,7 @@ export async function sendBatchedBookingConfirmation(
 
     const response = await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: `${studioName} <noreply@swiftfitpws.com>`,
+        from: `${studioName} <noreply@swiftfit215.com>`,
         to: params.studentEmail,
         subject: subject,
         react: EmailComponent({
@@ -224,7 +224,7 @@ export async function sendPaymentConfirmation(
   try {
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
         to: params.studentEmail,
         subject: `Payment Received - ${params.packageName || 'Swift Fit Pilates'}`,
         react: PilatesPaymentConfirmation({
@@ -262,7 +262,7 @@ export async function sendInstructorNotification(
   try {
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
         to: params.instructorEmail,
         subject: params.notificationType === 'new_booking' 
           ? `New Student Booked: ${params.className} on ${params.classDate}`
@@ -314,7 +314,7 @@ export async function sendAdminNotification(
 
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
         to: process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com',
         subject: getSubject(),
         react: AdminNotification({
@@ -361,7 +361,7 @@ export async function sendCancellationConfirmation(
 
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
         to: params.studentEmail,
         subject: `${subjectPrefix} - ${params.className} on ${params.classDate}`,
         react: PilatesCancellationConfirmation({
@@ -397,7 +397,7 @@ export async function sendWaitlistNotification(
   try {
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
         to: params.studentEmail,
         subject: `🎉 A spot opened up! ${params.className} on ${params.classDate}`,
         react: PilatesWaitlistNotification({
