@@ -197,18 +197,18 @@ export function WeeklyClassSchedule() {
                     key={index} 
                     className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 rounded-xl bg-[#FAF8F5] border border-[#B8AFA5]/20 hover:border-[#9BA899]/40 transition-colors"
                   >
-                    <div className="flex items-center gap-2 min-w-[160px]">
-                      <Clock className="h-4 w-4 text-[#9BA899] flex-shrink-0" />
-                      <span className="text-sm font-medium text-[#5A5550]">{session.time}</span>
+                    <div className="flex items-center gap-2 sm:min-w-[160px]">
+                      <Clock className="h-4 w-4 text-[#9BA899] shrink-0" />
+                      <span className="text-xs sm:text-sm font-medium text-[#5A5550]">{session.time}</span>
                     </div>
-                    <div className="flex flex-1 flex-wrap items-center gap-2 sm:gap-3">
+                    <div className="flex flex-1 flex-wrap items-center gap-2 sm:gap-3 min-w-0">
                       <Badge 
                         variant="outline" 
-                        className={`rounded-full text-xs ${getClassTypeColor(session.classType)}`}
+                        className={`rounded-full text-[10px] sm:text-xs whitespace-normal max-w-full ${getClassTypeColor(session.classType)}`}
                       >
                         {session.classType}
                       </Badge>
-                      <span className="text-sm text-[#7A736B]">
+                      <span className="text-xs sm:text-sm text-[#7A736B]">
                         with <span className="font-medium text-[#5A5550]">{session.instructor}</span>
                       </span>
                     </div>

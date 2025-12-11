@@ -31,12 +31,15 @@ function LoginForm() {
     e.preventDefault()
     setIsLoading(true)
 
+    // Get redirect parameter if present
+    const redirectTo = searchParams.get('redirect')
+
     try {
       const { data, error } = await authClient.signIn.email({
         email: formData.email,
         password: formData.password,
         rememberMe: formData.rememberMe,
-        callbackURL: "/"
+        callbackURL: redirectTo || "/"
       })
 
       if (error?.code) {
@@ -49,9 +52,9 @@ function LoginForm() {
       
       // Redirect based on user role (fetch from user profile)
       const token = localStorage.getItem("bearer_token")
-      if (token) {
+      if (token && data?.user?.id) {
         // Fetch user profile to determine role
-        const profileRes = await fetch(`/api/user-profiles?userId=${data?.user?.id}`, {
+        const profileRes = await fetch(`/api/user-profiles?userId=${data.user.id}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -62,7 +65,13 @@ function LoginForm() {
           if (profiles && profiles.length > 0) {
             const role = profiles[0].role
             
-            // Redirect based on role
+            // If there's a specific redirect, use it
+            if (redirectTo) {
+              router.push(redirectTo)
+              return
+            }
+            
+            // Otherwise redirect based on role
             if (role === 'admin') {
               router.push('/admin')
             } else if (role === 'instructor') {
@@ -73,11 +82,39 @@ function LoginForm() {
               router.push('/')
             }
             return
+          } else {
+            // Profile doesn't exist - create one (fallback for old users)
+            try {
+              const createProfileRes = await fetch('/api/user-profiles', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                  userId: data.user.id,
+                  role: 'student',
+                  phone: null,
+                  profileImage: null
+                })
+              })
+              
+              if (createProfileRes.ok) {
+                console.log('Created missing user profile')
+              }
+            } catch (profileError) {
+              console.error('Failed to create profile:', profileError)
+            }
+            
+            // Redirect to student dashboard (default for new profiles)
+            router.push(redirectTo || '/student')
+            return
           }
         }
       }
       
-      router.push('/')
+      // Fallback redirect
+      router.push(redirectTo || '/')
     } catch (error) {
       toast.error("An error occurred during login")
       setIsLoading(false)

@@ -55,24 +55,7 @@ export default function RegisterPage() {
         return
       }
 
-      // Create user profile as student by default
-      const token = localStorage.getItem("bearer_token")
-      if (token && data?.user?.id) {
-        await fetch('/api/user-profiles', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            userId: data.user.id,
-            role: 'student',
-            phone: null,
-            profileImage: null
-          })
-        })
-      }
-
+      // Profile is automatically created server-side via auth hook
       toast.success("Account created successfully!")
       router.push("/login?registered=true")
     } catch (error) {

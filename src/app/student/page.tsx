@@ -24,6 +24,7 @@ interface Class {
   classType: { name: string; description: string; durationMinutes: number }
   instructor: { name: string; headshotUrl: string }
   registeredCount: number
+  spotsRemaining: number
   isUserBooked: boolean
   waitlistPosition: number | null
 }
@@ -81,7 +82,7 @@ export default function StudentDashboard() {
       const headers = { Authorization: `Bearer ${token}` }
 
       const [classesRes, bookingsRes, purchasesRes] = await Promise.all([
-        fetch("/api/classes", { headers }),
+        fetch("/api/classes/schedule", { headers }),
         fetch("/api/bookings", { headers }),
         fetch("/api/student-purchases", { headers })
       ])
@@ -209,23 +210,23 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-display text-3xl text-primary">STUDENT DASHBOARD</h1>
-              <p className="text-sm text-muted-foreground">Welcome back, {session?.user?.name}</p>
+      <header className="border-b bg-card sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-xl md:text-3xl text-primary truncate">STUDENT DASHBOARD</h1>
+              <p className="text-xs md:text-sm text-muted-foreground truncate">Welcome, {session?.user?.name}</p>
             </div>
-            <Button variant="outline" onClick={() => router.push("/pilates")}>
-              Back to Pilates
+            <Button variant="outline" size="sm" className="shrink-0" onClick={() => router.push("/pilates")}>
+              <span className="hidden sm:inline">Back to </span>Pilates
             </Button>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-4 md:py-8">
         {/* Stats */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6 mb-6 md:mb-8">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium">Available Credits</CardTitle>
@@ -263,11 +264,11 @@ export default function StudentDashboard() {
         </div>
 
         {/* Main Content */}
-        <Tabs defaultValue="classes" className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="classes">Available Classes</TabsTrigger>
-            <TabsTrigger value="bookings">My Bookings</TabsTrigger>
-            <TabsTrigger value="packages">My Packages</TabsTrigger>
+        <Tabs defaultValue="classes" className="space-y-4 md:space-y-6">
+          <TabsList className="w-full justify-start overflow-x-auto flex-nowrap">
+            <TabsTrigger value="classes" className="text-xs md:text-sm whitespace-nowrap">Available Classes</TabsTrigger>
+            <TabsTrigger value="bookings" className="text-xs md:text-sm whitespace-nowrap">My Bookings</TabsTrigger>
+            <TabsTrigger value="packages" className="text-xs md:text-sm whitespace-nowrap">My Packages</TabsTrigger>
           </TabsList>
 
           {/* Available Classes */}
@@ -282,82 +283,84 @@ export default function StudentDashboard() {
                   <p className="text-center text-muted-foreground py-8">No upcoming classes available</p>
                 ) : (
                   upcomingClasses.map((cls) => {
-                    const spotsLeft = cls.capacity - cls.registeredCount
-                    const isFull = spotsLeft <= 0
+                    const isFull = cls.spotsRemaining <= 0
                     
                     return (
                       <Card key={cls.id} className="border-2">
-                        <CardContent className="p-6">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-3 mb-2">
-                                <h3 className="font-semibold text-lg">{cls.classType.name}</h3>
+                        <CardContent className="p-4 md:p-6">
+                          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <h3 className="font-semibold text-base md:text-lg text-wrap-balance">{cls.classType.name}</h3>
                                 {cls.isUserBooked && (
-                                  <Badge className="bg-green-500">Booked</Badge>
+                                  <Badge className="bg-green-500 shrink-0">Booked</Badge>
                                 )}
                                 {cls.waitlistPosition && (
-                                  <Badge variant="outline">Waitlist #{cls.waitlistPosition}</Badge>
+                                  <Badge variant="outline" className="shrink-0">Waitlist #{cls.waitlistPosition}</Badge>
                                 )}
                               </div>
                               
-                              <div className="space-y-1 text-sm text-muted-foreground">
+                              <div className="space-y-1 text-xs md:text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2">
-                                  <Calendar className="h-4 w-4" />
-                                  <span>{format(parseISO(cls.date), "EEEE, MMMM d, yyyy")}</span>
+                                  <Calendar className="h-4 w-4 shrink-0" />
+                                  <span className="truncate">{format(parseISO(cls.date), "EEE, MMM d, yyyy")}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Clock className="h-4 w-4" />
+                                  <Clock className="h-4 w-4 shrink-0" />
                                   <span>{cls.startTime} - {cls.endTime} ({cls.classType.durationMinutes} min)</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <User className="h-4 w-4" />
-                                  <span>{cls.instructor.name}</span>
+                                  <User className="h-4 w-4 shrink-0" />
+                                  <span className="truncate">{cls.instructor.name}</span>
                                 </div>
                               </div>
 
-                              <div className="mt-3 flex items-center gap-4">
+                              <div className="mt-3 flex flex-wrap items-center gap-2 md:gap-4">
                                 <Badge variant={isFull ? "destructive" : "secondary"}>
-                                  {spotsLeft > 0 ? `${spotsLeft} spots left` : "Full"}
+                                  {cls.spotsRemaining > 0 ? `${cls.spotsRemaining} spots left` : "Full"}
                                 </Badge>
                                 {cls.price && (
-                                  <span className="font-semibold">${cls.price.toFixed(2)}</span>
+                                  <span className="font-semibold text-sm">${cls.price.toFixed(2)}</span>
                                 )}
                               </div>
                             </div>
 
-                            <div className="flex flex-col gap-2">
+                            <div className="flex sm:flex-col gap-2 w-full sm:w-auto">
                               {cls.isUserBooked ? (
                                 <Button 
                                   variant="outline" 
+                                  size="sm"
                                   onClick={() => {
                                     const booking = bookings.find(b => b.class.id === cls.id && b.bookingStatus === "confirmed")
                                     if (booking) handleCancelBooking(booking.id)
                                   }}
-                                  className="w-full"
+                                  className="flex-1 sm:flex-none sm:w-28"
                                 >
                                   Cancel
                                 </Button>
                               ) : isFull ? (
                                 cls.waitlistPosition ? (
-                                  <Button variant="outline" disabled className="w-full">
+                                  <Button variant="outline" size="sm" disabled className="flex-1 sm:flex-none sm:w-28">
                                     On Waitlist
                                   </Button>
                                 ) : (
                                   <Button 
                                     variant="outline" 
+                                    size="sm"
                                     onClick={() => handleJoinWaitlist(cls.id)}
-                                    className="w-full"
+                                    className="flex-1 sm:flex-none sm:w-28"
                                   >
                                     Join Waitlist
                                   </Button>
                                 )
                               ) : (
                                 <Button 
+                                  size="sm"
                                   onClick={() => handleBookClass(cls.id)}
-                                  className="w-full"
+                                  className="flex-1 sm:flex-none sm:w-auto sm:min-w-[120px]"
                                   disabled={totalCredits === 0}
                                 >
-                                  Book Class
+                                  {totalCredits > 0 ? "Book Class" : "Buy Package"}
                                 </Button>
                               )}
                             </div>
@@ -385,17 +388,18 @@ export default function StudentDashboard() {
                   activeBookings.map((booking) => (
                     <Card key={booking.id} className="border-2">
                       <CardContent className="p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-semibold">{booking.class.classType.name}</h4>
-                            <div className="text-sm text-muted-foreground space-y-1 mt-1">
-                              <div>{format(parseISO(booking.class.date), "EEEE, MMMM d, yyyy")}</div>
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-semibold text-sm md:text-base">{booking.class.classType.name}</h4>
+                            <div className="text-xs md:text-sm text-muted-foreground space-y-0.5 mt-1">
+                              <div>{format(parseISO(booking.class.date), "EEE, MMM d, yyyy")}</div>
                               <div>{booking.class.startTime} • {booking.class.instructor.name}</div>
                             </div>
                           </div>
                           <Button 
                             variant="outline" 
                             size="sm"
+                            className="w-full sm:w-auto shrink-0"
                             onClick={() => handleCancelBooking(booking.id)}
                           >
                             Cancel
@@ -508,7 +512,7 @@ export default function StudentDashboard() {
                                 {purchase.autoRenew && (
                                   <div className="mt-3 p-3 bg-primary/5 rounded-lg">
                                     <p className="text-xs text-muted-foreground flex items-start gap-2">
-                                      <CheckCircle2 className="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                                      <CheckCircle2 className="h-4 w-4 text-primary shrink-0 mt-0.5" />
                                       <span>
                                         Your membership will automatically renew on{" "}
                                         <span className="font-medium text-foreground">

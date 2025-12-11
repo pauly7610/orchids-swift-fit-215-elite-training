@@ -450,13 +450,13 @@ export default function SchedulePage() {
                             {/* Class Details */}
                             <div className="flex-1">
                               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-3">
-                                <div className="flex-1">
-                                  <h3 className="text-xl md:text-2xl font-serif font-normal text-[#5A5550] mb-1">
+                                <div className="flex-1 min-w-0">
+                                  <h3 className="text-lg md:text-2xl font-serif font-normal text-[#5A5550] mb-1">
                                     {cls.classType.name}
                                   </h3>
                                   <div className="flex items-center gap-2 text-xs md:text-sm text-[#7A736B]">
-                                    <User className="h-3 w-3 md:h-4 md:w-4" />
-                                    <span>{cls.instructor.name}</span>
+                                    <User className="h-3 w-3 md:h-4 md:w-4 shrink-0" />
+                                    <span className="truncate">{cls.instructor.name}</span>
                                   </div>
                                 </div>
                                 {cls.price && (

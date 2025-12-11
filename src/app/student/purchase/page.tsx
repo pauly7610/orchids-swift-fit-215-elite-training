@@ -141,29 +141,29 @@ export default function PurchasePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b bg-card">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="font-display text-3xl text-primary">PURCHASE CREDITS</h1>
-              <p className="text-sm text-muted-foreground">Choose a package or membership</p>
+      <header className="border-b bg-card sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-3 md:py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <h1 className="font-display text-xl sm:text-2xl md:text-3xl text-primary truncate">PURCHASE CREDITS</h1>
+              <p className="text-xs sm:text-sm text-muted-foreground">Choose a package or membership</p>
             </div>
-            <Button variant="outline" onClick={() => router.push("/student")}>
-              Back to Dashboard
+            <Button variant="outline" size="sm" className="shrink-0" onClick={() => router.push("/student")}>
+              <span className="hidden sm:inline">Back to </span>Dashboard
             </Button>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-6 md:py-12">
         {/* Memberships */}
-        <section className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="font-display text-4xl text-secondary mb-2">MONTHLY MEMBERSHIPS</h2>
-            <p className="text-muted-foreground">Unlimited access to all Pilates classes</p>
+        <section className="mb-10 md:mb-16">
+          <div className="text-center mb-6 md:mb-8">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-secondary mb-2">MONTHLY MEMBERSHIPS</h2>
+            <p className="text-sm md:text-base text-muted-foreground px-4">Unlimited access to all Pilates classes</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
             {memberships.map((membership) => (
               <Card key={membership.id} className="border-2 hover:border-primary transition-colors">
                 <CardHeader>
@@ -215,12 +215,12 @@ export default function PurchasePage() {
 
         {/* Class Packages */}
         <section>
-          <div className="text-center mb-8">
-            <h2 className="font-display text-4xl text-secondary mb-2">CLASS PACKAGES</h2>
-            <p className="text-muted-foreground">Pay as you go with flexible credit packages</p>
+          <div className="text-center mb-6 md:mb-8">
+            <h2 className="font-display text-2xl sm:text-3xl md:text-4xl text-secondary mb-2">CLASS PACKAGES</h2>
+            <p className="text-sm md:text-base text-muted-foreground px-4">Pay as you go with flexible credit packages</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
             {packages.map((pkg) => (
               <Card key={pkg.id} className="border-2 hover:border-primary transition-colors">
                 <CardHeader>
@@ -270,9 +270,9 @@ export default function PurchasePage() {
         </section>
 
         {/* Note */}
-        <div className="max-w-2xl mx-auto mt-12">
+        <div className="max-w-2xl mx-auto mt-8 md:mt-12 px-2">
           <Card className="bg-muted/50">
-            <CardContent className="p-6 text-center text-sm text-muted-foreground">
+            <CardContent className="p-4 md:p-6 text-center text-xs md:text-sm text-muted-foreground">
               <p>
                 All purchases are processed securely through Square. You can manage your subscription 
                 and payment methods from your dashboard.

@@ -1,12 +1,13 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Sparkles, CheckCircle2, Star, Gift, TrendingUp, Zap, ExternalLink, RefreshCw } from "lucide-react"
+import { Heart, Sparkles, CheckCircle2, Star, Gift, TrendingUp, Zap, ExternalLink, RefreshCw, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
+import Image from "next/image"
 
 interface Package {
   id: number
@@ -43,10 +44,46 @@ export default function PricingPage() {
   const [packages, setPackages] = useState<Package[]>([])
   const [memberships, setMemberships] = useState<Membership[]>([])
   const [loading, setLoading] = useState(true)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => {
     fetchPricingData()
   }, [])
+
+  // Close mobile menu on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+        mobileMenuButtonRef.current?.focus()
+      }
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [isMobileMenuOpen])
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target as Node) && isMobileMenuOpen) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [isMobileMenuOpen])
+
+  // Prevent body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => { document.body.style.overflow = 'unset' }
+  }, [isMobileMenuOpen])
 
   const fetchPricingData = async () => {
     try {
@@ -107,19 +144,22 @@ export default function PricingPage() {
     <div className="min-h-screen bg-[#FAF8F5]">
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-sm border-b border-[#B8AFA5]/20">
-        <div className="container mx-auto px-4 py-5 flex items-center justify-between">
-          <Link href="/pilates" className="flex items-center gap-3">
-            <div className="relative w-12 h-12 rounded-full bg-[#9BA899]/10 flex items-center justify-center">
-              <div className="w-10 h-10 rounded-full border-2 border-[#B8AFA5] flex items-center justify-center">
-                <Heart className="h-5 w-5 text-[#B8AFA5]" fill="#B8AFA5" />
-              </div>
+        <div className="container mx-auto px-4 py-4 md:py-5 flex items-center justify-between">
+          <Link href="/pilates" className="flex items-center gap-2 md:gap-3">
+            <div className="relative w-10 h-10 md:w-12 md:h-12">
+              <Image
+                src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1765052969010.png?width=8000&height=8000&resize=contain"
+                alt="Swift Fit Pilates and Wellness Studio"
+                fill
+                className="object-contain"
+              />
             </div>
             <div>
-              <h1 className="font-serif text-xl tracking-wide text-[#5A5550]">Swift Fit</h1>
-              <p className="text-xs text-[#9BA899] -mt-0.5 tracking-wider">PILATES AND WELLNESS STUDIO</p>
+              <h1 className="font-serif text-lg md:text-xl tracking-wide text-[#5A5550]">Swift Fit</h1>
+              <p className="text-[10px] md:text-xs text-[#9BA899] -mt-0.5 tracking-wider">PILATES AND WELLNESS STUDIO</p>
             </div>
           </Link>
-          <nav className="hidden md:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-6 xl:gap-8">
             <Link href="/pilates/about" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">About</Link>
             <Link href="/pilates/instructors" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">Instructors</Link>
             <Link href="/pilates/classes" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-sm">Classes</Link>
@@ -132,7 +172,47 @@ export default function PricingPage() {
               </Button>
             </Link>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            ref={mobileMenuButtonRef}
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="lg:hidden text-[#5A5550] p-2 hover:bg-[#9BA899]/10 rounded-lg transition-colors"
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-menu"
+          >
+            {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div 
+            id="mobile-menu"
+            className="lg:hidden border-t border-[#B8AFA5]/20 bg-[#FAF8F5]/98 backdrop-blur-sm" 
+            ref={mobileMenuRef}
+            role="dialog"
+            aria-label="Mobile navigation menu"
+          >
+            <nav className="container mx-auto px-4 py-4 flex flex-col gap-3" aria-label="Mobile navigation">
+              <Link href="/pilates/about" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-base font-medium py-2" onClick={() => setIsMobileMenuOpen(false)}>About</Link>
+              <Link href="/pilates/instructors" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-base font-medium py-2" onClick={() => setIsMobileMenuOpen(false)}>Instructors</Link>
+              <Link href="/pilates/classes" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-base font-medium py-2" onClick={() => setIsMobileMenuOpen(false)}>Classes</Link>
+              <Link href="/pilates/pricing" className="text-[#9BA899] font-medium transition-colors text-base py-2" onClick={() => setIsMobileMenuOpen(false)}>Pricing</Link>
+              <Link href="/pilates/schedule" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-base font-medium py-2" onClick={() => setIsMobileMenuOpen(false)}>Schedule</Link>
+              <Link href="/pilates/faq" className="text-[#5A5550] hover:text-[#9BA899] transition-colors text-base font-medium py-2" onClick={() => setIsMobileMenuOpen(false)}>FAQ</Link>
+              <div className="flex flex-col gap-2 mt-2">
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button size="sm" className="bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full w-full">Login</Button>
+                </Link>
+                <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button size="sm" variant="outline" className="border-[#B8AFA5] text-[#5A5550] hover:bg-[#9BA899]/10 w-full">Back to Gym</Button>
+                </Link>
+              </div>
+            </nav>
+          </div>
+        )}
       </header>
 
       {/* Hero Section */}

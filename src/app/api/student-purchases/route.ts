@@ -1,7 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { studentPurchases, packages, memberships } from '@/db/schema';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { studentPurchases, packages, memberships, userProfiles } from '@/db/schema';
+import { eq, and, desc } from 'drizzle-orm';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+
+// Helper function to get current user's profile ID
+async function getCurrentUserProfileId(): Promise<number | null> {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) {
+      return null;
+    }
+    
+    const profile = await db.select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, session.user.id))
+      .limit(1);
+    
+    return profile.length > 0 ? profile[0].id : null;
+  } catch {
+    return null;
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,6 +51,8 @@ export async function GET(request: NextRequest) {
           expiresAt: studentPurchases.expiresAt,
           isActive: studentPurchases.isActive,
           paymentId: studentPurchases.paymentId,
+          autoRenew: studentPurchases.autoRenew,
+          nextBillingDate: studentPurchases.nextBillingDate,
           packageName: packages.name,
           packagePrice: packages.price,
           packageValidityType: packages.validityType,
@@ -56,11 +79,19 @@ export async function GET(request: NextRequest) {
     }
 
     // List with pagination, filtering, and package/membership details
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 100);
     const offset = parseInt(searchParams.get('offset') ?? '0');
-    const studentProfileId = searchParams.get('studentProfileId');
+    let studentProfileId = searchParams.get('studentProfileId');
     const purchaseType = searchParams.get('purchaseType');
     const isActive = searchParams.get('isActive');
+
+    // If no studentProfileId provided, get the current user's purchases
+    if (!studentProfileId) {
+      const currentUserProfileId = await getCurrentUserProfileId();
+      if (currentUserProfileId) {
+        studentProfileId = currentUserProfileId.toString();
+      }
+    }
 
     // Build filter conditions
     const conditions = [];
@@ -75,7 +106,7 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(studentPurchases.isActive, isActiveValue));
     }
 
-    let query = db
+    const results = await db
       .select({
         id: studentPurchases.id,
         studentProfileId: studentPurchases.studentProfileId,
@@ -88,6 +119,8 @@ export async function GET(request: NextRequest) {
         expiresAt: studentPurchases.expiresAt,
         isActive: studentPurchases.isActive,
         paymentId: studentPurchases.paymentId,
+        autoRenew: studentPurchases.autoRenew,
+        nextBillingDate: studentPurchases.nextBillingDate,
         packageName: packages.name,
         packagePrice: packages.price,
         packageValidityType: packages.validityType,
@@ -99,18 +132,42 @@ export async function GET(request: NextRequest) {
       })
       .from(studentPurchases)
       .leftJoin(packages, eq(studentPurchases.packageId, packages.id))
-      .leftJoin(memberships, eq(studentPurchases.membershipId, memberships.id));
-
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
-
-    const results = await query
+      .leftJoin(memberships, eq(studentPurchases.membershipId, memberships.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(studentPurchases.purchasedAt))
       .limit(limit)
       .offset(offset);
 
-    return NextResponse.json(results, { status: 200 });
+    // Transform to include nested package/membership objects for frontend compatibility
+    const transformedResults = results.map(r => ({
+      id: r.id,
+      studentProfileId: r.studentProfileId,
+      purchaseType: r.purchaseType,
+      packageId: r.packageId,
+      membershipId: r.membershipId,
+      creditsRemaining: r.creditsRemaining,
+      creditsTotal: r.creditsTotal,
+      purchasedAt: r.purchasedAt,
+      expiresAt: r.expiresAt,
+      isActive: r.isActive,
+      paymentId: r.paymentId,
+      autoRenew: r.autoRenew,
+      nextBillingDate: r.nextBillingDate,
+      package: r.packageName ? {
+        name: r.packageName,
+        price: r.packagePrice,
+        validityType: r.packageValidityType,
+        swipeSimpleLink: r.packageSwipeSimpleLink,
+      } : null,
+      membership: r.membershipName ? {
+        name: r.membershipName,
+        priceMonthly: r.membershipPriceMonthly,
+        isUnlimited: r.membershipIsUnlimited,
+        swipeSimpleLink: r.membershipSwipeSimpleLink,
+      } : null,
+    }));
+
+    return NextResponse.json(transformedResults, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(
@@ -230,12 +287,27 @@ export async function POST(request: NextRequest) {
     }
 
     // Prepare insert data
-    const insertData: any = {
+    const insertData: {
+      studentProfileId: number;
+      purchaseType: string;
+      paymentId: number;
+      purchasedAt: string;
+      isActive: boolean;
+      packageId?: number;
+      membershipId?: number;
+      creditsRemaining?: number;
+      creditsTotal?: number;
+      expiresAt?: string;
+      autoRenew: boolean;
+      nextBillingDate?: string;
+      squareCustomerId?: string;
+    } = {
       studentProfileId: parseInt(studentProfileId),
       purchaseType,
       paymentId: parseInt(paymentId),
       purchasedAt: new Date().toISOString(),
       isActive: isActive !== undefined ? isActive : true,
+      autoRenew: false,
     };
 
     if (packageId !== undefined && packageId !== null) {
@@ -273,9 +345,6 @@ export async function POST(request: NextRequest) {
       if (squareCustomerId) {
         insertData.squareCustomerId = squareCustomerId.trim();
       }
-    } else {
-      // For non-membership purchases, default to false
-      insertData.autoRenew = false;
     }
 
     // Insert record

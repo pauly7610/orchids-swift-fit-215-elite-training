@@ -86,28 +86,28 @@ export function PilatesEmailPopup({ delayMs = 3000 }: PilatesEmailPopupProps) {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-md bg-[#FAF8F5] border-[#B8AFA5]/30">
+      <DialogContent className="sm:max-w-md bg-[#FAF8F5] border-[#B8AFA5]/30 max-h-[90vh] overflow-y-auto">
         <button
           onClick={handleClose}
-          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground"
+          className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground z-10"
         >
-          <X className="h-4 w-4" />
+          <X className="h-5 w-5" />
           <span className="sr-only">Close</span>
         </button>
         
-        <DialogHeader>
-          <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-gradient-to-br from-[#9BA899]/20 to-[#E8B4B8]/20 flex items-center justify-center">
-            <Sparkles className="h-8 w-8 text-[#9BA899]" />
+        <DialogHeader className="pt-2">
+          <div className="mx-auto mb-3 sm:mb-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#9BA899]/20 to-[#E8B4B8]/20 flex items-center justify-center">
+            <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-[#9BA899]" />
           </div>
-          <DialogTitle className="text-2xl font-serif text-center text-[#5A5550]">
+          <DialogTitle className="text-xl sm:text-2xl font-serif text-center text-[#5A5550]">
             Join Our Wellness Community
           </DialogTitle>
-          <DialogDescription className="text-center text-[#7A736B] text-base">
+          <DialogDescription className="text-center text-[#7A736B] text-sm sm:text-base">
             Get exclusive class updates, wellness tips, and special offers delivered to your inbox.
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 mt-2 sm:mt-4">
           <div>
             <Label htmlFor="popup-email" className="text-[#5A5550]">Email *</Label>
             <Input
@@ -145,7 +145,15 @@ export function PilatesEmailPopup({ delayMs = 3000 }: PilatesEmailPopupProps) {
             />
           </div>
 
-          <div className="flex gap-3 pt-2">
+          <div className="flex flex-col-reverse sm:flex-row gap-2 sm:gap-3 pt-2">
+            <Button
+              type="button"
+              onClick={handleClose}
+              variant="outline"
+              className="border-[#B8AFA5] text-[#5A5550] hover:bg-[#F5F2EE] rounded-full w-full sm:w-auto"
+            >
+              Maybe Later
+            </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
@@ -153,17 +161,9 @@ export function PilatesEmailPopup({ delayMs = 3000 }: PilatesEmailPopupProps) {
             >
               {isSubmitting ? "Subscribing..." : "Sign Me Up"}
             </Button>
-            <Button
-              type="button"
-              onClick={handleClose}
-              variant="outline"
-              className="border-[#B8AFA5] text-[#5A5550] hover:bg-[#F5F2EE] rounded-full"
-            >
-              Maybe Later
-            </Button>
           </div>
 
-          <p className="text-xs text-center text-[#9BA899]">
+          <p className="text-[10px] sm:text-xs text-center text-[#9BA899] pb-2">
             We respect your privacy. Unsubscribe anytime.
           </p>
         </form>

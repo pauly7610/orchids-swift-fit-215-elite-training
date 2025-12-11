@@ -1,9 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
 import { bookings, classes, classTypes, instructors, userProfiles, user, studioInfo, studentPurchases } from '@/db/schema';
-import { eq, and, gte, lte, gt, or, isNull, sql } from 'drizzle-orm';
+import { eq, and, gte, lte, gt, or, isNull, sql, desc } from 'drizzle-orm';
 import { sendBookingConfirmation, sendInstructorNotification, sendAdminNotification } from '@/app/actions/send-booking-emails';
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
+import { auth } from '@/lib/auth';
+import { headers } from 'next/headers';
+
+// Helper function to get current user's profile ID
+async function getCurrentUserProfileId(): Promise<number | null> {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) {
+      return null;
+    }
+    
+    const profile = await db.select()
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, session.user.id))
+      .limit(1);
+    
+    return profile.length > 0 ? profile[0].id : null;
+  } catch {
+    return null;
+  }
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,15 +57,21 @@ export async function GET(request: NextRequest) {
     }
 
     // List with filters
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
+    const limit = Math.min(parseInt(searchParams.get('limit') ?? '50'), 100);
     const offset = parseInt(searchParams.get('offset') ?? '0');
-    const studentProfileId = searchParams.get('studentProfileId');
+    let studentProfileId = searchParams.get('studentProfileId');
     const classId = searchParams.get('classId');
     const bookingStatus = searchParams.get('bookingStatus');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
-    let query = db.select().from(bookings);
+    // If no studentProfileId provided, get the current user's bookings
+    if (!studentProfileId) {
+      const currentUserProfileId = await getCurrentUserProfileId();
+      if (currentUserProfileId) {
+        studentProfileId = currentUserProfileId.toString();
+      }
+    }
 
     const conditions = [];
 
@@ -77,13 +104,57 @@ export async function GET(request: NextRequest) {
       conditions.push(lte(bookings.bookedAt, endDate));
     }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
+    // Fetch bookings with class details
+    const results = await db
+      .select({
+        id: bookings.id,
+        classId: bookings.classId,
+        studentProfileId: bookings.studentProfileId,
+        bookingStatus: bookings.bookingStatus,
+        bookedAt: bookings.bookedAt,
+        cancelledAt: bookings.cancelledAt,
+        cancellationType: bookings.cancellationType,
+        paymentId: bookings.paymentId,
+        creditsUsed: bookings.creditsUsed,
+        classDate: classes.date,
+        classStartTime: classes.startTime,
+        classEndTime: classes.endTime,
+        classTypeName: classTypes.name,
+        instructorName: user.name,
+      })
+      .from(bookings)
+      .leftJoin(classes, eq(bookings.classId, classes.id))
+      .leftJoin(classTypes, eq(classes.classTypeId, classTypes.id))
+      .leftJoin(instructors, eq(classes.instructorId, instructors.id))
+      .leftJoin(userProfiles, eq(instructors.userProfileId, userProfiles.id))
+      .leftJoin(user, eq(userProfiles.userId, user.id))
+      .where(conditions.length > 0 ? and(...conditions) : undefined)
+      .orderBy(desc(bookings.bookedAt))
+      .limit(limit)
+      .offset(offset);
 
-    const results = await query.limit(limit).offset(offset);
+    // Transform results to include nested class object
+    const transformedResults = results.map(r => ({
+      id: r.id,
+      classId: r.classId,
+      studentProfileId: r.studentProfileId,
+      bookingStatus: r.bookingStatus,
+      bookedAt: r.bookedAt,
+      cancelledAt: r.cancelledAt,
+      cancellationType: r.cancellationType,
+      paymentId: r.paymentId,
+      creditsUsed: r.creditsUsed,
+      class: {
+        id: r.classId,
+        date: r.classDate,
+        startTime: r.classStartTime,
+        endTime: r.classEndTime,
+        classType: { name: r.classTypeName },
+        instructor: { name: r.instructorName },
+      }
+    }));
 
-    return NextResponse.json(results, { status: 200 });
+    return NextResponse.json(transformedResults, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(
@@ -123,8 +194,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get current user's profile ID from session
+    const currentUserProfileId = await getCurrentUserProfileId();
+    if (!currentUserProfileId) {
+      return NextResponse.json(
+        { error: 'Authentication required. Please log in to book classes.', code: 'UNAUTHORIZED' },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
-    const { classId, studentProfileId, bookingStatus, cancelledAt, cancellationType, paymentId, creditsUsed } = body;
+    const { classId, bookingStatus, cancelledAt, cancellationType, paymentId, creditsUsed } = body;
+    
+    // Use the authenticated user's profile ID (ignore any provided studentProfileId for security)
+    const studentProfileId = currentUserProfileId;
 
     // Validate required fields
     if (!classId) {
@@ -134,24 +217,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!studentProfileId) {
-      return NextResponse.json(
-        { error: 'studentProfileId is required', code: 'MISSING_STUDENT_PROFILE_ID' },
-        { status: 400 }
-      );
-    }
-
     // Validate field types
     if (isNaN(parseInt(classId))) {
       return NextResponse.json(
         { error: 'classId must be a valid integer', code: 'INVALID_CLASS_ID' },
-        { status: 400 }
-      );
-    }
-
-    if (isNaN(parseInt(studentProfileId))) {
-      return NextResponse.json(
-        { error: 'studentProfileId must be a valid integer', code: 'INVALID_STUDENT_PROFILE_ID' },
         { status: 400 }
       );
     }
@@ -175,23 +244,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate creditsUsed if provided
-    const creditsToUse = creditsUsed !== undefined && creditsUsed !== null ? parseInt(creditsUsed) : 0;
+    // Determine credits to use - default to 1, minimum 1 credit per booking
+    let creditsToUse = creditsUsed !== undefined && creditsUsed !== null ? parseInt(creditsUsed) : 1;
     if (creditsUsed !== undefined && creditsUsed !== null && isNaN(creditsToUse)) {
       return NextResponse.json(
         { error: 'creditsUsed must be a valid integer', code: 'INVALID_CREDITS_USED' },
         { status: 400 }
       );
     }
+    
+    // Ensure minimum of 1 credit is used (prevent negative or zero values)
+    if (creditsToUse < 1) {
+      creditsToUse = 1;
+    }
 
     // Execute booking creation with race condition prevention
     const result = await db.transaction(async (tx) => {
-      // 1. Lock the class row for update to prevent race conditions
+      // 1. Get the class data (SQLite doesn't support FOR UPDATE, so we just select)
       const classData = await tx
         .select()
         .from(classes)
         .where(eq(classes.id, parseInt(classId)))
-        .for('update') // Row-level lock
         .limit(1);
 
       if (classData.length === 0) {
@@ -206,7 +279,7 @@ export async function POST(request: NextRequest) {
         .from(bookings)
         .where(
           and(
-            eq(bookings.studentProfileId, parseInt(studentProfileId)),
+            eq(bookings.studentProfileId, studentProfileId),
             eq(bookings.classId, parseInt(classId)),
             eq(bookings.bookingStatus, 'confirmed')
           )
@@ -235,64 +308,75 @@ export async function POST(request: NextRequest) {
         throw new Error(`CLASS_FULL: Class is at full capacity (${classInfo.capacity}/${classInfo.capacity})`);
       }
 
-      // 5. If credits are being used, verify and deduct them
-      if (creditsToUse > 0) {
-        const currentDate = new Date().toISOString();
-        
-        // Find active purchases with available credits
-        const activePurchases = await tx
-          .select()
-          .from(studentPurchases)
-          .where(
-            and(
-              eq(studentPurchases.studentProfileId, parseInt(studentProfileId)),
-              eq(studentPurchases.isActive, true),
-              gt(studentPurchases.creditsRemaining, 0),
-              or(
-                isNull(studentPurchases.expiresAt),
-                gt(studentPurchases.expiresAt, currentDate)
-              )
+      // 5. Check available credits and deduct them
+      const currentDate = new Date().toISOString();
+      
+      // Find active purchases with available credits
+      const activePurchases = await tx
+        .select()
+        .from(studentPurchases)
+        .where(
+          and(
+            eq(studentPurchases.studentProfileId, studentProfileId),
+            eq(studentPurchases.isActive, true),
+            gt(studentPurchases.creditsRemaining, 0),
+            or(
+              isNull(studentPurchases.expiresAt),
+              gt(studentPurchases.expiresAt, currentDate)
             )
           )
-          .for('update') // Lock credit rows to prevent race conditions
-          .orderBy(studentPurchases.expiresAt); // Use credits expiring soonest first
+        )
+        .orderBy(studentPurchases.expiresAt); // Use credits expiring soonest first
 
-        // Calculate total available credits
-        const totalAvailableCredits = activePurchases.reduce(
-          (sum, purchase) => sum + (purchase.creditsRemaining || 0),
-          0
-        );
+      // Calculate total available credits
+      const totalAvailableCredits = activePurchases.reduce(
+        (sum, purchase) => sum + (purchase.creditsRemaining || 0),
+        0
+      );
 
-        if (totalAvailableCredits < creditsToUse) {
-          throw new Error(`INSUFFICIENT_CREDITS: Required ${creditsToUse}, available ${totalAvailableCredits}`);
-        }
+      // User must have credits to book - no free bookings allowed
+      if (totalAvailableCredits === 0) {
+        throw new Error('INSUFFICIENT_CREDITS: You have no credits available. Please purchase a package first.');
+      }
 
-        // Deduct credits from purchases (FIFO - first expiring first)
-        let creditsToDeduct = creditsToUse;
-        for (const purchase of activePurchases) {
-          if (creditsToDeduct <= 0) break;
+      if (totalAvailableCredits < creditsToUse) {
+        throw new Error(`INSUFFICIENT_CREDITS: Required ${creditsToUse} credit(s), but you only have ${totalAvailableCredits}`);
+      }
 
-          const availableInThisPurchase = purchase.creditsRemaining || 0;
-          const deductFromThis = Math.min(creditsToDeduct, availableInThisPurchase);
-          const newRemaining = availableInThisPurchase - deductFromThis;
+      // Deduct credits from purchases (FIFO - first expiring first)
+      let creditsToDeduct = creditsToUse;
+      for (const purchase of activePurchases) {
+        if (creditsToDeduct <= 0) break;
 
-          await tx
-            .update(studentPurchases)
-            .set({ 
-              creditsRemaining: newRemaining,
-              // Deactivate if no credits remaining
-              isActive: newRemaining > 0
-            })
-            .where(eq(studentPurchases.id, purchase.id));
+        const availableInThisPurchase = purchase.creditsRemaining || 0;
+        const deductFromThis = Math.min(creditsToDeduct, availableInThisPurchase);
+        const newRemaining = availableInThisPurchase - deductFromThis;
 
-          creditsToDeduct -= deductFromThis;
-        }
+        await tx
+          .update(studentPurchases)
+          .set({ 
+            creditsRemaining: newRemaining,
+            // Deactivate if no credits remaining
+            isActive: newRemaining > 0
+          })
+          .where(eq(studentPurchases.id, purchase.id));
+
+        creditsToDeduct -= deductFromThis;
       }
 
       // 6. Prepare insert data for booking
-      const insertData: any = {
+      const insertData: {
+        classId: number;
+        studentProfileId: number;
+        bookingStatus: string;
+        bookedAt: string;
+        creditsUsed: number;
+        cancelledAt?: string;
+        cancellationType?: string;
+        paymentId?: number;
+      } = {
         classId: parseInt(classId),
-        studentProfileId: parseInt(studentProfileId),
+        studentProfileId: studentProfileId,
         bookingStatus: bookingStatus || 'confirmed',
         bookedAt: new Date().toISOString(),
         creditsUsed: creditsToUse,
@@ -323,7 +407,10 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json(result, { status: 201 });
+    return NextResponse.json({
+      ...result,
+      message: `Class booked successfully! ${result.creditsUsed} credit(s) used.`
+    }, { status: 201 });
   } catch (error) {
     console.error('POST error:', error);
     
@@ -365,46 +452,54 @@ export async function POST(request: NextRequest) {
 // Helper function to send all email notifications
 async function sendEmailNotifications(bookingId: number, bookingStatus: string) {
   try {
-    // Fetch booking with all related data
-    const bookingData = await db
+    // Fetch booking with student data
+    const bookingWithStudent = await db
       .select({
         booking: bookings,
         class: classes,
         classType: classTypes,
-        instructor: instructors,
-        instructorProfile: userProfiles,
-        instructorUser: user,
         studentProfile: userProfiles,
         studentUser: user,
       })
       .from(bookings)
       .innerJoin(classes, eq(bookings.classId, classes.id))
       .innerJoin(classTypes, eq(classes.classTypeId, classTypes.id))
-      .innerJoin(instructors, eq(classes.instructorId, instructors.id))
-      .innerJoin(userProfiles, eq(instructors.userProfileId, userProfiles.id))
+      .innerJoin(userProfiles, eq(bookings.studentProfileId, userProfiles.id))
       .innerJoin(user, eq(userProfiles.userId, user.id))
-      .innerJoin(
-        { studentProfile: userProfiles },
-        eq(bookings.studentProfileId, userProfiles.id)
-      )
-      .innerJoin(
-        { studentUser: user },
-        eq(userProfiles.userId, user.id)
-      )
       .where(eq(bookings.id, bookingId))
       .limit(1);
 
-    if (bookingData.length === 0) {
+    if (bookingWithStudent.length === 0) {
       console.error('Booking data not found for email notifications');
       return;
     }
 
-    const data = bookingData[0];
+    const bookingData = bookingWithStudent[0];
+
+    // Fetch instructor data separately
+    const instructorData = await db
+      .select({
+        instructor: instructors,
+        instructorProfile: userProfiles,
+        instructorUser: user,
+      })
+      .from(instructors)
+      .innerJoin(userProfiles, eq(instructors.userProfileId, userProfiles.id))
+      .innerJoin(user, eq(userProfiles.userId, user.id))
+      .where(eq(instructors.id, bookingData.class.instructorId))
+      .limit(1);
+
+    if (instructorData.length === 0) {
+      console.error('Instructor data not found for email notifications');
+      return;
+    }
+
+    const instructor = instructorData[0];
 
     // Detect if this is a Pilates class
-    const isPilates = data.classType.name.toLowerCase().includes('pilates') || 
-                      data.classType.name.toLowerCase().includes('yoga') ||
-                      data.classType.name.toLowerCase().includes('meditation');
+    const isPilates = bookingData.classType.name.toLowerCase().includes('pilates') || 
+                      bookingData.classType.name.toLowerCase().includes('yoga') ||
+                      bookingData.classType.name.toLowerCase().includes('meditation');
 
     // Fetch studio info for cancellation policy
     const studioData = await db.select().from(studioInfo).limit(1);
@@ -413,7 +508,7 @@ async function sendEmailNotifications(bookingId: number, bookingStatus: string) 
       'Please cancel at least 24 hours in advance to avoid losing your credit.';
 
     // Format date and time
-    const classDate = new Date(data.class.date).toLocaleDateString('en-US', {
+    const classDate = new Date(bookingData.class.date).toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
@@ -421,29 +516,29 @@ async function sendEmailNotifications(bookingId: number, bookingStatus: string) 
     });
 
     // Get current capacity
-    const currentBookings = await db
-      .select()
+    const currentBookingsResult = await db
+      .select({ count: sql<number>`count(*)` })
       .from(bookings)
       .where(
         and(
-          eq(bookings.classId, data.class.id),
+          eq(bookings.classId, bookingData.class.id),
           eq(bookings.bookingStatus, 'confirmed')
         )
       );
 
-    const currentCapacity = currentBookings.length;
+    const currentCapacity = Number(currentBookingsResult[0]?.count || 0);
 
     // 1. Send confirmation to student
     if (bookingStatus === 'confirmed') {
       await sendBookingConfirmation({
-        studentEmail: data.studentUser.email,
-        studentName: data.studentUser.name,
-        className: data.classType.name,
+        studentEmail: bookingData.studentUser.email,
+        studentName: bookingData.studentUser.name,
+        className: bookingData.classType.name,
         classDate: classDate,
-        classTime: data.class.startTime,
-        instructorName: data.instructorUser.name,
+        classTime: bookingData.class.startTime,
+        instructorName: instructor.instructorUser.name,
         location: '2245 E Tioga Street, Philadelphia, PA 19134',
-        creditsUsed: data.booking.creditsUsed || 0,
+        creditsUsed: bookingData.booking.creditsUsed || 0,
         cancellationPolicy: cancellationPolicy,
         isPilates: isPilates,
       });
@@ -451,28 +546,28 @@ async function sendEmailNotifications(bookingId: number, bookingStatus: string) 
 
     // 2. Send notification to instructor
     await sendInstructorNotification({
-      instructorEmail: data.instructorUser.email,
-      instructorName: data.instructorUser.name,
-      studentName: data.studentUser.name,
-      className: data.classType.name,
+      instructorEmail: instructor.instructorUser.email,
+      instructorName: instructor.instructorUser.name,
+      studentName: bookingData.studentUser.name,
+      className: bookingData.classType.name,
       classDate: classDate,
-      classTime: data.class.startTime,
+      classTime: bookingData.class.startTime,
       currentCapacity: currentCapacity,
-      maxCapacity: data.class.capacity,
-      bookingId: data.booking.id,
+      maxCapacity: bookingData.class.capacity,
+      bookingId: bookingData.booking.id,
       notificationType: bookingStatus === 'confirmed' ? 'new_booking' : 'cancellation',
     });
 
     // 3. Send notification to admin
     await sendAdminNotification({
       notificationType: bookingStatus === 'confirmed' ? 'new_booking' : 'cancellation',
-      studentName: data.studentUser.name,
-      studentEmail: data.studentUser.email,
-      className: data.classType.name,
+      studentName: bookingData.studentUser.name,
+      studentEmail: bookingData.studentUser.email,
+      className: bookingData.classType.name,
       classDate: classDate,
-      classTime: data.class.startTime,
-      instructorName: data.instructorUser.name,
-      bookingId: data.booking.id,
+      classTime: bookingData.class.startTime,
+      instructorName: instructor.instructorUser.name,
+      bookingId: bookingData.booking.id,
       timestamp: new Date().toLocaleString('en-US', {
         timeZone: 'America/New_York',
         dateStyle: 'medium',
