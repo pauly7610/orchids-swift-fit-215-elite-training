@@ -69,16 +69,22 @@ export const auth = betterAuth({
 					</p>
 				`;
 				
-				await resend.emails.send({
+				const result = await resend.emails.send({
 					from: "Swift Fit Pilates <noreply@swiftfit215.com>",
 					to: user.email,
 					subject: "Verify Your Email - Swift Fit Pilates",
 					html: getEmailTemplate("Verify Your Email", content, "Verify Email", url),
 				});
-				console.log('Verification email sent to:', user.email);
+				
+				if (result.error) {
+					console.error('Resend error:', result.error);
+					// Don't throw - let signup succeed, user can request new verification email
+				} else {
+					console.log('Verification email sent to:', user.email);
+				}
 			} catch (error) {
 				console.error('Failed to send verification email:', error);
-				throw error;
+				// Don't throw - let signup succeed, user can request new verification email
 			}
 		},
 		// Enable password reset
