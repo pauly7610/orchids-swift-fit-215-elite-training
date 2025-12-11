@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     // Get today's date in YYYY-MM-DD format
     const today = new Date().toISOString().split('T')[0];
 
-    // Fetch due reminders with student information
+    // Fetch due reminders with student information and email preferences
     const dueReminders = await db
       .select({
         reminderId: classReminderTracking.id,
@@ -31,6 +31,8 @@ export async function GET(request: NextRequest) {
         studentProfileId: classReminderTracking.studentProfileId,
         userName: user.name,
         userEmail: user.email,
+        emailReminders: userProfiles.emailReminders,
+        marketingEmails: userProfiles.marketingEmails,
       })
       .from(classReminderTracking)
       .leftJoin(
@@ -57,6 +59,21 @@ export async function GET(request: NextRequest) {
     // Send reminders
     for (const reminder of dueReminders) {
       try {
+        // Check if user has opted out of email reminders
+        // emailReminders defaults to true, so null/undefined means opted in
+        if (reminder.emailReminders === false) {
+          console.log(`Reminder ${reminder.reminderId}: User opted out of email reminders, marking as sent`);
+          // Mark as sent so we don't keep trying
+          await db
+            .update(classReminderTracking)
+            .set({
+              reminderSent: true,
+              reminderSentAt: new Date().toISOString(),
+            })
+            .where(eq(classReminderTracking.id, reminder.reminderId));
+          continue;
+        }
+
         // Determine email and name
         const recipientEmail = reminder.email || reminder.userEmail;
         const recipientName = reminder.userName || 'Valued Student';
@@ -90,7 +107,7 @@ export async function GET(request: NextRequest) {
         );
 
         await resend.emails.send({
-          from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
+          from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
           to: recipientEmail,
           subject: `We miss you at Swift Fit! 💕 Time to return to your practice`,
           html: emailHtml,
@@ -121,8 +138,8 @@ export async function GET(request: NextRequest) {
     if (dueReminders.length > 0) {
       try {
         await resend.emails.send({
-          from: 'Swift Fit System <noreply@swiftfit215.com>',
-          to: 'swiftfitpws@gmail.com',
+          from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+          to: process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com',
           subject: `30-Day Reminder Report: ${results.sent} sent, ${results.failed} failed`,
           html: `
             <h2>Swift Fit 30-Day Reminder Report</h2>

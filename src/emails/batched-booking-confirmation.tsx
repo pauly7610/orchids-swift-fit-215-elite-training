@@ -146,7 +146,7 @@ export const BatchedBookingConfirmation = ({
           
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfit215.com/student"
+              href="https://swiftfitpws.com/student"
               style={{
                 backgroundColor: '#FF6B35',
                 color: '#ffffff',

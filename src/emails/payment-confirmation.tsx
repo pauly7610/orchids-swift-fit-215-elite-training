@@ -171,7 +171,7 @@ export const PaymentConfirmation = ({
           
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfit215.com/student"
+              href="https://swiftfitpws.com/student"
               style={{
                 backgroundColor: '#FF6B35',
                 color: '#ffffff',
@@ -187,7 +187,7 @@ export const PaymentConfirmation = ({
               Book a Class
             </Button>
             <Button
-              href="https://swiftfit215.com/student/purchase"
+              href="https://swiftfitpws.com/student/purchase"
               style={{
                 backgroundColor: '#ffffff',
                 color: '#1a1a1a',
@@ -209,7 +209,7 @@ export const PaymentConfirmation = ({
           <Section>
             <Text style={{ color: '#999', fontSize: '14px', lineHeight: '1.6', margin: '0' }}>
               <strong>Questions about your purchase?</strong><br />
-              Contact us at <a href="tel:2679390254" style={{ color: '#FF6B35', textDecoration: 'none' }}>(267) 939-0254</a> or email <a href="mailto:contact@swiftfit215.com" style={{ color: '#FF6B35', textDecoration: 'none' }}>contact@swiftfit215.com</a>
+              Contact us at <a href="tel:2679390254" style={{ color: '#FF6B35', textDecoration: 'none' }}>(267) 939-0254</a> or email <a href="mailto:swiftfitpws@gmail.com" style={{ color: '#FF6B35', textDecoration: 'none' }}>swiftfitpws@gmail.com</a>
             </Text>
           </Section>
           

@@ -94,7 +94,7 @@ export async function sendContactEmail(
 
     // Send confirmation email to user
     const userEmailResponse = await resend.emails.send({
-      from: 'SwiftFit 215 <noreply@swiftfit215.com>',
+      from: 'Swift Fit <noreply@swiftfitpws.com>',
       to: data.email,
       subject: 'Thank you for contacting SwiftFit 215',
       react: GymContactConfirmation({
@@ -103,7 +103,7 @@ export async function sendContactEmail(
         phone: data.phone,
         message: data.message,
       }),
-      replyTo: 'info@swiftfit215.com',
+      replyTo: 'swiftfitpws@gmail.com',
     });
 
     if (userEmailResponse.error) {
@@ -115,11 +115,11 @@ export async function sendContactEmail(
     }
 
     // Use custom admin email if provided, otherwise fall back to env variable
-    const recipientEmail = data.adminEmail || process.env.ADMIN_EMAIL || 'admin@swiftfit215.com';
+    const recipientEmail = data.adminEmail || process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com';
 
     // Send notification email to admin using React component
     const adminEmailResponse = await resend.emails.send({
-      from: 'SwiftFit 215 <noreply@swiftfit215.com>',
+      from: 'Swift Fit <noreply@swiftfitpws.com>',
       to: recipientEmail,
       subject: `New Contact Form: ${data.name}`,
       react: GymContactNotification({

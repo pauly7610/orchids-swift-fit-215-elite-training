@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { bookings, classes, studioInfo, studentPurchases } from '@/db/schema';
+import { bookings, classes, studioInfo, studentPurchases, classTypes, instructors, userProfiles, user, waitlist } from '@/db/schema';
 import { eq, and, or, isNull, gt } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
+import { sendCancellationConfirmation, sendInstructorNotification, sendAdminNotification, sendWaitlistNotification } from '@/app/actions/send-booking-emails';
+import { asc, sql } from 'drizzle-orm';
 
 export async function POST(
   request: NextRequest,
@@ -241,6 +243,18 @@ export async function POST(
             : `No-show recorded. Penalty: ${penaltyInfo}. No credits refunded.`,
     };
 
+    // Send email notifications asynchronously (don't block the response)
+    sendCancellationEmails(
+      bookingId,
+      booking.studentProfileId,
+      classData,
+      cancellationType,
+      shouldRefundCredits ? (booking.creditsUsed || 0) : 0,
+      hoursUntilClass
+    ).catch(error => {
+      console.error('Failed to send cancellation email notifications:', error);
+    });
+
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
     console.error('POST cancellation error:', error);
@@ -251,5 +265,216 @@ export async function POST(
       },
       { status: 500 }
     );
+  }
+}
+
+// Helper function to send cancellation email notifications
+async function sendCancellationEmails(
+  bookingId: number,
+  studentProfileId: number,
+  classData: { id: number; date: string; startTime: string; classTypeId: number; instructorId: number; capacity: number },
+  cancellationType: 'on_time' | 'late' | 'no_show',
+  creditsRefunded: number,
+  hoursUntilClass: number
+) {
+  try {
+    // Fetch student data
+    const studentData = await db
+      .select({
+        studentName: user.name,
+        studentEmail: user.email,
+      })
+      .from(userProfiles)
+      .innerJoin(user, eq(userProfiles.userId, user.id))
+      .where(eq(userProfiles.id, studentProfileId))
+      .limit(1);
+
+    if (studentData.length === 0) {
+      console.error('Student data not found for cancellation email');
+      return;
+    }
+
+    // Fetch class type name
+    const classTypeData = await db
+      .select({ name: classTypes.name })
+      .from(classTypes)
+      .where(eq(classTypes.id, classData.classTypeId))
+      .limit(1);
+
+    // Fetch instructor data
+    const instructorData = await db
+      .select({
+        instructorName: user.name,
+        instructorEmail: user.email,
+      })
+      .from(instructors)
+      .innerJoin(userProfiles, eq(instructors.userProfileId, userProfiles.id))
+      .innerJoin(user, eq(userProfiles.userId, user.id))
+      .where(eq(instructors.id, classData.instructorId))
+      .limit(1);
+
+    const student = studentData[0];
+    const className = classTypeData[0]?.name || 'Class';
+    const instructor = instructorData[0];
+
+    // Format date
+    const classDate = new Date(classData.date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+    // 1. Send cancellation confirmation to student
+    await sendCancellationConfirmation({
+      studentEmail: student.studentEmail,
+      studentName: student.studentName,
+      className,
+      classDate,
+      classTime: classData.startTime,
+      instructorName: instructor?.instructorName || 'Instructor',
+      cancellationType,
+      creditsRefunded,
+      hoursUntilClass: Math.max(0, hoursUntilClass),
+    });
+
+    // 2. Send notification to instructor
+    if (instructor) {
+      // Get current booking count for capacity info
+      const currentBookingsResult = await db
+        .select({ count: bookings.id })
+        .from(bookings)
+        .where(
+          and(
+            eq(bookings.classId, classData.id),
+            eq(bookings.bookingStatus, 'confirmed')
+          )
+        );
+
+      await sendInstructorNotification({
+        instructorEmail: instructor.instructorEmail,
+        instructorName: instructor.instructorName,
+        studentName: student.studentName,
+        className,
+        classDate,
+        classTime: classData.startTime,
+        currentCapacity: currentBookingsResult.length,
+        maxCapacity: classData.capacity,
+        bookingId,
+        notificationType: 'cancellation',
+      });
+    }
+
+    // 3. Send notification to admin
+    await sendAdminNotification({
+      notificationType: 'cancellation',
+      studentName: student.studentName,
+      studentEmail: student.studentEmail,
+      className,
+      classDate,
+      classTime: classData.startTime,
+      instructorName: instructor?.instructorName || 'Instructor',
+      bookingId,
+      timestamp: new Date().toLocaleString('en-US', {
+        timeZone: 'America/New_York',
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }),
+    });
+
+    // 4. Notify waitlisted students that a spot opened up
+    await notifyWaitlistedStudents(
+      classData.id,
+      className,
+      classDate,
+      classData.startTime,
+      instructor?.instructorName || 'Instructor',
+      classData.capacity
+    );
+
+    console.log('Cancellation email notifications sent successfully for booking:', bookingId);
+  } catch (error) {
+    console.error('Error sending cancellation email notifications:', error);
+  }
+}
+
+// Helper function to notify waitlisted students when a spot opens
+async function notifyWaitlistedStudents(
+  classId: number,
+  className: string,
+  classDate: string,
+  classTime: string,
+  instructorName: string,
+  classCapacity: number
+) {
+  try {
+    // Get current confirmed booking count
+    const confirmedBookings = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(bookings)
+      .where(
+        and(
+          eq(bookings.classId, classId),
+          eq(bookings.bookingStatus, 'confirmed')
+        )
+      );
+
+    const currentBookings = Number(confirmedBookings[0]?.count || 0);
+    const spotsAvailable = classCapacity - currentBookings;
+
+    // Only notify if there are spots available
+    if (spotsAvailable <= 0) {
+      return;
+    }
+
+    // Get waitlisted students for this class (ordered by position)
+    const waitlistedStudents = await db
+      .select({
+        waitlistId: waitlist.id,
+        position: waitlist.position,
+        notified: waitlist.notified,
+        studentProfileId: waitlist.studentProfileId,
+        studentName: user.name,
+        studentEmail: user.email,
+      })
+      .from(waitlist)
+      .innerJoin(userProfiles, eq(waitlist.studentProfileId, userProfiles.id))
+      .innerJoin(user, eq(userProfiles.userId, user.id))
+      .where(eq(waitlist.classId, classId))
+      .orderBy(asc(waitlist.position))
+      .limit(5); // Notify top 5 on waitlist
+
+    if (waitlistedStudents.length === 0) {
+      console.log('No students on waitlist for class:', classId);
+      return;
+    }
+
+    // Send notification to each waitlisted student
+    for (const waitlistEntry of waitlistedStudents) {
+      try {
+        await sendWaitlistNotification({
+          studentEmail: waitlistEntry.studentEmail,
+          studentName: waitlistEntry.studentName,
+          className,
+          classDate,
+          classTime,
+          instructorName,
+          waitlistPosition: waitlistEntry.position,
+          spotsAvailable,
+        });
+
+        // Mark as notified
+        await db
+          .update(waitlist)
+          .set({ notified: true })
+          .where(eq(waitlist.id, waitlistEntry.waitlistId));
+
+        console.log(`Waitlist notification sent to ${waitlistEntry.studentEmail} (position ${waitlistEntry.position})`);
+      } catch (error) {
+        console.error(`Failed to notify waitlist position ${waitlistEntry.position}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Error notifying waitlisted students:', error);
   }
 }

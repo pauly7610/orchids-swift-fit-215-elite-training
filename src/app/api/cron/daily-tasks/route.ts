@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
           studentProfileId: classReminderTracking.studentProfileId,
           userName: user.name,
           userEmail: user.email,
+          emailReminders: userProfiles.emailReminders,
         })
         .from(classReminderTracking)
         .leftJoin(userProfiles, eq(classReminderTracking.studentProfileId, userProfiles.id))
@@ -62,6 +63,19 @@ export async function GET(request: NextRequest) {
 
       for (const reminder of dueReminders) {
         try {
+          // Check if user has opted out of email reminders
+          if (reminder.emailReminders === false) {
+            console.log(`Reminder ${reminder.reminderId}: User opted out, marking as sent`);
+            await db
+              .update(classReminderTracking)
+              .set({
+                reminderSent: true,
+                reminderSentAt: new Date().toISOString(),
+              })
+              .where(eq(classReminderTracking.id, reminder.reminderId));
+            continue;
+          }
+
           const recipientEmail = reminder.email || reminder.userEmail;
           const recipientName = reminder.userName || 'Valued Student';
 
@@ -87,7 +101,7 @@ export async function GET(request: NextRequest) {
           );
 
           await resend.emails.send({
-            from: 'Swift Fit Pilates <noreply@swiftfit215.com>',
+            from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
             to: recipientEmail,
             subject: `We miss you at Swift Fit! 💕 Time to return to your practice`,
             html: emailHtml,
@@ -189,8 +203,8 @@ export async function GET(request: NextRequest) {
     // ============================================
     try {
       await resend.emails.send({
-        from: 'Swift Fit System <noreply@swiftfit215.com>',
-        to: 'swiftfitpws@gmail.com',
+        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        to: process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com',
         subject: `Daily Tasks Report - ${today}`,
         html: `
           <h2>Swift Fit Daily Tasks Report</h2>

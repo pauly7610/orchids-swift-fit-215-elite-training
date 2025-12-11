@@ -4,7 +4,10 @@ import { resend } from '@/lib/resend';
 import { BookingConfirmation } from '@/emails/booking-confirmation';
 import { BatchedBookingConfirmation } from '@/emails/batched-booking-confirmation';
 import { PilatesBookingConfirmation } from '@/emails/pilates-booking-confirmation';
+import { PilatesCancellationConfirmation } from '@/emails/pilates-cancellation-confirmation';
+import { PilatesWaitlistNotification } from '@/emails/pilates-waitlist-notification';
 import { PaymentConfirmation } from '@/emails/payment-confirmation';
+import { PilatesPaymentConfirmation } from '@/emails/pilates-payment-confirmation';
 import { InstructorNotification } from '@/emails/instructor-notification';
 import { AdminNotification } from '@/emails/admin-notification';
 
@@ -83,6 +86,29 @@ interface SendAdminNotificationParams {
   timestamp: string;
 }
 
+interface SendCancellationConfirmationParams {
+  studentEmail: string;
+  studentName: string;
+  className: string;
+  classDate: string;
+  classTime: string;
+  instructorName: string;
+  cancellationType: 'on_time' | 'late' | 'no_show';
+  creditsRefunded: number;
+  hoursUntilClass: number;
+}
+
+interface SendWaitlistNotificationParams {
+  studentEmail: string;
+  studentName: string;
+  className: string;
+  classDate: string;
+  classTime: string;
+  instructorName: string;
+  waitlistPosition: number;
+  spotsAvailable: number;
+}
+
 /**
  * Retry helper with exponential backoff
  * @param fn Function to retry
@@ -135,7 +161,7 @@ export async function sendBatchedBookingConfirmation(
 
     const response = await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: `${studioName} <noreply@swiftfit215.com>`,
+        from: `${studioName} <noreply@swiftfitpws.com>`,
         to: params.studentEmail,
         subject: subject,
         react: EmailComponent({
@@ -147,7 +173,7 @@ export async function sendBatchedBookingConfirmation(
         }),
         replyTo: params.isPilates 
           ? 'swiftfitpws@gmail.com'
-          : process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+          : process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com',
       });
 
       if (result.error) {
@@ -198,10 +224,10 @@ export async function sendPaymentConfirmation(
   try {
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'SwiftFit 215 <noreply@swiftfit215.com>',
+        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
         to: params.studentEmail,
-        subject: `Payment Received - ${params.packageName || 'SwiftFit 215'}`,
-        react: PaymentConfirmation({
+        subject: `Payment Received - ${params.packageName || 'Swift Fit Pilates'}`,
+        react: PilatesPaymentConfirmation({
           studentName: params.studentName,
           amount: params.amount,
           currency: params.currency,
@@ -213,7 +239,7 @@ export async function sendPaymentConfirmation(
           expiresAt: params.expiresAt,
           transactionId: params.transactionId,
         }),
-        replyTo: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+        replyTo: 'swiftfitpws@gmail.com',
       });
 
       if (result.error) {
@@ -236,7 +262,7 @@ export async function sendInstructorNotification(
   try {
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'SwiftFit 215 Instructor Portal <noreply@swiftfit215.com>',
+        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
         to: params.instructorEmail,
         subject: params.notificationType === 'new_booking' 
           ? `New Student Booked: ${params.className} on ${params.classDate}`
@@ -252,7 +278,7 @@ export async function sendInstructorNotification(
           bookingId: params.bookingId,
           notificationType: params.notificationType,
         }),
-        replyTo: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+        replyTo: process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com',
       });
 
       if (result.error) {
@@ -288,8 +314,8 @@ export async function sendAdminNotification(
 
     await retryWithBackoff(async () => {
       const result = await resend.emails.send({
-        from: 'SwiftFit 215 Admin <noreply@swiftfit215.com>',
-        to: process.env.ADMIN_EMAIL || 'contact@swiftfit215.com',
+        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        to: process.env.ADMIN_EMAIL || 'swiftfitpws@gmail.com',
         subject: getSubject(),
         react: AdminNotification({
           notificationType: params.notificationType,
@@ -319,6 +345,83 @@ export async function sendAdminNotification(
     return { success: true };
   } catch (error) {
     console.error('Admin notification error after retries:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
+  }
+}
+
+export async function sendCancellationConfirmation(
+  params: SendCancellationConfirmationParams
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    const subjectPrefix = params.cancellationType === 'on_time' 
+      ? 'Booking Cancelled' 
+      : params.cancellationType === 'late' 
+        ? 'Late Cancellation' 
+        : 'No-Show Recorded';
+
+    await retryWithBackoff(async () => {
+      const result = await resend.emails.send({
+        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        to: params.studentEmail,
+        subject: `${subjectPrefix} - ${params.className} on ${params.classDate}`,
+        react: PilatesCancellationConfirmation({
+          studentName: params.studentName,
+          className: params.className,
+          classDate: params.classDate,
+          classTime: params.classTime,
+          instructorName: params.instructorName,
+          cancellationType: params.cancellationType,
+          creditsRefunded: params.creditsRefunded,
+          hoursUntilClass: params.hoursUntilClass,
+        }),
+        replyTo: 'swiftfitpws@gmail.com',
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message || 'Failed to send email');
+      }
+
+      return result;
+    }, 3, 1000);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Cancellation confirmation error after retries:', error);
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
+  }
+}
+
+export async function sendWaitlistNotification(
+  params: SendWaitlistNotificationParams
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    await retryWithBackoff(async () => {
+      const result = await resend.emails.send({
+        from: 'Swift Fit Pilates <noreply@swiftfitpws.com>',
+        to: params.studentEmail,
+        subject: `🎉 A spot opened up! ${params.className} on ${params.classDate}`,
+        react: PilatesWaitlistNotification({
+          studentName: params.studentName,
+          className: params.className,
+          classDate: params.classDate,
+          classTime: params.classTime,
+          instructorName: params.instructorName,
+          waitlistPosition: params.waitlistPosition,
+          spotsAvailable: params.spotsAvailable,
+        }),
+        replyTo: 'swiftfitpws@gmail.com',
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message || 'Failed to send email');
+      }
+
+      return result;
+    }, 3, 1000);
+
+    return { success: true };
+  } catch (error) {
+    console.error('Waitlist notification error after retries:', error);
     return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' };
   }
 }

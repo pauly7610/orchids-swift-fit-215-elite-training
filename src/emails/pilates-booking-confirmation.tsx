@@ -273,7 +273,7 @@ export const PilatesBookingConfirmation = ({
           
           <Section style={{ marginTop: '32px', textAlign: 'center' }}>
             <Button
-              href="https://swiftfit215.com/student"
+              href="https://swiftfitpws.com/student"
               style={{
                 backgroundColor: '#9BA899',
                 color: '#ffffff',
@@ -329,6 +329,17 @@ export const PilatesBookingConfirmation = ({
             fontWeight: '300'
           }}>
             © 2025 Swift Fit Pilates & Wellness Studio. All rights reserved.
+          </Text>
+          
+          <Text style={{ 
+            color: '#B8AFA5', 
+            fontSize: '11px', 
+            marginTop: '16px', 
+            textAlign: 'center'
+          }}>
+            <a href="https://swiftfitpws.com/student" style={{ color: '#9BA899', textDecoration: 'underline' }}>
+              Manage notification preferences
+            </a>
           </Text>
         </Container>
       </Body>
