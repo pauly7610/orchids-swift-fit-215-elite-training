@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { authClient } from "@/lib/auth-client"
 import { toast } from "sonner"
 import Link from "next/link"
+import Image from "next/image"
 import { ArrowLeft } from "lucide-react"
 
 function LoginForm() {
@@ -82,7 +83,7 @@ function LoginForm() {
             } else if (role === 'student') {
               router.push('/student')
             } else {
-              router.push('/')
+              router.push('/pilates')
             }
             return
           } else {
@@ -117,7 +118,7 @@ function LoginForm() {
       }
       
       // Fallback redirect
-      router.push(redirectTo || '/')
+      router.push(redirectTo || '/pilates')
     } catch (error) {
       toast.error("An error occurred during login")
       setIsLoading(false)
@@ -125,15 +126,15 @@ function LoginForm() {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl font-display">Welcome Back</CardTitle>
-        <CardDescription>Sign in to your SwiftFit Pilates account</CardDescription>
+    <Card className="border-[#B8AFA5]/30 shadow-lg">
+      <CardHeader className="text-center pb-4">
+        <CardTitle className="text-2xl font-serif font-normal text-[#5A5550]">Welcome Back</CardTitle>
+        <CardDescription className="text-[#7A736B]">Sign in to your Swift Fit Pilates account</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-[#5A5550]">Email</Label>
             <Input
               id="email"
               type="email"
@@ -141,13 +142,13 @@ function LoginForm() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
-              className="mt-1"
+              className="mt-1 border-[#B8AFA5]/50 focus:border-[#9BA899] focus:ring-[#9BA899]"
               autoComplete="email"
             />
           </div>
 
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-[#5A5550]">Password</Label>
             <Input
               id="password"
               type="password"
@@ -155,7 +156,7 @@ function LoginForm() {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
-              className="mt-1"
+              className="mt-1 border-[#B8AFA5]/50 focus:border-[#9BA899] focus:ring-[#9BA899]"
               autoComplete="off"
             />
           </div>
@@ -167,28 +168,28 @@ function LoginForm() {
                 type="checkbox"
                 checked={formData.rememberMe}
                 onChange={(e) => setFormData({ ...formData, rememberMe: e.target.checked })}
-                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                className="h-4 w-4 rounded border-[#B8AFA5] text-[#9BA899] focus:ring-[#9BA899]"
               />
-              <Label htmlFor="rememberMe" className="ml-2 text-sm cursor-pointer">
+              <Label htmlFor="rememberMe" className="ml-2 text-sm cursor-pointer text-[#5A5550]">
                 Remember me
               </Label>
             </div>
-            <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+            <Link href="/forgot-password" className="text-sm text-[#9BA899] hover:text-[#8A9788] hover:underline">
               Forgot password?
             </Link>
           </div>
 
           <Button 
             type="submit" 
-            className="w-full bg-primary hover:bg-primary/90"
+            className="w-full bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full"
             disabled={isLoading}
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </Button>
 
-          <div className="text-center text-sm text-muted-foreground">
+          <div className="text-center text-sm text-[#7A736B]">
             Don't have an account?{" "}
-            <Link href="/register" className="text-primary hover:underline font-semibold">
+            <Link href="/register" className="text-[#9BA899] hover:text-[#8A9788] hover:underline font-semibold">
               Create account
             </Link>
           </div>
@@ -200,28 +201,54 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-secondary via-secondary/95 to-black flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="mb-6">
-          <Link href="/">
-            <Button variant="ghost" className="text-white hover:text-primary">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Button>
-          </Link>
+    <div className="min-h-screen bg-[#FAF8F5] flex flex-col">
+      {/* Header */}
+      <header className="border-b border-[#B8AFA5]/20 bg-white">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <Link href="/pilates" className="flex items-center gap-3">
+              <div className="relative w-10 h-10">
+                <Image
+                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1765052969010.png?width=8000&height=8000&resize=contain"
+                  alt="Swift Fit"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+              <span className="font-serif text-lg text-[#5A5550] hidden sm:block">Swift Fit Pilates</span>
+            </Link>
+            <Link href="/pilates">
+              <Button variant="ghost" className="text-[#5A5550] hover:text-[#9BA899] hover:bg-[#9BA899]/10">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Studio
+              </Button>
+            </Link>
+          </div>
         </div>
+      </header>
 
-        <Suspense fallback={
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-display">Welcome Back</CardTitle>
-              <CardDescription>Loading...</CardDescription>
-            </CardHeader>
-          </Card>
-        }>
-          <LoginForm />
-        </Suspense>
-      </div>
+      {/* Main Content */}
+      <main className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-md">
+          <Suspense fallback={
+            <Card className="border-[#B8AFA5]/30">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-serif text-[#5A5550]">Welcome Back</CardTitle>
+                <CardDescription className="text-[#7A736B]">Loading...</CardDescription>
+              </CardHeader>
+            </Card>
+          }>
+            <LoginForm />
+          </Suspense>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-[#B8AFA5]/20 bg-white py-4">
+        <div className="container mx-auto px-4 text-center text-sm text-[#7A736B]">
+          © 2025 Swift Fit Pilates & Wellness Studio
+        </div>
+      </footer>
     </div>
   )
 }
