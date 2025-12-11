@@ -6,9 +6,7 @@ import { headers } from "next/headers"
 import { db } from "@/db";
 import { userProfiles } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { resend } from "@/lib/resend";
 
 // Email template helper
 const getEmailTemplate = (title: string, content: string, buttonText: string, buttonUrl: string) => `
