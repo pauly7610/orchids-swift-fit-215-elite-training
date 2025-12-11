@@ -121,10 +121,24 @@ export async function GET(request: NextRequest) {
       userWaitlists.forEach(w => userWaitlistPositions.set(w.classId, w.position));
     }
     
+    // Helper function to calculate duration from start and end times
+    function calculateDuration(startTime: string, endTime: string): number {
+      const [startHours, startMinutes] = startTime.split(':').map(Number);
+      const [endHours, endMinutes] = endTime.split(':').map(Number);
+      const startTotal = startHours * 60 + startMinutes;
+      const endTotal = endHours * 60 + endMinutes;
+      return endTotal - startTotal;
+    }
+
     // Transform to enriched format with real data
     const enrichedClasses = classResults.map((cls) => {
       const registeredCount = bookingCountMap.get(cls.id) || 0;
       const spotsRemaining = Math.max(0, cls.capacity - registeredCount);
+      
+      // Calculate actual duration from start/end times (more accurate than class type default)
+      const actualDuration = cls.startTime && cls.endTime 
+        ? calculateDuration(cls.startTime, cls.endTime)
+        : cls.classTypeDuration || 50;
       
       return {
         id: cls.id,
@@ -138,7 +152,7 @@ export async function GET(request: NextRequest) {
           id: cls.classTypeId,
           name: cls.classTypeName || 'Unknown',
           description: cls.classTypeDescription || '',
-          durationMinutes: cls.classTypeDuration || 50
+          durationMinutes: actualDuration // Use actual duration from class times
         },
         instructor: {
           id: cls.instructorId,
