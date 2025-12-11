@@ -532,11 +532,13 @@ export default function SchedulePage() {
                                   )
                                 ) : (
                                   <Button
-                                    onClick={() => handleBookClass(cls.id)}
-                                    className="w-full bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full text-sm"
-                                    disabled={session && totalCredits === 0}
+                                    onClick={() => cls.isFree && !session ? router.push('/register') : handleBookClass(cls.id)}
+                                    className={`w-full text-white rounded-full text-sm ${cls.isFree ? 'bg-[#E8B4B8] hover:bg-[#d9a3a7]' : 'bg-[#9BA899] hover:bg-[#8A9788]'}`}
+                                    disabled={session && !cls.isFree && totalCredits === 0}
                                   >
-                                    {session ? (totalCredits > 0 ? "Book Now" : "No Credits") : "Login to Book"}
+                                    {cls.isFree 
+                                      ? (session ? "Book FREE ✨" : "Sign Up for FREE ✨")
+                                      : (session ? (totalCredits > 0 ? "Book Now" : "No Credits") : "Login to Book")}
                                   </Button>
                                 )}
                               </div>
@@ -571,11 +573,13 @@ export default function SchedulePage() {
                                 )
                               ) : (
                                 <Button
-                                  onClick={() => handleBookClass(cls.id)}
-                                  className="w-32 bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full"
-                                  disabled={session && totalCredits === 0}
+                                  onClick={() => cls.isFree && !session ? router.push('/register') : handleBookClass(cls.id)}
+                                  className={`w-32 text-white rounded-full ${cls.isFree ? 'bg-[#E8B4B8] hover:bg-[#d9a3a7]' : 'bg-[#9BA899] hover:bg-[#8A9788]'}`}
+                                  disabled={session && !cls.isFree && totalCredits === 0}
                                 >
-                                  {session ? (totalCredits > 0 ? "Book Now" : "No Credits") : "Login to Book"}
+                                  {cls.isFree 
+                                    ? (session ? "Book FREE ✨" : "Sign Up ✨")
+                                    : (session ? (totalCredits > 0 ? "Book Now" : "No Credits") : "Login to Book")}
                                 </Button>
                               )}
                             </div>

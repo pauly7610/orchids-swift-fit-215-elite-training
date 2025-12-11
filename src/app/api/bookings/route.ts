@@ -275,9 +275,8 @@ export async function POST(request: NextRequest) {
 
       // Check if this is a soft opening class (December 13th) - these are FREE
       const classDate = new Date(classInfo.date);
-      const isSoftOpeningDay = classDate.getFullYear() === 2024 && 
-                               classDate.getMonth() === 11 && // December is month 11 (0-indexed)
-                               classDate.getDate() === 13;
+      const isSoftOpeningDay = classDate.getMonth() === 11 && // December is month 11 (0-indexed)
+                               classDate.getDate() === 13; // Works for any year
 
       // 2. Check for duplicate booking (same student, same class)
       const existingBooking = await tx

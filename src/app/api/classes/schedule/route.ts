@@ -143,11 +143,10 @@ export async function GET(request: NextRequest) {
         ? calculateDuration(cls.startTime, cls.endTime)
         : cls.classTypeDuration || 50;
       
-      // Check if this is a soft opening class (December 13th, 2024) - FREE
+      // Check if this is a soft opening class (December 13th) - FREE
       const classDate = new Date(cls.date);
-      const isFree = classDate.getFullYear() === 2024 && 
-                     classDate.getMonth() === 11 && // December is month 11 (0-indexed)
-                     classDate.getDate() === 13;
+      const isFree = classDate.getMonth() === 11 && // December is month 11 (0-indexed)
+                     classDate.getDate() === 13; // Works for any year
       
       return {
         id: cls.id,
