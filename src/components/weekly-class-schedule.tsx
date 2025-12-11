@@ -131,7 +131,7 @@ export function SoftOpeningBanner() {
       </CardHeader>
       <CardContent>
         <p className="text-[#7A736B] mb-6">
-          Join us for our soft opening! Experience sample classes, meet our amazing instructors, and learn about what Swift Fit Pilates & Wellness has to offer.
+          Join us for our soft opening! Experience 30-minute sample classes, meet our amazing instructors, and learn about what Swift Fit Pilates & Wellness has to offer.
         </p>
         
         <div className="space-y-2">
