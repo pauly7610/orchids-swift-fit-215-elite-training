@@ -6,10 +6,24 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, ArrowLeft, Sparkles } from "lucide-react"
+import { Check, ArrowLeft, Sparkles, ExternalLink } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
 import Image from "next/image"
+
+// SwipeSimple payment links
+const SWIPE_SIMPLE_LINKS: Record<string, string> = {
+  // Class Packs
+  "New Student Intro": "https://swipesimple.com/links/lnk_3170cae99f12bdf4946fbad2f0115779",
+  "Drop In": "https://swipesimple.com/links/lnk_2fbdf3a609891ea262e844eb8ecd6d0d",
+  "5 Class Pack": "https://swipesimple.com/links/lnk_31523cd29d05b93f5914fa3810d6d222",
+  "10 Class Pack": "https://swipesimple.com/links/lnk_05d3b78c3d0a693475d54f08edddeaa0",
+  "20 Class Pack": "https://swipesimple.com/links/lnk_e67ae0c539f9ef0c8b2715cc6a058d5a",
+  // Monthly Memberships
+  "4 Class Monthly": "https://swipesimple.com/links/lnk_6f005263d89019ae3467b7014930bdb7",
+  "8 Class Monthly": "https://swipesimple.com/links/lnk_b98d041b9a58327d90aea6dd479ba24b",
+  "Unlimited Monthly": "https://swipesimple.com/links/lnk_f7a2d31d0342eda1b64db8ae9f170cff",
+}
 
 interface Package {
   id: number
@@ -37,7 +51,6 @@ export default function PurchasePage() {
   const [packages, setPackages] = useState<Package[]>([])
   const [memberships, setMemberships] = useState<Membership[]>([])
   const [loading, setLoading] = useState(true)
-  const [purchasing, setPurchasing] = useState(false)
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -76,57 +89,17 @@ export default function PurchasePage() {
     }
   }
 
-  const handlePurchase = async (type: "package" | "membership", id: number, amount: number) => {
-    setPurchasing(true)
-    try {
-      const token = localStorage.getItem("bearer_token")
-      
-      // Create payment intent
-      const paymentRes = await fetch("/api/payments", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          amount,
-          currency: "USD",
-          paymentMethod: "square"
-        })
-      })
-
-      if (!paymentRes.ok) {
-        throw new Error("Failed to create payment")
-      }
-
-      const paymentData = await paymentRes.json()
-
-      // Create student purchase record
-      const purchaseRes = await fetch("/api/student-purchases", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          purchaseType: type,
-          packageId: type === "package" ? id : undefined,
-          membershipId: type === "membership" ? id : undefined,
-          paymentId: paymentData.id
-        })
-      })
-
-      if (!purchaseRes.ok) {
-        throw new Error("Failed to complete purchase")
-      }
-
-      toast.success("Purchase successful!")
-      router.push("/student")
-    } catch (error) {
-      toast.error("Purchase failed. Please try again.")
-    } finally {
-      setPurchasing(false)
+  const handlePurchase = (name: string) => {
+    const link = SWIPE_SIMPLE_LINKS[name]
+    
+    if (!link) {
+      toast.error("Payment link not available. Please contact us.")
+      return
     }
+    
+    // Open SwipeSimple payment page
+    window.open(link, "_blank", "noopener,noreferrer")
+    toast.success(`Opening payment page for ${name}`)
   }
 
   if (isPending || loading) {
@@ -188,10 +161,10 @@ export default function PurchasePage() {
               <p className="text-[#7A736B] mb-6">Perfect for trying out different class types and instructors</p>
               <Button 
                 className="bg-[#E8B4B8] hover:bg-[#D9A5A9] text-white rounded-full px-8"
-                onClick={() => handlePurchase("package", 1, 49)}
-                disabled={purchasing}
+                onClick={() => handlePurchase("New Student Intro")}
               >
-                {purchasing ? "Processing..." : "Get Started"}
+                Get Started
+                <ExternalLink className="h-4 w-4 ml-2" />
               </Button>
             </CardContent>
           </Card>
@@ -243,10 +216,10 @@ export default function PurchasePage() {
 
                   <Button 
                     className="w-full bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full" 
-                    onClick={() => handlePurchase("membership", membership.id, membership.priceMonthly)}
-                    disabled={purchasing}
+                    onClick={() => handlePurchase(membership.name)}
                   >
-                    {purchasing ? "Processing..." : "Subscribe Now"}
+                    Subscribe Now
+                    <ExternalLink className="h-4 w-4 ml-2" />
                   </Button>
                 </CardContent>
               </Card>
@@ -299,10 +272,10 @@ export default function PurchasePage() {
                   <Button 
                     className="w-full rounded-full border-[#9BA899] text-[#9BA899] hover:bg-[#9BA899]/10" 
                     variant="outline"
-                    onClick={() => handlePurchase("package", pkg.id, pkg.price)}
-                    disabled={purchasing}
+                    onClick={() => handlePurchase(pkg.name)}
                   >
-                    {purchasing ? "Processing..." : "Buy Package"}
+                    Buy Package
+                    <ExternalLink className="h-4 w-4 ml-2" />
                   </Button>
                 </CardContent>
               </Card>
@@ -315,8 +288,8 @@ export default function PurchasePage() {
           <Card className="bg-[#9BA899]/10 border-[#9BA899]/20">
             <CardContent className="p-4 md:p-6 text-center text-xs md:text-sm text-[#7A736B]">
               <p>
-                All purchases are processed securely through Square. You can manage your subscription 
-                and payment methods from your dashboard.
+                All purchases are processed securely through SwipeSimple. After completing payment, 
+                your credits will be added to your account within 24 hours.
               </p>
             </CardContent>
           </Card>
