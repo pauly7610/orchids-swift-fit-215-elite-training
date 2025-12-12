@@ -9,8 +9,9 @@ import { Badge } from "@/components/ui/badge"
 import { Heart, Calendar, User, CreditCard, Menu, X } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
-import { format, parseISO, startOfWeek, addDays, isSameDay } from "date-fns"
-import { useRef } from "react"
+import { format, parseISO, startOfWeek, addDays, isSameDay, isToday, startOfDay } from "date-fns"
+import { useRef, useCallback } from "react"
+import { ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 
 interface Class {
@@ -42,15 +43,45 @@ export default function SchedulePage() {
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date>(new Date())
-  const [weekDays, setWeekDays] = useState<Date[]>([])
+  const [allDays, setAllDays] = useState<Date[]>([])
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
+  const dateScrollRef = useRef<HTMLDivElement>(null)
+  const todayButtonRef = useRef<HTMLButtonElement>(null)
 
+  // Generate 60 days starting from today
   useEffect(() => {
-    const start = startOfWeek(new Date(), { weekStartsOn: 0 })
-    const days = Array.from({ length: 7 }, (_, i) => addDays(start, i))
-    setWeekDays(days)
+    const today = startOfDay(new Date())
+    const days = Array.from({ length: 60 }, (_, i) => addDays(today, i))
+    setAllDays(days)
+    setSelectedDate(today)
+  }, [])
+
+  // Scroll to today on mount
+  useEffect(() => {
+    if (todayButtonRef.current && dateScrollRef.current) {
+      const scrollContainer = dateScrollRef.current
+      const todayButton = todayButtonRef.current
+      const containerWidth = scrollContainer.offsetWidth
+      const buttonLeft = todayButton.offsetLeft
+      const buttonWidth = todayButton.offsetWidth
+      scrollContainer.scrollTo({
+        left: buttonLeft - (containerWidth / 2) + (buttonWidth / 2),
+        behavior: 'smooth'
+      })
+    }
+  }, [allDays])
+
+  // Scroll functions for arrow buttons
+  const scrollDates = useCallback((direction: 'left' | 'right') => {
+    if (dateScrollRef.current) {
+      const scrollAmount = 300
+      dateScrollRef.current.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      })
+    }
   }, [])
 
   useEffect(() => {
@@ -335,51 +366,96 @@ export default function SchedulePage() {
         </div>
       </section>
 
-      {/* Week Navigation */}
-      <section className="py-6 md:py-8 bg-white border-b border-[#B8AFA5]/20">
+      {/* Date Carousel */}
+      <section className="py-4 md:py-6 bg-white border-b border-[#B8AFA5]/20 sticky top-[72px] md:top-[80px] z-40">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-start gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {weekDays.map((day) => {
-              const isSelected = selectedDate && isSameDay(day, selectedDate)
-              const hasClasses = classes.some(cls => isSameDay(parseISO(cls.date), day))
-              
-              return (
-                <button
-                  key={day.toISOString()}
-                  onClick={() => setSelectedDate(day)}
-                  className={`flex flex-col items-center min-w-[70px] md:min-w-[80px] px-3 md:px-4 py-2.5 md:py-3 rounded-2xl border-2 transition-all flex-shrink-0 ${
-                    isSelected
-                      ? "border-[#9BA899] bg-[#9BA899]/10"
-                      : hasClasses
-                      ? "border-[#B8AFA5]/30 hover:border-[#9BA899]/50 bg-white"
-                      : "border-[#B8AFA5]/20 opacity-50 cursor-not-allowed bg-[#FAF8F5]"
-                  }`}
-                  disabled={!hasClasses}
-                >
-                  <span className="text-xs text-[#9BA899] mb-0.5 md:mb-1">
-                    {format(day, "EEE")}
-                  </span>
-                  <span className="text-xl md:text-2xl font-serif font-light text-[#5A5550]">
-                    {format(day, "d")}
-                  </span>
-                  <span className="text-xs text-[#7A736B]">
-                    {format(day, "MMM")}
-                  </span>
-                  {hasClasses && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#9BA899] mt-1.5 md:mt-2" />
-                  )}
-                </button>
-              )
-            })}
+          <div className="relative">
+            {/* Left Arrow */}
+            <button
+              onClick={() => scrollDates('left')}
+              className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-md rounded-full p-2 border border-[#B8AFA5]/30 transition-all hover:border-[#9BA899] hidden sm:flex"
+              aria-label="Scroll left"
+            >
+              <ChevronLeft className="h-5 w-5 text-[#5A5550]" />
+            </button>
+            
+            {/* Scrollable Date Container */}
+            <div 
+              ref={dateScrollRef}
+              className="flex items-center gap-2 overflow-x-auto scrollbar-hide scroll-smooth px-0 sm:px-10"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              {allDays.map((day, index) => {
+                const isSelected = selectedDate && isSameDay(day, selectedDate)
+                const hasClasses = classes.some(cls => isSameDay(parseISO(cls.date), day))
+                const isDayToday = isToday(day)
+                
+                return (
+                  <button
+                    key={day.toISOString()}
+                    ref={isDayToday ? todayButtonRef : null}
+                    onClick={() => setSelectedDate(day)}
+                    className={`flex flex-col items-center min-w-[60px] md:min-w-[70px] px-2 md:px-3 py-2 md:py-3 rounded-xl border-2 transition-all flex-shrink-0 ${
+                      isSelected
+                        ? "border-[#9BA899] bg-[#9BA899]/10 shadow-sm"
+                        : isDayToday
+                        ? "border-[#E8B4B8] bg-[#E8B4B8]/10"
+                        : hasClasses
+                        ? "border-[#B8AFA5]/30 hover:border-[#9BA899]/50 bg-white hover:bg-[#FAF8F5]"
+                        : "border-[#B8AFA5]/20 opacity-40 bg-[#FAF8F5]"
+                    }`}
+                  >
+                    <span className={`text-[10px] md:text-xs mb-0.5 ${isDayToday ? 'text-[#E8B4B8] font-medium' : 'text-[#9BA899]'}`}>
+                      {isDayToday ? 'Today' : format(day, "EEE")}
+                    </span>
+                    <span className={`text-lg md:text-xl font-serif font-light ${isSelected ? 'text-[#9BA899]' : 'text-[#5A5550]'}`}>
+                      {format(day, "d")}
+                    </span>
+                    <span className="text-[10px] md:text-xs text-[#7A736B]">
+                      {format(day, "MMM")}
+                    </span>
+                    {hasClasses && (
+                      <div className={`w-1.5 h-1.5 rounded-full mt-1 ${isSelected ? 'bg-[#9BA899]' : 'bg-[#B8AFA5]'}`} />
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Right Arrow */}
+            <button
+              onClick={() => scrollDates('right')}
+              className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-md rounded-full p-2 border border-[#B8AFA5]/30 transition-all hover:border-[#9BA899] hidden sm:flex"
+              aria-label="Scroll right"
+            >
+              <ChevronRight className="h-5 w-5 text-[#5A5550]" />
+            </button>
           </div>
-          <div className="text-center mt-3 md:mt-4">
+
+          {/* Jump to Today Button */}
+          <div className="text-center mt-2 md:mt-3">
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setSelectedDate(new Date())}
-              className="text-[#9BA899] hover:text-[#8A9788] text-sm"
+              onClick={() => {
+                const today = startOfDay(new Date())
+                setSelectedDate(today)
+                if (todayButtonRef.current && dateScrollRef.current) {
+                  const scrollContainer = dateScrollRef.current
+                  const todayButton = todayButtonRef.current
+                  const containerWidth = scrollContainer.offsetWidth
+                  const buttonLeft = todayButton.offsetLeft
+                  const buttonWidth = todayButton.offsetWidth
+                  scrollContainer.scrollTo({
+                    left: buttonLeft - (containerWidth / 2) + (buttonWidth / 2),
+                    behavior: 'smooth'
+                  })
+                }
+              }}
+              className="text-[#9BA899] hover:text-[#8A9788] text-xs md:text-sm"
             >
-              Today
+              <Calendar className="h-3 w-3 md:h-4 md:w-4 mr-1" />
+              Jump to Today
             </Button>
           </div>
         </div>
