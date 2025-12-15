@@ -27,8 +27,8 @@ async function main() {
             specialties: ['Mat Pilates', 'Fitness & Strength Training', 'HIIT']
         },
         {
-            name: 'Maisha',
-            email: 'maisha@posh-studio.com',
+            name: 'Life',
+            email: 'life@posh-studio.com',
             phone: '555-0103',
             bio: 'Experienced yoga instructor focused on mindfulness, breathwork, and alignment. Creates a calming and supportive environment for all levels.',
             specialties: ['Yoga', 'Mindfulness', 'Breathwork']

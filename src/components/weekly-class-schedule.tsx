@@ -19,7 +19,7 @@ const weeklySchedule: DaySchedule[] = [
   {
     day: "Monday",
     classes: [
-      { time: "6:00 AM – 7:00 AM", instructor: "Joi", classType: "Mat Pilates" },
+      { time: "5:30 AM – 6:30 AM", instructor: "Joi", classType: "Mat Pilates" },
       { time: "11:00 AM – 12:00 PM", instructor: "Drelle", classType: "Fitness / Strength" },
       { time: "4:00 PM – 5:00 PM", instructor: "Nasir", classType: "Meditation / Herbal Wellness" },
       { time: "7:00 PM – 8:00 PM", instructor: "Ivori", classType: "Group Fitness / Zumba" },
@@ -28,17 +28,16 @@ const weeklySchedule: DaySchedule[] = [
   {
     day: "Tuesday",
     classes: [
-      { time: "6:00 AM – 7:00 AM", instructor: "Joi", classType: "Mat Pilates" },
-      { time: "9:15 AM – 10:15 AM", instructor: "Maisha", classType: "Yoga" },
+      { time: "5:30 AM – 6:30 AM", instructor: "Joi", classType: "Mat Pilates" },
+      { time: "9:15 AM – 10:15 AM", instructor: "Life", classType: "Yoga" },
       { time: "11:00 AM – 12:00 PM", instructor: "Drelle", classType: "Fitness / Strength" },
     ]
   },
   {
     day: "Wednesday",
     classes: [
-      { time: "6:00 AM – 7:00 AM", instructor: "Joi", classType: "Mat Pilates" },
+      { time: "5:30 AM – 6:30 AM", instructor: "Joi", classType: "Mat Pilates" },
       { time: "1:00 PM – 2:00 PM", instructor: "Drelle", classType: "Fitness / Strength" },
-      { time: "3:30 PM – 4:30 PM", instructor: "Nasir", classType: "Meditation / Herbal Wellness" },
       { time: "5:00 PM – 6:00 PM", instructor: "Jewlz", classType: "Fitness" },
       { time: "6:30 PM – 7:30 PM", instructor: "Des", classType: "Dance Fitness" },
       { time: "8:00 PM – 9:00 PM", instructor: "Ivori", classType: "Group Fitness / Zumba" },
@@ -47,8 +46,8 @@ const weeklySchedule: DaySchedule[] = [
   {
     day: "Thursday",
     classes: [
-      { time: "6:00 AM – 7:00 AM", instructor: "Joi", classType: "Mat Pilates" },
-      { time: "9:15 AM – 10:15 AM", instructor: "Maisha", classType: "Yoga" },
+      { time: "5:30 AM – 6:30 AM", instructor: "Joi", classType: "Mat Pilates" },
+      { time: "9:15 AM – 10:15 AM", instructor: "Life", classType: "Yoga" },
       { time: "11:00 AM – 12:00 PM", instructor: "Drelle", classType: "Fitness / Strength" },
       { time: "6:00 PM – 7:00 PM", instructor: "Des", classType: "Dance Fitness" },
       { time: "7:30 PM – 8:30 PM", instructor: "Ivori", classType: "Group Fitness / Zumba" },
@@ -57,7 +56,7 @@ const weeklySchedule: DaySchedule[] = [
   {
     day: "Friday",
     classes: [
-      { time: "6:00 AM – 7:00 AM", instructor: "Joi", classType: "Mat Pilates" },
+      { time: "5:30 AM – 6:30 AM", instructor: "Joi", classType: "Mat Pilates" },
       { time: "11:00 AM – 12:00 PM", instructor: "Drelle", classType: "Fitness / Strength" },
       { time: "4:00 PM – 5:00 PM", instructor: "Nasir", classType: "Meditation / Herbal Wellness" },
     ]

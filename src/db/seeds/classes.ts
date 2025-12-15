@@ -54,37 +54,38 @@ async function main() {
     }
 
     // Weekly schedule template
+    // NOTE: Joi's classes are 5:30am-6:30am
     const weeklySchedule = {
         1: [ // Monday
-            { time: '06:00', type: 'Mat Pilates', instructor: 'Joi' },
+            { time: '05:30', type: 'Mat Pilates', instructor: 'Joi' },
             { time: '08:00', type: 'Mat Pilates', instructor: 'Tyra' },
             { time: '12:00', type: 'Fitness & Strength Training', instructor: 'Drelle' },
             { time: '17:30', type: 'Mat Pilates', instructor: 'Joi' },
-            { time: '18:30', type: 'Yoga', instructor: 'Maisha' },
+            { time: '18:30', type: 'Yoga', instructor: 'Life' },
         ],
         2: [ // Tuesday
-            { time: '06:00', type: 'HIIT', instructor: 'Tyra' },
+            { time: '05:30', type: 'HIIT', instructor: 'Tyra' },
             { time: '09:00', type: 'Mat Pilates', instructor: 'Joi' },
             { time: '12:00', type: 'Dance Fitness', instructor: 'Des' },
             { time: '17:30', type: 'Fitness & Strength Training', instructor: 'Drelle' },
             { time: '19:00', type: 'Meditation & Herbal Wellness', instructor: 'Nasir' },
         ],
-        3: [ // Wednesday
-            { time: '06:00', type: 'Mat Pilates', instructor: 'Tyra' },
+        3: [ // Wednesday - Nasir REMOVED from this day
+            { time: '05:30', type: 'Mat Pilates', instructor: 'Tyra' },
             { time: '08:00', type: 'Mat Pilates', instructor: 'Joi' },
-            { time: '12:00', type: 'Yoga', instructor: 'Maisha' },
+            { time: '12:00', type: 'Yoga', instructor: 'Life' },
             { time: '17:30', type: 'Mat Pilates', instructor: 'Joi' },
             { time: '18:30', type: 'Dance Fitness', instructor: 'Des' },
         ],
         4: [ // Thursday
-            { time: '06:00', type: 'HIIT', instructor: 'Tyra' },
+            { time: '05:30', type: 'HIIT', instructor: 'Tyra' },
             { time: '09:00', type: 'Mat Pilates', instructor: 'Joi' },
             { time: '12:00', type: 'Fitness & Strength Training', instructor: 'Tyra' },
-            { time: '17:30', type: 'Yoga', instructor: 'Maisha' },
+            { time: '17:30', type: 'Yoga', instructor: 'Life' },
             { time: '19:00', type: 'Dance Fitness', instructor: 'Drelle' },
         ],
         5: [ // Friday
-            { time: '06:00', type: 'Mat Pilates', instructor: 'Joi' },
+            { time: '05:30', type: 'Mat Pilates', instructor: 'Joi' },
             { time: '08:00', type: 'Mat Pilates', instructor: 'Tyra' },
             { time: '12:00', type: 'Dance Fitness', instructor: 'Des' },
             { time: '17:30', type: 'Mat Pilates', instructor: 'Joi' },
@@ -92,7 +93,7 @@ async function main() {
         ],
         6: [ // Saturday
             { time: '08:00', type: 'Mat Pilates', instructor: 'Joi' },
-            { time: '09:00', type: 'Yoga', instructor: 'Maisha' },
+            { time: '09:00', type: 'Yoga', instructor: 'Life' },
             { time: '10:15', type: 'Dance Fitness', instructor: 'Des' },
             { time: '11:15', type: 'HIIT', instructor: 'Tyra' },
         ],

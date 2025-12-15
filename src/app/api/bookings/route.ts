@@ -6,6 +6,7 @@ import { sendBookingConfirmation, sendInstructorNotification, sendAdminNotificat
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from '@/lib/rate-limit';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
+import { getInstructorNotificationEmails } from '@/lib/instructor-notifications';
 
 // Helper function to get current user's profile ID
 async function getCurrentUserProfileId(): Promise<number | null> {
@@ -588,6 +589,37 @@ async function sendEmailNotifications(bookingId: number, bookingStatus: string) 
         timeStyle: 'short',
       }),
     });
+
+    // 4. Send notifications to instructor-specific additional emails
+    // (e.g., Desiree → internally.a.queen@gmail.com, Nasir → Aceinvestgp@gmail.com)
+    const additionalEmails = getInstructorNotificationEmails(instructor.instructorUser.name);
+    
+    for (const additionalEmail of additionalEmails) {
+      // Avoid duplicate emails if the additional email is the same as instructor or admin
+      if (
+        additionalEmail.toLowerCase() !== instructor.instructorUser.email.toLowerCase() &&
+        additionalEmail.toLowerCase() !== (process.env.ADMIN_EMAIL || '').toLowerCase()
+      ) {
+        try {
+          await sendInstructorNotification({
+            instructorEmail: additionalEmail,
+            instructorName: instructor.instructorUser.name,
+            studentName: bookingData.studentUser.name,
+            className: bookingData.classType.name,
+            classDate: classDate,
+            classTime: bookingData.class.startTime,
+            currentCapacity: currentCapacity,
+            maxCapacity: bookingData.class.capacity,
+            bookingId: bookingData.booking.id,
+            notificationType: bookingStatus === 'confirmed' ? 'new_booking' : 'cancellation',
+          });
+          console.log(`Additional notification sent to ${additionalEmail} for instructor ${instructor.instructorUser.name}`);
+        } catch (err) {
+          console.error(`Failed to send additional notification to ${additionalEmail}:`, err);
+          // Continue with other notifications even if this one fails
+        }
+      }
+    }
 
     console.log('Email notifications sent successfully for booking:', bookingId);
   } catch (error) {

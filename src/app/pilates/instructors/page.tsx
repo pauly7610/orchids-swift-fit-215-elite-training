@@ -17,12 +17,12 @@ const instructors = [
     image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788581334.png?width=8000&height=8000&resize=contain"
   },
   {
-    name: "Maisha",
+    name: "Life",
     specialty: "Yoga & Group Fitness",
     badge: "Certified Yoga Instructor • BS Health Sciences",
     bio: "I'm a performance-driven group fitness instructor and certified yoga instructor with a Bachelor's degree in Health Sciences. I blend athletic training with personal growth strategies to help clients level up physically and mentally. I thrive on creating a supportive environment where people can build strength, refine their skills, and unlock next level success.",
     classes: ["Yoga", "Group Fitness"],
-    image: "https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764788595284.png?width=8000&height=8000&resize=contain"
+    image: "" // New profile photo to be provided separately
   },
   {
     name: "Nasir",

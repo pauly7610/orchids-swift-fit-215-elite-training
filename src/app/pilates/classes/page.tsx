@@ -24,7 +24,7 @@ const classTypes = [
   {
     name: "Yoga",
     icon: Wind,
-    instructor: "Maisha",
+    instructor: "Life",
     description: "Flow through sequences that connect breath with movement, cultivating strength, balance, and inner peace. Our yoga classes blend athletic training with mindful practice to help you level up physically and mentally.",
     benefits: [
       "Increased flexibility and mobility",

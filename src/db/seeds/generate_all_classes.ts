@@ -36,35 +36,35 @@ async function main() {
 
     // Weekly schedule based on the actual schedule from the website
     // Day 0 = Sunday, 1 = Monday, etc.
+    // NOTE: Joi's classes are 5:30am-6:30am, Nasir removed from Wednesdays
     const weeklySchedule: { [key: number]: Array<{ time: string; type: string; instructor: string }> } = {
         1: [ // Monday
-            { time: '06:00', type: 'Mat Pilates', instructor: 'Joi' },
+            { time: '05:30', type: 'Mat Pilates', instructor: 'Joi' },
             { time: '11:00', type: 'Fitness & Strength Training', instructor: 'Drelle' },
             { time: '16:00', type: 'Meditation & Herbal Wellness', instructor: 'Nasir' },
             { time: '19:00', type: 'Dance Fitness', instructor: 'Ivori' },
         ],
         2: [ // Tuesday
-            { time: '06:00', type: 'Mat Pilates', instructor: 'Joi' },
-            { time: '09:15', type: 'Yoga', instructor: 'Maisha' },
+            { time: '05:30', type: 'Mat Pilates', instructor: 'Joi' },
+            { time: '09:15', type: 'Yoga', instructor: 'Life' },
             { time: '11:00', type: 'Fitness & Strength Training', instructor: 'Drelle' },
         ],
-        3: [ // Wednesday
-            { time: '06:00', type: 'Mat Pilates', instructor: 'Joi' },
+        3: [ // Wednesday - Nasir REMOVED from this day
+            { time: '05:30', type: 'Mat Pilates', instructor: 'Joi' },
             { time: '13:00', type: 'Fitness & Strength Training', instructor: 'Drelle' },
-            { time: '15:30', type: 'Meditation & Herbal Wellness', instructor: 'Nasir' },
             { time: '17:00', type: 'Fitness & Strength Training', instructor: 'Jewlz' },
             { time: '18:30', type: 'Dance Fitness', instructor: 'Des' },
             { time: '20:00', type: 'Dance Fitness', instructor: 'Ivori' },
         ],
         4: [ // Thursday
-            { time: '06:00', type: 'Mat Pilates', instructor: 'Joi' },
-            { time: '09:15', type: 'Yoga', instructor: 'Maisha' },
+            { time: '05:30', type: 'Mat Pilates', instructor: 'Joi' },
+            { time: '09:15', type: 'Yoga', instructor: 'Life' },
             { time: '11:00', type: 'Fitness & Strength Training', instructor: 'Drelle' },
             { time: '18:00', type: 'Dance Fitness', instructor: 'Des' },
             { time: '19:30', type: 'Dance Fitness', instructor: 'Ivori' },
         ],
         5: [ // Friday
-            { time: '06:00', type: 'Mat Pilates', instructor: 'Joi' },
+            { time: '05:30', type: 'Mat Pilates', instructor: 'Joi' },
             { time: '11:00', type: 'Fitness & Strength Training', instructor: 'Drelle' },
             { time: '16:00', type: 'Meditation & Herbal Wellness', instructor: 'Nasir' },
         ],
@@ -80,6 +80,12 @@ async function main() {
             { time: '12:00', type: 'Dance Fitness', instructor: 'Des' },
         ],
     };
+
+    // Dates where Nasir is excluded (Jan 16-19, 2026)
+    const nasirExcludedDates = ['2026-01-16', '2026-01-17', '2026-01-18', '2026-01-19'];
+    
+    // Dates where Des (Desiree) is excluded (Dec 20, 2025)
+    const desExcludedDates = ['2025-12-20'];
 
     // Soft opening schedule for December 13th (30-minute classes)
     const softOpeningSchedule = [
@@ -148,6 +154,18 @@ async function main() {
         const schedule = weeklySchedule[dayOfWeek];
         if (schedule) {
             for (const classSession of schedule) {
+                // Skip Nasir on excluded dates (Jan 16-19, 2026)
+                if (classSession.instructor === 'Nasir' && nasirExcludedDates.includes(dateStr)) {
+                    console.log(`⚠️ Skipping Nasir's class on ${dateStr} (excluded date)`);
+                    continue;
+                }
+                
+                // Skip Des (Desiree) on excluded dates (Dec 20, 2025)
+                if (classSession.instructor === 'Des' && desExcludedDates.includes(dateStr)) {
+                    console.log(`⚠️ Skipping Des's class on ${dateStr} (excluded date)`);
+                    continue;
+                }
+
                 const classTypeData = classTypeMap.get(classSession.type);
                 const instructorId = instructorMap.get(classSession.instructor);
 
