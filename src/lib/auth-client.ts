@@ -12,9 +12,8 @@ export const authClient = createAuthClient({
           const authToken = ctx.response.headers.get("set-auth-token")
           // Store the token securely (e.g., in localStorage)
           if(authToken){
-            // Split token at "." and take only the first part
-            const tokenPart = authToken.includes('.') ? authToken.split('.')[0] : authToken;
-            localStorage.setItem("bearer_token", tokenPart);
+            // Store the full token - don't truncate JWT tokens
+            localStorage.setItem("bearer_token", authToken);
           }
       }
   }

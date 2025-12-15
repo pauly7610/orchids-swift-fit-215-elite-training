@@ -1,7 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { instructors } from '@/db/schema';
+import { instructors, userProfiles } from '@/db/schema';
 import { eq, like, and } from 'drizzle-orm';
+import { getCurrentUser } from '@/lib/auth';
+
+// Helper function to check if user is admin
+async function isAdmin(request: NextRequest): Promise<boolean> {
+  const user = await getCurrentUser(request);
+  if (!user) return false;
+  
+  const profile = await db.select()
+    .from(userProfiles)
+    .where(eq(userProfiles.userId, user.id))
+    .limit(1);
+  
+  return profile.length > 0 && profile[0].role === 'admin';
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -71,6 +85,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check admin authentication
+    if (!await isAdmin(request)) {
+      return NextResponse.json(
+        { error: 'Access denied. Admin privileges required.', code: 'ADMIN_REQUIRED' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { userProfileId, bio, specialties, headshotUrl, isActive } = body;
 
@@ -126,6 +148,14 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Check admin authentication
+    if (!await isAdmin(request)) {
+      return NextResponse.json(
+        { error: 'Access denied. Admin privileges required.', code: 'ADMIN_REQUIRED' },
+        { status: 403 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 
@@ -205,6 +235,14 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Check admin authentication
+    if (!await isAdmin(request)) {
+      return NextResponse.json(
+        { error: 'Access denied. Admin privileges required.', code: 'ADMIN_REQUIRED' },
+        { status: 403 }
+      );
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const id = searchParams.get('id');
 

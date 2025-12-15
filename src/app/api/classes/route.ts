@@ -1,9 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { classes } from '@/db/schema';
+import { classes, userProfiles } from '@/db/schema';
 import { eq, and, like, desc } from 'drizzle-orm';
+import { getCurrentUser } from '@/lib/auth';
 
 const VALID_STATUSES = ['scheduled', 'cancelled', 'completed'];
+
+// Helper function to check if user is admin
+async function isAdmin(request: NextRequest): Promise<boolean> {
+  const user = await getCurrentUser(request);
+  if (!user) return false;
+  
+  const profile = await db.select()
+    .from(userProfiles)
+    .where(eq(userProfiles.userId, user.id))
+    .limit(1);
+  
+  return profile.length > 0 && profile[0].role === 'admin';
+}
 
 export async function GET(request: NextRequest) {
   try {
@@ -90,6 +104,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Check admin authentication
+    if (!await isAdmin(request)) {
+      return NextResponse.json(
+        { error: 'Access denied. Admin privileges required.', code: 'ADMIN_REQUIRED' },
+        { status: 403 }
+      );
+    }
+
     const body = await request.json();
     const { classTypeId, instructorId, date, startTime, endTime, capacity, price, status } = body;
 
@@ -201,6 +223,14 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Check admin authentication
+    if (!await isAdmin(request)) {
+      return NextResponse.json(
+        { error: 'Access denied. Admin privileges required.', code: 'ADMIN_REQUIRED' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
@@ -297,6 +327,14 @@ export async function PUT(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
+    // Check admin authentication
+    if (!await isAdmin(request)) {
+      return NextResponse.json(
+        { error: 'Access denied. Admin privileges required.', code: 'ADMIN_REQUIRED' },
+        { status: 403 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
