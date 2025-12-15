@@ -10,8 +10,10 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Plus, Edit2, Trash2, User, Search, ArrowLeft } from "lucide-react"
+import { Plus, Edit2, Trash2, User, Search, ArrowLeft, Upload, X, Loader2 } from "lucide-react"
 import { toast } from "sonner"
+import { useCallback, useState as useDropzoneState } from "react"
+import { useDropzone } from "react-dropzone"
 
 interface Instructor {
   id: number
@@ -49,6 +51,8 @@ export default function InstructorManagement() {
     headshotUrl: "",
     isActive: true
   })
+  const [uploading, setUploading] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -175,6 +179,7 @@ export default function InstructorManagement() {
       headshotUrl: instructor.headshotUrl || "",
       isActive: instructor.isActive
     })
+    setPreviewUrl(instructor.headshotUrl || null)
     setIsCreateDialogOpen(true)
   }
 
@@ -207,6 +212,70 @@ export default function InstructorManagement() {
       headshotUrl: "",
       isActive: true
     })
+    setPreviewUrl(null)
+  }
+
+  // Handle file upload
+  const handleFileUpload = useCallback(async (acceptedFiles: File[]) => {
+    const file = acceptedFiles[0]
+    if (!file) return
+
+    setUploading(true)
+    
+    // Create local preview
+    const localPreview = URL.createObjectURL(file)
+    setPreviewUrl(localPreview)
+
+    try {
+      const token = localStorage.getItem("bearer_token")
+      const uploadFormData = new FormData()
+      uploadFormData.append("file", file)
+      uploadFormData.append("folder", "instructors")
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: uploadFormData
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        setFormData(prev => ({ ...prev, headshotUrl: data.url }))
+        setPreviewUrl(data.url)
+        toast.success("Image uploaded successfully!")
+      } else {
+        const error = await res.json()
+        toast.error(error.error || "Failed to upload image")
+        setPreviewUrl(null)
+      }
+    } catch (error) {
+      toast.error("Failed to upload image")
+      setPreviewUrl(null)
+    } finally {
+      setUploading(false)
+    }
+  }, [])
+
+  // Dropzone configuration
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileUpload,
+    accept: {
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/webp': ['.webp'],
+      'image/gif': ['.gif']
+    },
+    maxSize: 5 * 1024 * 1024, // 5MB
+    multiple: false,
+    disabled: uploading
+  })
+
+  // Clear uploaded image
+  const handleClearImage = () => {
+    setFormData(prev => ({ ...prev, headshotUrl: "" }))
+    setPreviewUrl(null)
   }
 
   const getUserProfileName = (userProfileId: number) => {
@@ -320,15 +389,74 @@ export default function InstructorManagement() {
                   </div>
 
                   <div>
-                    <Label htmlFor="headshotUrl" className="text-[#5A5550]">Headshot URL</Label>
-                    <Input
-                      id="headshotUrl"
-                      type="url"
-                      value={formData.headshotUrl}
-                      onChange={(e) => setFormData({ ...formData, headshotUrl: e.target.value })}
-                      placeholder="https://example.com/photo.jpg"
-                      className="mt-1 border-[#B8AFA5]/30"
-                    />
+                    <Label className="text-[#5A5550]">Headshot Photo</Label>
+                    
+                    {/* Show preview or dropzone */}
+                    {(previewUrl || formData.headshotUrl) ? (
+                      <div className="mt-2 relative">
+                        <div className="relative w-32 h-32 mx-auto">
+                          <img
+                            src={previewUrl || formData.headshotUrl}
+                            alt="Preview"
+                            className="w-full h-full object-cover rounded-lg border-2 border-[#9BA899]"
+                          />
+                          {uploading && (
+                            <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                              <Loader2 className="h-6 w-6 text-white animate-spin" />
+                            </div>
+                          )}
+                          <button
+                            type="button"
+                            onClick={handleClearImage}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                        <p className="text-xs text-center text-[#9BA899] mt-2">Click × to remove</p>
+                      </div>
+                    ) : (
+                      <div
+                        {...getRootProps()}
+                        className={`mt-2 border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
+                          isDragActive 
+                            ? 'border-[#9BA899] bg-[#9BA899]/10' 
+                            : 'border-[#B8AFA5]/40 hover:border-[#9BA899] hover:bg-[#9BA899]/5'
+                        } ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      >
+                        <input {...getInputProps()} />
+                        <Upload className={`h-8 w-8 mx-auto mb-2 ${isDragActive ? 'text-[#9BA899]' : 'text-[#B8AFA5]'}`} />
+                        {isDragActive ? (
+                          <p className="text-sm text-[#9BA899]">Drop the image here...</p>
+                        ) : (
+                          <>
+                            <p className="text-sm text-[#7A736B]">
+                              Drag & drop an image here, or <span className="text-[#9BA899] font-medium">click to select</span>
+                            </p>
+                            <p className="text-xs text-[#B8AFA5] mt-1">JPEG, PNG, WebP, GIF • Max 5MB</p>
+                          </>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Manual URL input as fallback */}
+                    <div className="mt-3">
+                      <details className="text-xs">
+                        <summary className="text-[#9BA899] cursor-pointer hover:text-[#7A736B]">
+                          Or enter image URL manually
+                        </summary>
+                        <Input
+                          type="url"
+                          value={formData.headshotUrl}
+                          onChange={(e) => {
+                            setFormData({ ...formData, headshotUrl: e.target.value })
+                            setPreviewUrl(e.target.value || null)
+                          }}
+                          placeholder="https://example.com/photo.jpg"
+                          className="mt-2 border-[#B8AFA5]/30 text-sm"
+                        />
+                      </details>
+                    </div>
                   </div>
 
                   <div className="flex items-center gap-2">
