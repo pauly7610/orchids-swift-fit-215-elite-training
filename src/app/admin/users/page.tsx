@@ -26,6 +26,8 @@ interface UserWithProfile {
     role: string
     phone: string | null
   }
+  creditsRemaining?: number
+  hasUnlimitedMembership?: boolean
 }
 
 // Skeleton Component
@@ -102,18 +104,47 @@ export default function UsersManagementPage() {
       const profilesRes = await fetch("/api/user-profiles?limit=500", {
         headers: { Authorization: `Bearer ${token}` }
       })
+      
+      // Fetch all student purchases to get credit balances
+      const purchasesRes = await fetch("/api/student-purchases?limit=500", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
 
       if (usersRes.ok && profilesRes.ok) {
         const usersData = await usersRes.json()
         const profilesData = await profilesRes.json()
+        const purchasesData = purchasesRes.ok ? await purchasesRes.json() : []
         
-        // Merge users with their profiles
-        const merged = usersData.map((user: any) => ({
-          ...user,
-          profile: Array.isArray(profilesData) 
+        // Calculate credits per student profile
+        const creditsByProfile = new Map<number, { credits: number, unlimited: boolean }>()
+        if (Array.isArray(purchasesData)) {
+          purchasesData.forEach((purchase: any) => {
+            if (purchase.isActive) {
+              const current = creditsByProfile.get(purchase.studentProfileId) || { credits: 0, unlimited: false }
+              // Check for unlimited membership
+              if (purchase.creditsRemaining === null && purchase.purchaseType === 'membership') {
+                current.unlimited = true
+              } else if (purchase.creditsRemaining) {
+                current.credits += purchase.creditsRemaining
+              }
+              creditsByProfile.set(purchase.studentProfileId, current)
+            }
+          })
+        }
+        
+        // Merge users with their profiles and credits
+        const merged = usersData.map((user: any) => {
+          const profile = Array.isArray(profilesData) 
             ? profilesData.find((p: any) => p.userId === user.id)
             : undefined
-        }))
+          const creditInfo = profile ? creditsByProfile.get(profile.id) : undefined
+          return {
+            ...user,
+            profile,
+            creditsRemaining: creditInfo?.credits || 0,
+            hasUnlimitedMembership: creditInfo?.unlimited || false
+          }
+        })
         
         setUsers(merged)
       } else if (!usersRes.ok) {
@@ -395,6 +426,13 @@ export default function UsersManagementPage() {
                                 <Calendar className="h-3.5 w-3.5 text-[#9BA899]" />
                                 <span>Joined {format(new Date(user.createdAt), "MMM d, yyyy")}</span>
                               </div>
+                              {user.profile?.role === 'student' && (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#9BA899]/10 text-[#9BA899]">
+                                    {user.hasUnlimitedMembership ? '∞ Unlimited' : `${user.creditsRemaining || 0} credits`}
+                                  </span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>
