@@ -86,6 +86,7 @@ export const userProfiles = sqliteTable('user_profiles', {
 export const instructors = sqliteTable('instructors', {
   id: integer('id').primaryKey({ autoIncrement: true }),
   userProfileId: integer('user_profile_id').notNull().references(() => userProfiles.id, { onDelete: 'cascade' }),
+  name: text('name'), // Display name for the instructor
   bio: text('bio'),
   specialties: text('specialties', { mode: 'json' }),
   headshotUrl: text('headshot_url'),

@@ -44,7 +44,32 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      return NextResponse.json(instructor[0], { status: 200 });
+      // Parse specialties properly
+      let specialties = instructor[0].specialties;
+      if (Array.isArray(specialties)) {
+        // Already an array
+      } else if (typeof specialties === 'string') {
+        if (specialties.startsWith('[')) {
+          try {
+            specialties = JSON.parse(specialties);
+          } catch {
+            specialties = [specialties];
+          }
+        } else if (specialties.trim()) {
+          specialties = [specialties];
+        } else {
+          specialties = null;
+        }
+      } else {
+        specialties = null;
+      }
+
+      const normalized = {
+        ...instructor[0],
+        specialties,
+      };
+
+      return NextResponse.json(normalized, { status: 200 });
     }
 
     // List with pagination, search, and filtering
@@ -53,27 +78,56 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
     const isActiveParam = searchParams.get('isActive');
 
-    let query = db.select().from(instructors);
-
-    // Build where conditions
-    const conditions = [];
-
-    if (search) {
-      conditions.push(like(instructors.bio, `%${search}%`));
-    }
-
-    if (isActiveParam !== null) {
+    // Build where condition
+    let whereCondition = undefined;
+    if (search && isActiveParam !== null) {
       const isActiveValue = isActiveParam === 'true';
-      conditions.push(eq(instructors.isActive, isActiveValue));
+      whereCondition = and(
+        like(instructors.bio, `%${search}%`),
+        eq(instructors.isActive, isActiveValue),
+      );
+    } else if (search) {
+      whereCondition = like(instructors.bio, `%${search}%`);
+    } else if (isActiveParam !== null) {
+      const isActiveValue = isActiveParam === 'true';
+      whereCondition = eq(instructors.isActive, isActiveValue);
     }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
+    const results = whereCondition
+      ? await db.select().from(instructors).where(whereCondition).limit(limit).offset(offset)
+      : await db.select().from(instructors).limit(limit).offset(offset);
 
-    const results = await query.limit(limit).offset(offset);
+    const normalizedResults = results.map((row) => {
+      let specialties = row.specialties;
+      
+      // Handle different formats: array, JSON string, or plain string
+      if (Array.isArray(specialties)) {
+        // Already an array, use as-is
+      } else if (typeof specialties === 'string') {
+        // Try to parse as JSON if it looks like an array
+        if (specialties.startsWith('[')) {
+          try {
+            specialties = JSON.parse(specialties);
+          } catch {
+            specialties = [specialties];
+          }
+        } else if (specialties.trim()) {
+          // Plain string, wrap in array
+          specialties = [specialties];
+        } else {
+          specialties = null;
+        }
+      } else {
+        specialties = null;
+      }
+      
+      return {
+        ...row,
+        specialties,
+      };
+    });
 
-    return NextResponse.json(results, { status: 200 });
+    return NextResponse.json(normalizedResults, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(
@@ -94,7 +148,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { userProfileId, bio, specialties, headshotUrl, isActive } = body;
+    const { userProfileId, name, bio, specialties, headshotUrl, isActive } = body;
 
     // Validate required fields
     if (!userProfileId) {
@@ -124,6 +178,7 @@ export async function POST(request: NextRequest) {
     // Prepare insert data with defaults
     const insertData: any = {
       userProfileId: parseInt(userProfileId),
+      name: name ? name.trim() : null,
       bio: bio ? bio.trim() : null,
       specialties: specialties || null,
       headshotUrl: headshotUrl ? headshotUrl.trim() : null,
@@ -181,7 +236,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { bio, specialties, headshotUrl, isActive } = body;
+    const { name, bio, specialties, headshotUrl, isActive } = body;
 
     // Validate specialties if provided
     if (specialties !== undefined && specialties !== null) {
@@ -195,6 +250,10 @@ export async function PUT(request: NextRequest) {
 
     // Prepare update data
     const updateData: any = {};
+
+    if (name !== undefined) {
+      updateData.name = name ? name.trim() : null;
+    }
 
     if (bio !== undefined) {
       updateData.bio = bio ? bio.trim() : null;

@@ -23,6 +23,9 @@ interface ClassData {
   price: number | null
   status: string
   createdAt: string
+  // Joined fields from API
+  classTypeName?: string
+  instructorName?: string
 }
 
 interface ClassType {
@@ -35,6 +38,7 @@ interface ClassType {
 interface Instructor {
   id: number
   userProfileId: number
+  name: string | null
 }
 
 export default function ClassScheduleManagement() {
@@ -96,12 +100,15 @@ export default function ClassScheduleManagement() {
     try {
       const token = localStorage.getItem("bearer_token")
       const headers = { Authorization: `Bearer ${token}` }
+      
+      // Get today's date in YYYY-MM-DD format for filtering
+      const today = new Date().toISOString().split('T')[0]
 
       const [classesRes, typesRes, instructorsRes, profilesRes] = await Promise.all([
-        fetch("/api/classes", { headers }),
+        fetch(`/api/classes?fromDate=${today}&limit=100`, { headers }),
         fetch("/api/class-types", { headers }),
         fetch("/api/instructors?isActive=true", { headers }),
-        fetch("/api/user-profiles", { headers })
+        fetch("/api/user-profiles?role=instructor", { headers })
       ])
 
       if (classesRes.ok) setClasses(await classesRes.json())
@@ -221,25 +228,38 @@ export default function ClassScheduleManagement() {
     })
   }
 
-  const getClassTypeName = (id: number) => classTypes.find(t => t.id === id)?.name || "Unknown"
-  const getInstructorName = (id: number) => {
+  // Helper to get instructor name by ID (for dropdowns)
+  const getInstructorNameById = (id: number) => {
     const instructor = instructors.find(i => i.id === id)
     if (!instructor) return "Unknown"
-    const profile = userProfiles.find(p => p.id === instructor.userProfileId)
-    return profile?.userName || profile?.userEmail || "Unknown"
+    if (instructor.name) return instructor.name
+    const profile = userProfiles.find((p: any) => p.id === instructor.userProfileId)
+    return profile?.displayName || profile?.userName || profile?.userEmail || "Unknown"
+  }
+
+  // Use joined data from API, fall back to lookup if needed
+  const getClassTypeName = (classData: ClassData) => {
+    if (classData.classTypeName) return classData.classTypeName
+    return classTypes.find(t => t.id === classData.classTypeId)?.name || "Unknown"
+  }
+  
+  const getInstructorName = (classData: ClassData) => {
+    if (classData.instructorName) return classData.instructorName
+    return getInstructorNameById(classData.instructorId)
   }
 
   const filteredClasses = classes.filter(classData => {
-    const typeName = getClassTypeName(classData.classTypeId).toLowerCase()
-    const instructorName = getInstructorName(classData.instructorId).toLowerCase()
+    const typeName = getClassTypeName(classData).toLowerCase()
+    const instructorName = getInstructorName(classData).toLowerCase()
     const search = searchTerm.toLowerCase()
     const matchesSearch = typeName.includes(search) || instructorName.includes(search)
     const matchesDate = !filterDate || classData.date === filterDate
     return matchesSearch && matchesDate
   }).sort((a, b) => {
-    const dateCompare = b.date.localeCompare(a.date)
+    // Sort by date ascending (soonest first), then by time ascending
+    const dateCompare = a.date.localeCompare(b.date)
     if (dateCompare !== 0) return dateCompare
-    return b.startTime.localeCompare(a.startTime)
+    return a.startTime.localeCompare(b.startTime)
   })
 
   if (isPending || loading) {
@@ -326,7 +346,7 @@ export default function ClassScheduleManagement() {
                         <option value="">Select instructor...</option>
                         {instructors.map(instructor => (
                           <option key={instructor.id} value={instructor.id}>
-                            {getInstructorName(instructor.id)}
+                            {getInstructorNameById(instructor.id)}
                           </option>
                         ))}
                       </select>
@@ -487,7 +507,7 @@ export default function ClassScheduleManagement() {
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <CardTitle className="text-xl text-[#5A5550]">
-                          {getClassTypeName(classData.classTypeId)}
+                          {getClassTypeName(classData)}
                         </CardTitle>
                         <Badge
                           variant={
@@ -500,7 +520,7 @@ export default function ClassScheduleManagement() {
                         </Badge>
                       </div>
                       <CardDescription className="text-[#7A736B]">
-                        {getInstructorName(classData.instructorId)}
+                        {getInstructorName(classData)}
                       </CardDescription>
                     </div>
                     <div className="flex gap-2">

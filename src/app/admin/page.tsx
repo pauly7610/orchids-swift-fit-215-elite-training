@@ -147,34 +147,35 @@ export default function AdminDashboard() {
       const token = localStorage.getItem("bearer_token")
       const headers = { Authorization: `Bearer ${token}` }
 
+      // Fetch all data with individual error handling
       const [revenueRes, classesRes, studentsRes, packagesRes, usersRes] = await Promise.all([
-        fetch("/api/admin/reports/revenue", { headers }),
-        fetch("/api/classes", { headers }),
-        fetch("/api/user-profiles?role=student&limit=100", { headers }),
-        fetch("/api/packages", { headers }),
-        fetch("/api/auth/users", { headers })
+        fetch("/api/admin/reports/revenue", { headers }).catch(e => { console.error("Revenue fetch failed:", e); return null }),
+        fetch("/api/classes?limit=100", { headers }).catch(e => { console.error("Classes fetch failed:", e); return null }),
+        fetch("/api/user-profiles?role=student&limit=100", { headers }).catch(e => { console.error("Students fetch failed:", e); return null }),
+        fetch("/api/packages", { headers }).catch(e => { console.error("Packages fetch failed:", e); return null }),
+        fetch("/api/auth/users", { headers }).catch(e => { console.error("Users fetch failed:", e); return null })
       ])
 
       // Process revenue
-      if (revenueRes.ok) {
+      if (revenueRes?.ok) {
         const revenueData = await revenueRes.json()
         setStats(prev => ({ ...prev, totalRevenue: revenueData.totalRevenue || 0 }))
       }
       
       // Process classes
-      if (classesRes.ok) {
+      if (classesRes?.ok) {
         const classesData = await classesRes.json()
         const now = new Date()
         const todayStr = format(now, 'yyyy-MM-dd')
         
-        // Filter and enrich class data
+        // Filter and enrich class data (API now returns flat classTypeName and instructorName)
         const enrichedClasses: ClassPreview[] = classesData.map((c: any) => ({
           id: c.id,
           date: c.date,
           startTime: c.startTime,
           endTime: c.endTime,
-          classTypeName: c.classType?.name || 'Unknown Class',
-          instructorName: c.instructor?.name || 'TBD',
+          classTypeName: c.classTypeName || c.classType?.name || 'Unknown Class',
+          instructorName: c.instructorName || c.instructor?.name || 'TBD',
           capacity: c.capacity,
           registeredCount: c.registeredCount || 0,
           status: c.status
@@ -196,7 +197,7 @@ export default function AdminDashboard() {
       }
       
       // Process students
-      if (studentsRes.ok) {
+      if (studentsRes?.ok) {
         const studentsData = await studentsRes.json()
         const studentCount = Array.isArray(studentsData) ? studentsData.length : 0
         
@@ -214,7 +215,7 @@ export default function AdminDashboard() {
       }
 
       // Process users for recent list
-      if (usersRes.ok) {
+      if (usersRes?.ok) {
         const usersData = await usersRes.json()
         const profilesRes = await fetch("/api/user-profiles?limit=100", { headers })
         let profiles: any[] = []
@@ -237,7 +238,7 @@ export default function AdminDashboard() {
       }
       
       // Process packages
-      if (packagesRes.ok) {
+      if (packagesRes?.ok) {
         const packagesData = await packagesRes.json()
         setPackages(packagesData.slice(0, 5))
       }

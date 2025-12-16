@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { userProfiles } from '@/db/schema';
+import { userProfiles, user as userTable } from '@/db/schema';
 import { eq, like, or, and, desc } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
+
+// Helper to extract first name from full name or email
+function extractDisplayName(name: string | null, email: string): string {
+  if (name && name.trim()) {
+    // Return first name (first word before space)
+    const firstName = name.trim().split(/\s+/)[0];
+    return firstName;
+  }
+  // Fall back to email prefix (before @)
+  return email.split('@')[0];
+}
 
 const VALID_ROLES = ['admin', 'instructor', 'student'] as const;
 
@@ -87,20 +98,22 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
-    const offset = parseInt(searchParams.get('offset') ?? '0');
+    const limitNum = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
+    const offsetNum = parseInt(searchParams.get('offset') ?? '0');
     const search = searchParams.get('search');
     const roleFilter = searchParams.get('role');
 
-    let query = db.select().from(userProfiles);
-    const conditions = [];
+    // Build conditions array
+    const conditions: any[] = [];
 
-    // Search functionality
+    // Search functionality - search in user name and email too
     if (search) {
       conditions.push(
         or(
           like(userProfiles.role, `%${search}%`),
-          like(userProfiles.phone, `%${search}%`)
+          like(userProfiles.phone, `%${search}%`),
+          like(userTable.name, `%${search}%`),
+          like(userTable.email, `%${search}%`)
         )
       );
     }
@@ -121,16 +134,35 @@ export async function GET(request: NextRequest) {
       conditions.push(eq(userProfiles.userId, userIdFilter));
     }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
-    }
+    // Join with user table to get name and email
+    const baseQuery = db.select({
+      id: userProfiles.id,
+      userId: userProfiles.userId,
+      role: userProfiles.role,
+      phone: userProfiles.phone,
+      profileImage: userProfiles.profileImage,
+      emailReminders: userProfiles.emailReminders,
+      reminderHoursBefore: userProfiles.reminderHoursBefore,
+      marketingEmails: userProfiles.marketingEmails,
+      createdAt: userProfiles.createdAt,
+      updatedAt: userProfiles.updatedAt,
+      userName: userTable.name,
+      userEmail: userTable.email,
+    })
+    .from(userProfiles)
+    .leftJoin(userTable, eq(userProfiles.userId, userTable.id));
 
-    const results = await query
-      .orderBy(desc(userProfiles.createdAt))
-      .limit(limit)
-      .offset(offset);
+    const results = conditions.length > 0
+      ? await baseQuery.where(and(...conditions)).orderBy(desc(userProfiles.createdAt)).limit(limitNum).offset(offsetNum)
+      : await baseQuery.orderBy(desc(userProfiles.createdAt)).limit(limitNum).offset(offsetNum);
 
-    return NextResponse.json(results, { status: 200 });
+    // Add displayName to each result
+    const resultsWithDisplayName = results.map(profile => ({
+      ...profile,
+      displayName: extractDisplayName(profile.userName, profile.userEmail || ''),
+    }));
+
+    return NextResponse.json(resultsWithDisplayName, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json({ 

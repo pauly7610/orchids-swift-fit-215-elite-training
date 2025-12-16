@@ -96,7 +96,7 @@ export default function PilatesLanding() {
             <p className="text-base md:text-lg text-[#7A736B] leading-relaxed mb-4 md:mb-6 px-4">
               To provide a safe, supportive environment where you can work on you. We believe in building healthy habits, nurturing the mind–body connection, and giving you the space to take what you need from every session—strength, clarity, community, or peace.
             </p>
-            <p className="text-lg md:text-base font-serif italic md:text-xl text-[#5A5550] px-4">
+            <p className="text-lg md:text-base font-serif italic md:text-base text-[#5A5550] px-4">
               At Swift Fit, it's not about being perfect. It's about showing up, moving with purpose, and becoming the best version of yourself, one day at a time.
             </p>
           </div>

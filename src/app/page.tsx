@@ -869,7 +869,7 @@ export default function Home() {
                 </a>
               </div>
               <div className="relative order-first lg:order-last">
-                <div className="aspect-[4/5] rounded-2xl overflow-hidden bg-muted relative">
+                <div className="aspect-4/5 rounded-2xl overflow-hidden bg-muted relative">
                   <img 
                     src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1761152758760.png?width=8000&height=8000&resize=contain" 
                     alt="SwiftFit 215 Training" 

@@ -1,8 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { classes, userProfiles } from '@/db/schema';
-import { eq, and, like, desc } from 'drizzle-orm';
+import { classes, userProfiles, classTypes, instructors, user as userTable } from '@/db/schema';
+import { eq, and, like, asc, gte } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
+
+// Helper to extract first name from full name or email
+function extractDisplayName(name: string | null, email: string | null): string {
+  if (name && name.trim()) {
+    return name.trim().split(/\s+/)[0];
+  }
+  if (email) {
+    return email.split('@')[0];
+  }
+  return 'Unknown';
+}
 
 const VALID_STATUSES = ['scheduled', 'cancelled', 'completed'];
 
@@ -50,49 +61,96 @@ export async function GET(request: NextRequest) {
     }
 
     // List with filtering, search, and pagination
-    const limit = Math.min(parseInt(searchParams.get('limit') ?? '10'), 100);
-    const offset = parseInt(searchParams.get('offset') ?? '0');
+    const limitNum = Math.min(parseInt(searchParams.get('limit') ?? '100'), 100);
+    const offsetNum = parseInt(searchParams.get('offset') ?? '0');
     const search = searchParams.get('search');
-    const instructorId = searchParams.get('instructorId');
-    const classTypeId = searchParams.get('classTypeId');
-    const status = searchParams.get('status');
-    const date = searchParams.get('date');
-
-    let query = db.select().from(classes);
+    const instructorIdParam = searchParams.get('instructorId');
+    const classTypeIdParam = searchParams.get('classTypeId');
+    const statusParam = searchParams.get('status');
+    const dateParam = searchParams.get('date');
+    const fromDateParam = searchParams.get('fromDate');
 
     // Build WHERE conditions
-    const conditions = [];
+    const conditions: any[] = [];
 
     if (search) {
       conditions.push(like(classes.date, `%${search}%`));
     }
 
-    if (instructorId && !isNaN(parseInt(instructorId))) {
-      conditions.push(eq(classes.instructorId, parseInt(instructorId)));
+    if (instructorIdParam && !isNaN(parseInt(instructorIdParam))) {
+      conditions.push(eq(classes.instructorId, parseInt(instructorIdParam)));
     }
 
-    if (classTypeId && !isNaN(parseInt(classTypeId))) {
-      conditions.push(eq(classes.classTypeId, parseInt(classTypeId)));
+    if (classTypeIdParam && !isNaN(parseInt(classTypeIdParam))) {
+      conditions.push(eq(classes.classTypeId, parseInt(classTypeIdParam)));
     }
 
-    if (status) {
-      conditions.push(eq(classes.status, status));
+    if (statusParam) {
+      conditions.push(eq(classes.status, statusParam));
     }
 
-    if (date) {
-      conditions.push(eq(classes.date, date));
+    if (dateParam) {
+      conditions.push(eq(classes.date, dateParam));
     }
 
-    if (conditions.length > 0) {
-      query = query.where(and(...conditions));
+    // Filter from a specific date onwards (e.g., today)
+    if (fromDateParam) {
+      conditions.push(gte(classes.date, fromDateParam));
     }
 
-    const results = await query
-      .orderBy(desc(classes.date), desc(classes.startTime))
-      .limit(limit)
-      .offset(offset);
+    // Join with classTypes and instructors to get names
+    const baseQuery = db.select({
+      id: classes.id,
+      classTypeId: classes.classTypeId,
+      instructorId: classes.instructorId,
+      date: classes.date,
+      startTime: classes.startTime,
+      endTime: classes.endTime,
+      capacity: classes.capacity,
+      price: classes.price,
+      status: classes.status,
+      createdAt: classes.createdAt,
+      // Joined fields
+      classTypeName: classTypes.name,
+      instructorName: instructors.name,
+      instructorUserProfileId: instructors.userProfileId,
+    })
+    .from(classes)
+    .leftJoin(classTypes, eq(classes.classTypeId, classTypes.id))
+    .leftJoin(instructors, eq(classes.instructorId, instructors.id));
 
-    return NextResponse.json(results, { status: 200 });
+    const results = conditions.length > 0
+      ? await baseQuery.where(and(...conditions)).orderBy(asc(classes.date), asc(classes.startTime)).limit(limitNum).offset(offsetNum)
+      : await baseQuery.orderBy(asc(classes.date), asc(classes.startTime)).limit(limitNum).offset(offsetNum);
+
+    // For any instructor without a name, fetch from user profile
+    const enrichedResults = await Promise.all(results.map(async (row) => {
+      let instructorDisplayName = row.instructorName;
+      
+      if (!instructorDisplayName && row.instructorUserProfileId) {
+        // Fetch user profile and user to get name
+        const profileWithUser = await db.select({
+          userName: userTable.name,
+          userEmail: userTable.email,
+        })
+        .from(userProfiles)
+        .leftJoin(userTable, eq(userProfiles.userId, userTable.id))
+        .where(eq(userProfiles.id, row.instructorUserProfileId))
+        .limit(1);
+        
+        if (profileWithUser.length > 0) {
+          instructorDisplayName = extractDisplayName(profileWithUser[0].userName, profileWithUser[0].userEmail);
+        }
+      }
+      
+      return {
+        ...row,
+        classTypeName: row.classTypeName || 'Unknown Class Type',
+        instructorName: instructorDisplayName || 'Unknown Instructor',
+      };
+    }));
+
+    return NextResponse.json(enrichedResults, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(

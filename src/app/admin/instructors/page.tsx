@@ -18,6 +18,7 @@ import { useDropzone } from "react-dropzone"
 interface Instructor {
   id: number
   userProfileId: number
+  name: string | null
   bio: string | null
   specialties: string[] | null
   headshotUrl: string | null
@@ -33,6 +34,7 @@ interface UserProfile {
   profileImage: string | null
   userName?: string
   userEmail?: string
+  displayName?: string
 }
 
 export default function InstructorManagement() {
@@ -46,6 +48,7 @@ export default function InstructorManagement() {
   const [editingInstructor, setEditingInstructor] = useState<Instructor | null>(null)
   const [formData, setFormData] = useState({
     userProfileId: "",
+    name: "",
     bio: "",
     specialties: "",
     headshotUrl: "",
@@ -128,6 +131,7 @@ export default function InstructorManagement() {
 
       const payload = {
         userProfileId: parseInt(formData.userProfileId),
+        name: formData.name || null,
         bio: formData.bio || null,
         specialties: specialtiesArray,
         headshotUrl: formData.headshotUrl || null,
@@ -174,8 +178,11 @@ export default function InstructorManagement() {
     setEditingInstructor(instructor)
     setFormData({
       userProfileId: instructor.userProfileId.toString(),
+      name: instructor.name || "",
       bio: instructor.bio || "",
-      specialties: instructor.specialties?.join(", ") || "",
+      specialties: Array.isArray(instructor.specialties)
+        ? instructor.specialties.join(", ")
+        : "",
       headshotUrl: instructor.headshotUrl || "",
       isActive: instructor.isActive
     })
@@ -207,6 +214,7 @@ export default function InstructorManagement() {
   const resetForm = () => {
     setFormData({
       userProfileId: "",
+      name: "",
       bio: "",
       specialties: "",
       headshotUrl: "",
@@ -278,16 +286,19 @@ export default function InstructorManagement() {
     setPreviewUrl(null)
   }
 
-  const getUserProfileName = (userProfileId: number) => {
-    const profile = userProfiles.find(p => p.id === userProfileId)
-    return profile?.userName || profile?.userEmail || "Unknown"
+  const getInstructorDisplayName = (instructor: Instructor) => {
+    // First try instructor's own name field
+    if (instructor.name) return instructor.name
+    // Fall back to user profile displayName (first name extracted from full name)
+    const profile = userProfiles.find(p => p.id === instructor.userProfileId)
+    return profile?.displayName || profile?.userName || profile?.userEmail || "Unknown"
   }
 
   const filteredInstructors = instructors.filter(instructor => {
-    const profileName = getUserProfileName(instructor.userProfileId).toLowerCase()
+    const displayName = getInstructorDisplayName(instructor).toLowerCase()
     const bio = (instructor.bio || "").toLowerCase()
     const search = searchTerm.toLowerCase()
-    return profileName.includes(search) || bio.includes(search)
+    return displayName.includes(search) || bio.includes(search)
   })
 
   if (isPending || loading) {
@@ -358,10 +369,22 @@ export default function InstructorManagement() {
                       <option value="">Select a user profile...</option>
                       {userProfiles.map(profile => (
                         <option key={profile.id} value={profile.id}>
-                          {profile.userName || profile.userEmail}
+                          {profile.displayName || profile.userName || "Unknown"} ({profile.userEmail})
                         </option>
                       ))}
                     </select>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="name" className="text-[#5A5550]">Display Name *</Label>
+                    <Input
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      placeholder="e.g., Tyra Woods"
+                      required
+                      className="mt-1 border-[#B8AFA5]/30"
+                    />
                   </div>
 
                   <div>
@@ -545,7 +568,7 @@ export default function InstructorManagement() {
                       )}
                       <div>
                         <CardTitle className="text-lg text-[#5A5550]">
-                          {getUserProfileName(instructor.userProfileId)}
+                          {getInstructorDisplayName(instructor)}
                         </CardTitle>
                         <Badge
                           variant={instructor.isActive ? "default" : "secondary"}
@@ -562,7 +585,7 @@ export default function InstructorManagement() {
                     <p className="text-sm text-[#7A736B] mb-3 line-clamp-3">{instructor.bio}</p>
                   )}
                   
-                  {instructor.specialties && instructor.specialties.length > 0 && (
+                  {Array.isArray(instructor.specialties) && instructor.specialties.length > 0 && (
                     <div className="mb-4">
                       <p className="text-xs font-semibold text-[#5A5550] mb-2">Specialties:</p>
                       <div className="flex flex-wrap gap-2">
