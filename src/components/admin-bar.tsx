@@ -87,7 +87,7 @@ export function AdminBar({ currentPage }: AdminBarProps) {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-[#5A5550] to-[#7A736B] text-white shadow-lg">
+    <div className="fixed top-[65px] md:top-[73px] left-0 right-0 z-[60] bg-gradient-to-r from-[#5A5550] to-[#7A736B] text-white shadow-lg">
       <div className="container mx-auto px-4 py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
