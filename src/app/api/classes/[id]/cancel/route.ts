@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { classes, bookings, classTypes, instructors, userProfiles, user } from '@/db/schema';
-import { eq, and } from 'drizzle-orm';
+import { classes, bookings, classTypes, instructors, userProfiles, user, studentPurchases } from '@/db/schema';
+import { eq, and, gt, or, isNull } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { headers } from 'next/headers';
 import { Resend } from 'resend';
@@ -116,6 +116,7 @@ export async function POST(
       .where(eq(classes.id, classId));
 
     // Cancel all bookings and refund credits
+    let totalCreditsRefunded = 0;
     for (const student of bookedStudents) {
       await db.update(bookings)
         .set({ 
@@ -125,7 +126,42 @@ export async function POST(
         })
         .where(eq(bookings.id, student.bookingId));
 
-      // TODO: Refund credits if applicable
+      // Refund credits if student used any
+      if (student.creditsUsed && student.creditsUsed > 0) {
+        const currentDate = new Date().toISOString();
+        
+        // Find an active purchase to refund to
+        const activePurchases = await db.select()
+          .from(studentPurchases)
+          .where(
+            and(
+              eq(studentPurchases.studentProfileId, student.studentProfileId),
+              eq(studentPurchases.isActive, true),
+              or(
+                isNull(studentPurchases.expiresAt),
+                gt(studentPurchases.expiresAt, currentDate)
+              )
+            )
+          )
+          .orderBy(studentPurchases.expiresAt)
+          .limit(1);
+
+        if (activePurchases.length > 0) {
+          const purchaseToRefund = activePurchases[0];
+          const newCredits = (purchaseToRefund.creditsRemaining || 0) + student.creditsUsed;
+
+          await db.update(studentPurchases)
+            .set({
+              creditsRemaining: newCredits,
+              isActive: true,
+            })
+            .where(eq(studentPurchases.id, purchaseToRefund.id));
+          
+          totalCreditsRefunded += student.creditsUsed;
+        } else {
+          console.warn(`No active purchase found to refund ${student.creditsUsed} credits for student ${student.studentProfileId}`);
+        }
+      }
     }
 
     // Format class date for emails
