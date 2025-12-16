@@ -217,13 +217,15 @@ export default function AdminDashboard() {
       // Process users for recent list
       if (usersRes?.ok) {
         const usersData = await usersRes.json()
-        const profilesRes = await fetch("/api/user-profiles?limit=100", { headers })
+        const profilesRes = await fetch("/api/user-profiles?limit=100", { headers }).catch(() => null)
         let profiles: any[] = []
-        if (profilesRes.ok) {
-          profiles = await profilesRes.json()
+        if (profilesRes?.ok) {
+          const profilesData = await profilesRes.json()
+          // Ensure profiles is always an array
+          profiles = Array.isArray(profilesData) ? profilesData : []
         }
         
-        const enrichedUsers: UserPreview[] = usersData
+        const enrichedUsers: UserPreview[] = (Array.isArray(usersData) ? usersData : [])
           .map((u: any) => ({
             id: u.id,
             name: u.name,
@@ -243,7 +245,11 @@ export default function AdminDashboard() {
         setPackages(packagesData.slice(0, 5))
       }
     } catch (error) {
-      toast.error("Failed to load data")
+      console.error("Dashboard data load error:", error)
+      // Only show error toast if no data loaded at all
+      if (!upcomingClasses.length && !recentUsers.length) {
+        toast.error("Some dashboard data couldn't be loaded. Please refresh.")
+      }
     } finally {
       setLoading(false)
     }

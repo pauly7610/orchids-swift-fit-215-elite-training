@@ -37,8 +37,8 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
     const userIdFilter = searchParams.get('userId');
 
-    // If no filters provided, return the current user's profile
-    if (!id && !userIdFilter && !searchParams.get('role') && !searchParams.get('search')) {
+    // If no filters provided and not explicitly requesting a list, return the current user's profile
+    if (!id && !userIdFilter && !searchParams.get('role') && !searchParams.get('search') && !searchParams.get('limit')) {
       const profile = await db.select()
         .from(userProfiles)
         .where(eq(userProfiles.userId, user.id))
