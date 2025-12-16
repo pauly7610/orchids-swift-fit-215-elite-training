@@ -148,12 +148,13 @@ export default function AdminDashboard() {
       const headers = { Authorization: `Bearer ${token}` }
 
       // Fetch all data with individual error handling
-      const [revenueRes, classesRes, studentsRes, packagesRes, usersRes] = await Promise.all([
+      const [revenueRes, classesRes, studentsRes, packagesRes, usersRes, bookingsRes] = await Promise.all([
         fetch("/api/admin/reports/revenue", { headers }).catch(e => { console.error("Revenue fetch failed:", e); return null }),
         fetch("/api/classes?limit=100", { headers }).catch(e => { console.error("Classes fetch failed:", e); return null }),
         fetch("/api/user-profiles?role=student&limit=100", { headers }).catch(e => { console.error("Students fetch failed:", e); return null }),
         fetch("/api/packages", { headers }).catch(e => { console.error("Packages fetch failed:", e); return null }),
-        fetch("/api/auth/users", { headers }).catch(e => { console.error("Users fetch failed:", e); return null })
+        fetch("/api/auth/users", { headers }).catch(e => { console.error("Users fetch failed:", e); return null }),
+        fetch("/api/bookings?all=true&limit=1000", { headers }).catch(e => { console.error("Bookings fetch failed:", e); return null })
       ])
 
       // Process revenue
@@ -243,6 +244,26 @@ export default function AdminDashboard() {
       if (packagesRes?.ok) {
         const packagesData = await packagesRes.json()
         setPackages(packagesData.slice(0, 5))
+      }
+      
+      // Process bookings
+      if (bookingsRes?.ok) {
+        const bookingsData = await bookingsRes.json()
+        const confirmedBookings = Array.isArray(bookingsData) 
+          ? bookingsData.filter((b: any) => b.bookingStatus === 'confirmed')
+          : []
+        
+        // Calculate bookings this week
+        const weekAgo = addDays(new Date(), -7)
+        const bookingsThisWeek = confirmedBookings.filter((b: any) => 
+          new Date(b.bookedAt) > weekAgo
+        ).length
+        
+        setStats(prev => ({ 
+          ...prev, 
+          totalBookings: confirmedBookings.length,
+          bookingsThisWeek: bookingsThisWeek
+        }))
       }
     } catch (error) {
       console.error("Dashboard data load error:", error)
@@ -579,6 +600,10 @@ export default function AdminDashboard() {
               <Calendar className="h-4 w-4 mr-1 md:mr-2" />
               <span className="hidden sm:inline">Classes</span>
             </TabsTrigger>
+            <TabsTrigger value="bookings" className="text-xs md:text-sm whitespace-nowrap rounded-full data-[state=active]:bg-[#9BA899] data-[state=active]:text-white">
+              <CreditCard className="h-4 w-4 mr-1 md:mr-2" />
+              <span className="hidden sm:inline">Bookings</span>
+            </TabsTrigger>
             <TabsTrigger value="users" className="text-xs md:text-sm whitespace-nowrap rounded-full data-[state=active]:bg-[#9BA899] data-[state=active]:text-white">
               <Users className="h-4 w-4 mr-1 md:mr-2" />
               <span className="hidden sm:inline">Users</span>
@@ -660,6 +685,41 @@ export default function AdminDashboard() {
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Bookings Tab - Audit Trail */}
+          <TabsContent value="bookings">
+            <Card className="border-[#B8AFA5]/30 bg-white">
+              <CardHeader>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <CardTitle className="font-serif font-normal text-[#5A5550]">Booking Audit Trail</CardTitle>
+                    <CardDescription className="text-[#7A736B]">Track all customer bookings with full details</CardDescription>
+                  </div>
+                  <Button 
+                    onClick={() => router.push("/admin/bookings")}
+                    className="bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full"
+                  >
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    View Full Audit Log
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <CreditCard className="h-12 w-12 mx-auto mb-4 text-[#9BA899] opacity-50" />
+                  <p className="text-[#5A5550] font-medium mb-2">{stats.totalBookings} Total Bookings</p>
+                  <p className="text-sm text-[#7A736B] mb-4">{stats.bookingsThisWeek} bookings this week</p>
+                  <Button 
+                    variant="outline"
+                    onClick={() => router.push("/admin/bookings")}
+                    className="border-[#9BA899] text-[#9BA899] hover:bg-[#9BA899]/10 rounded-full"
+                  >
+                    View Complete Booking History
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

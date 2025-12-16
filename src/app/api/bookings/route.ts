@@ -66,8 +66,11 @@ export async function GET(request: NextRequest) {
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
-    // If no studentProfileId provided, get the current user's bookings
-    if (!studentProfileId) {
+    // Check if requesting all bookings (admin only)
+    const allBookings = searchParams.get('all') === 'true';
+    
+    // If no studentProfileId provided and not requesting all, get the current user's bookings
+    if (!studentProfileId && !allBookings) {
       const currentUserProfileId = await getCurrentUserProfileId();
       if (currentUserProfileId) {
         studentProfileId = currentUserProfileId.toString();
@@ -105,7 +108,13 @@ export async function GET(request: NextRequest) {
       conditions.push(lte(bookings.bookedAt, endDate));
     }
 
-    // Fetch bookings with class details
+    // Create aliases for student user profile join
+    const studentProfile = userProfiles;
+    const instructorProfile = db.$with('instructor_profile').as(
+      db.select().from(userProfiles)
+    );
+
+    // Fetch bookings with class details AND student details for audit trail
     const results = await db
       .select({
         id: bookings.id,
@@ -120,42 +129,86 @@ export async function GET(request: NextRequest) {
         classDate: classes.date,
         classStartTime: classes.startTime,
         classEndTime: classes.endTime,
+        classStatus: classes.status,
         classTypeName: classTypes.name,
-        instructorName: user.name,
       })
       .from(bookings)
       .leftJoin(classes, eq(bookings.classId, classes.id))
       .leftJoin(classTypes, eq(classes.classTypeId, classTypes.id))
-      .leftJoin(instructors, eq(classes.instructorId, instructors.id))
-      .leftJoin(userProfiles, eq(instructors.userProfileId, userProfiles.id))
-      .leftJoin(user, eq(userProfiles.userId, user.id))
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(desc(bookings.bookedAt))
       .limit(limit)
       .offset(offset);
 
-    // Transform results to include nested class object
-    const transformedResults = results.map(r => ({
-      id: r.id,
-      classId: r.classId,
-      studentProfileId: r.studentProfileId,
-      bookingStatus: r.bookingStatus,
-      bookedAt: r.bookedAt,
-      cancelledAt: r.cancelledAt,
-      cancellationType: r.cancellationType,
-      paymentId: r.paymentId,
-      creditsUsed: r.creditsUsed,
-      class: {
-        id: r.classId,
-        date: r.classDate,
-        startTime: r.classStartTime,
-        endTime: r.classEndTime,
-        classType: { name: r.classTypeName },
-        instructor: { name: r.instructorName },
+    // Fetch student and instructor details separately for each booking
+    const enrichedResults = await Promise.all(results.map(async (r) => {
+      // Get student info
+      let studentName = 'Unknown';
+      let studentEmail = 'Unknown';
+      if (r.studentProfileId) {
+        const studentData = await db
+          .select({ name: user.name, email: user.email })
+          .from(userProfiles)
+          .leftJoin(user, eq(userProfiles.userId, user.id))
+          .where(eq(userProfiles.id, r.studentProfileId))
+          .limit(1);
+        if (studentData.length > 0) {
+          studentName = studentData[0].name || 'Unknown';
+          studentEmail = studentData[0].email || 'Unknown';
+        }
       }
+
+      // Get instructor info
+      let instructorName = 'Unknown';
+      if (r.classId) {
+        const classData = await db
+          .select({ instructorId: classes.instructorId })
+          .from(classes)
+          .where(eq(classes.id, r.classId))
+          .limit(1);
+        
+        if (classData.length > 0 && classData[0].instructorId) {
+          const instructorData = await db
+            .select({ name: user.name })
+            .from(instructors)
+            .leftJoin(userProfiles, eq(instructors.userProfileId, userProfiles.id))
+            .leftJoin(user, eq(userProfiles.userId, user.id))
+            .where(eq(instructors.id, classData[0].instructorId))
+            .limit(1);
+          if (instructorData.length > 0) {
+            instructorName = instructorData[0].name || 'Unknown';
+          }
+        }
+      }
+
+      return {
+        id: r.id,
+        classId: r.classId,
+        studentProfileId: r.studentProfileId,
+        bookingStatus: r.bookingStatus,
+        bookedAt: r.bookedAt,
+        cancelledAt: r.cancelledAt,
+        cancellationType: r.cancellationType,
+        paymentId: r.paymentId,
+        creditsUsed: r.creditsUsed,
+        student: {
+          id: r.studentProfileId,
+          name: studentName,
+          email: studentEmail,
+        },
+        class: {
+          id: r.classId,
+          date: r.classDate,
+          startTime: r.classStartTime,
+          endTime: r.classEndTime,
+          status: r.classStatus,
+          classType: { name: r.classTypeName },
+          instructor: { name: instructorName },
+        }
+      };
     }));
 
-    return NextResponse.json(transformedResults, { status: 200 });
+    return NextResponse.json(enrichedResults, { status: 200 });
   } catch (error) {
     console.error('GET error:', error);
     return NextResponse.json(
