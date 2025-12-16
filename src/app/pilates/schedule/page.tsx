@@ -134,7 +134,7 @@ export default function SchedulePage() {
   const fetchClasses = async () => {
     try {
       const token = localStorage.getItem("bearer_token")
-      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      const headers: HeadersInit = token ? { Authorization: `Bearer ${token}` } : {}
       
       const res = await fetch("/api/classes/schedule", { headers })
       if (res.ok) {
@@ -632,7 +632,7 @@ export default function SchedulePage() {
                                   <Button
                                     onClick={() => cls.isFree && !session ? router.push('/register') : handleBookClass(cls.id)}
                                     className={`w-full text-white rounded-full text-sm ${cls.isFree ? 'bg-[#E8B4B8] hover:bg-[#d9a3a7]' : 'bg-[#9BA899] hover:bg-[#8A9788]'}`}
-                                    disabled={session && !cls.isFree && totalCredits === 0}
+                                    disabled={!!session && !cls.isFree && totalCredits === 0}
                                   >
                                     {cls.isFree 
                                       ? (session ? "Book FREE ✨" : "Sign Up for FREE ✨")
@@ -673,7 +673,7 @@ export default function SchedulePage() {
                                 <Button
                                   onClick={() => cls.isFree && !session ? router.push('/register') : handleBookClass(cls.id)}
                                   className={`w-32 text-white rounded-full ${cls.isFree ? 'bg-[#E8B4B8] hover:bg-[#d9a3a7]' : 'bg-[#9BA899] hover:bg-[#8A9788]'}`}
-                                  disabled={session && !cls.isFree && totalCredits === 0}
+                                  disabled={!!session && !cls.isFree && totalCredits === 0}
                                 >
                                   {cls.isFree 
                                     ? (session ? "Book FREE ✨" : "Sign Up ✨")
