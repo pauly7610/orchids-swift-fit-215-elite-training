@@ -26,6 +26,8 @@ interface ClassData {
   // Joined fields from API
   classTypeName?: string
   instructorName?: string
+  registeredCount?: number
+  spotsRemaining?: number
 }
 
 interface ClassType {
@@ -549,7 +551,9 @@ export default function ClassScheduleManagement() {
                     </div>
                     <div className="flex items-center gap-2 text-[#7A736B]">
                       <Users className="h-4 w-4 text-[#9BA899]" />
-                      Capacity: {classData.capacity}
+                      <span className={classData.registeredCount && classData.registeredCount >= classData.capacity ? 'text-[#E8B4B8] font-medium' : ''}>
+                        {classData.registeredCount || 0}/{classData.capacity} booked
+                      </span>
                     </div>
                     <div className="text-[#7A736B]">
                       {classData.price ? `$${classData.price.toFixed(2)}` : "Credit-based"}

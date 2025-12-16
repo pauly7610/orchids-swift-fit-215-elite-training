@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { classes, userProfiles, classTypes, instructors, user as userTable } from '@/db/schema';
-import { eq, and, like, asc, gte } from 'drizzle-orm';
+import { classes, userProfiles, classTypes, instructors, user as userTable, bookings } from '@/db/schema';
+import { eq, and, like, asc, gte, sql, inArray } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
 
 // Helper to extract first name from full name or email
@@ -123,6 +123,30 @@ export async function GET(request: NextRequest) {
       ? await baseQuery.where(and(...conditions)).orderBy(asc(classes.date), asc(classes.startTime)).limit(limitNum).offset(offsetNum)
       : await baseQuery.orderBy(asc(classes.date), asc(classes.startTime)).limit(limitNum).offset(offsetNum);
 
+    // Get booking counts for all classes in one query
+    const classIds = results.map(r => r.id);
+    let bookingCountMap = new Map<number, number>();
+    
+    if (classIds.length > 0) {
+      const bookingCounts = await db
+        .select({
+          classId: bookings.classId,
+          count: sql<number>`count(*)`,
+        })
+        .from(bookings)
+        .where(
+          and(
+            inArray(bookings.classId, classIds),
+            eq(bookings.bookingStatus, 'confirmed')
+          )
+        )
+        .groupBy(bookings.classId);
+      
+      bookingCounts.forEach(b => {
+        bookingCountMap.set(b.classId, Number(b.count));
+      });
+    }
+
     // For any instructor without a name, fetch from user profile
     const enrichedResults = await Promise.all(results.map(async (row) => {
       let instructorDisplayName = row.instructorName;
@@ -143,10 +167,14 @@ export async function GET(request: NextRequest) {
         }
       }
       
+      const registeredCount = bookingCountMap.get(row.id) || 0;
+      
       return {
         ...row,
         classTypeName: row.classTypeName || 'Unknown Class Type',
         instructorName: instructorDisplayName || 'Unknown Instructor',
+        registeredCount,
+        spotsRemaining: Math.max(0, row.capacity - registeredCount),
       };
     }));
 
