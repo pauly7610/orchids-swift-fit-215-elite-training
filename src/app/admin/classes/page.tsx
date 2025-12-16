@@ -317,142 +317,134 @@ export default function ClassScheduleManagement() {
                   </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
-                <div className="space-y-4 overflow-y-auto flex-1 pr-2 pb-4">
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-4 overflow-y-auto flex-1 pr-2 pb-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="classTypeId" className="text-[#5A5550]">Class Type *</Label>
+                        <select
+                          id="classTypeId"
+                          value={formData.classTypeId}
+                          onChange={(e) => setFormData({ ...formData, classTypeId: e.target.value })}
+                          required
+                          className="w-full mt-1 px-3 py-2 border border-[#B8AFA5]/30 rounded-md focus:outline-none focus:ring-2 focus:ring-[#9BA899] bg-white"
+                        >
+                          <option value="">Select class type...</option>
+                          {classTypes.map(type => (
+                            <option key={type.id} value={type.id}>{type.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <Label htmlFor="instructorId" className="text-[#5A5550]">Instructor *</Label>
+                        <select
+                          id="instructorId"
+                          value={formData.instructorId}
+                          onChange={(e) => setFormData({ ...formData, instructorId: e.target.value })}
+                          required
+                          className="w-full mt-1 px-3 py-2 border border-[#B8AFA5]/30 rounded-md focus:outline-none focus:ring-2 focus:ring-[#9BA899] bg-white"
+                        >
+                          <option value="">Select instructor...</option>
+                          {instructors.map(instructor => (
+                            <option key={instructor.id} value={instructor.id}>
+                              {getInstructorNameById(instructor.id)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
                     <div>
-                      <Label htmlFor="classTypeId" className="text-[#5A5550]">Class Type *</Label>
-                      <select
-                        id="classTypeId"
-                        value={formData.classTypeId}
-                        onChange={(e) => setFormData({ ...formData, classTypeId: e.target.value })}
+                      <Label htmlFor="date" className="text-[#5A5550]">Date *</Label>
+                      <Input
+                        id="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                         required
+                        className="mt-1 border-[#B8AFA5]/30"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="startTime" className="text-[#5A5550]">Start Time *</Label>
+                        <Input
+                          id="startTime"
+                          type="time"
+                          value={formData.startTime}
+                          onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                          required
+                          className="mt-1 border-[#B8AFA5]/30"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="endTime" className="text-[#5A5550]">End Time *</Label>
+                        <Input
+                          id="endTime"
+                          type="time"
+                          value={formData.endTime}
+                          onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                          required
+                          className="mt-1 border-[#B8AFA5]/30"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="capacity" className="text-[#5A5550]">Capacity *</Label>
+                        <Input
+                          id="capacity"
+                          type="number"
+                          min="1"
+                          value={formData.capacity}
+                          onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
+                          required
+                          className="mt-1 border-[#B8AFA5]/30"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="price" className="text-[#5A5550]">Price (optional)</Label>
+                        <Input
+                          id="price"
+                          type="number"
+                          step="0.01"
+                          min="0"
+                          value={formData.price}
+                          onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                          placeholder="Leave empty for credit-based"
+                          className="mt-1 border-[#B8AFA5]/30"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label htmlFor="status" className="text-[#5A5550]">Status</Label>
+                      <select
+                        id="status"
+                        value={formData.status}
+                        onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                         className="w-full mt-1 px-3 py-2 border border-[#B8AFA5]/30 rounded-md focus:outline-none focus:ring-2 focus:ring-[#9BA899] bg-white"
                       >
-                        <option value="">Select class type...</option>
-                        {classTypes.map(type => (
-                          <option key={type.id} value={type.id}>{type.name}</option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="instructorId" className="text-[#5A5550]">Instructor *</Label>
-                      <select
-                        id="instructorId"
-                        value={formData.instructorId}
-                        onChange={(e) => setFormData({ ...formData, instructorId: e.target.value })}
-                        required
-                        className="w-full mt-1 px-3 py-2 border border-[#B8AFA5]/30 rounded-md focus:outline-none focus:ring-2 focus:ring-[#9BA899] bg-white"
-                      >
-                        <option value="">Select instructor...</option>
-                        {instructors.map(instructor => (
-                          <option key={instructor.id} value={instructor.id}>
-                            {getInstructorNameById(instructor.id)}
-                          </option>
-                        ))}
+                        <option value="scheduled">Scheduled</option>
+                        <option value="cancelled">Cancelled</option>
+                        <option value="completed">Completed</option>
                       </select>
                     </div>
                   </div>
-
-                  <div>
-                    <Label htmlFor="date" className="text-[#5A5550]">Date *</Label>
-                    <Input
-                      id="date"
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      required
-                      className="mt-1 border-[#B8AFA5]/30"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="startTime" className="text-[#5A5550]">Start Time *</Label>
-                      <Input
-                        id="startTime"
-                        type="time"
-                        value={formData.startTime}
-                        onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
-                        required
-                        className="mt-1 border-[#B8AFA5]/30"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="endTime" className="text-[#5A5550]">End Time *</Label>
-                      <Input
-                        id="endTime"
-                        type="time"
-                        value={formData.endTime}
-                        onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
-                        required
-                        className="mt-1 border-[#B8AFA5]/30"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="capacity" className="text-[#5A5550]">Capacity *</Label>
-                      <Input
-                        id="capacity"
-                        type="number"
-                        min="1"
-                        value={formData.capacity}
-                        onChange={(e) => setFormData({ ...formData, capacity: e.target.value })}
-                        required
-                        className="mt-1 border-[#B8AFA5]/30"
-                      />
-                    </div>
-
-                    <div>
-                      <Label htmlFor="price" className="text-[#5A5550]">Price (optional)</Label>
-                      <Input
-                        id="price"
-                        type="number"
-                        step="0.01"
-                        min="0"
-                        value={formData.price}
-                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                        placeholder="Leave empty for credit-based"
-                        className="mt-1 border-[#B8AFA5]/30"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <Label htmlFor="status" className="text-[#5A5550]">Status</Label>
-                    <select
-                      id="status"
-                      value={formData.status}
-                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                      className="w-full mt-1 px-3 py-2 border border-[#B8AFA5]/30 rounded-md focus:outline-none focus:ring-2 focus:ring-[#9BA899] bg-white"
+                  <div className="flex gap-3 pt-4 border-t border-[#B8AFA5]/20 mt-4 bg-[#FAF8F5]">
+                    <Button type="submit" className="flex-1 bg-[#9BA899] hover:bg-[#8A9788] text-white">
+                      {editingClass ? "Save Changes" : "Create Class"}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setIsCreateDialogOpen(false)
+                        setEditingClass(null)
+                        resetForm()
+                      }}
+                      className="border-[#B8AFA5] text-[#5A5550]"
                     >
-                      <option value="scheduled">Scheduled</option>
-                      <option value="cancelled">Cancelled</option>
-                      <option value="completed">Completed</option>
-                    </select>
+                      Cancel
+                    </Button>
                   </div>
-                </div>
-
-                <div className="flex gap-3 pt-4 border-t border-[#B8AFA5]/20 mt-4 bg-[#FAF8F5]">
-                  <Button type="submit" className="flex-1 bg-[#9BA899] hover:bg-[#8A9788] text-white">
-                    {editingClass ? "Save Changes" : "Create Class"}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setIsCreateDialogOpen(false)
-                      setEditingClass(null)
-                      resetForm()
-                    }}
-                    className="border-[#B8AFA5] text-[#5A5550]"
-                  >
-                    Cancel
-                  </Button>
-                </div>
                 </form>
               </DialogContent>
             </Dialog>
