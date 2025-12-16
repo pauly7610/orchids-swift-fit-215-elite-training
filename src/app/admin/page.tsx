@@ -877,11 +877,11 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="border-[#B8AFA5]/30 bg-white">
+              <Card className="border-[#B8AFA5]/30 bg-white hover:border-[#9BA899]/50 cursor-pointer transition-colors" onClick={() => router.push("/admin/attendance")}>
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <BarChart3 className="h-5 w-5 text-[#9BA899]" />
-                    <CardTitle className="font-serif font-normal text-[#5A5550]">Attendance Stats</CardTitle>
+                    <CardTitle className="font-serif font-normal text-[#5A5550]">Attendance Tracking</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -889,12 +889,8 @@ export default function AdminDashboard() {
                   <p className="text-sm text-[#B8AFA5] mb-4">Total class bookings</p>
                   <div className="space-y-2 pt-4 border-t border-[#B8AFA5]/20">
                     <div className="flex justify-between text-sm">
-                      <span className="text-[#7A736B]">Classes this week</span>
-                      <span className="text-[#5A5550] font-medium">{stats.upcomingClasses}</span>
-                    </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-[#7A736B]">Avg. attendance</span>
-                      <span className="text-[#5A5550] font-medium">Coming soon</span>
+                      <span className="text-[#7A736B]">Mark attendance</span>
+                      <span className="text-[#9BA899] font-medium">Track no-shows →</span>
                     </div>
                   </div>
                 </CardContent>
@@ -922,16 +918,16 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="border-[#B8AFA5]/30 bg-white">
+              <Card className="border-[#B8AFA5]/30 bg-white hover:border-[#9BA899]/50 cursor-pointer transition-colors" onClick={() => router.push("/admin/reports/instructors")}>
                 <CardHeader>
                   <div className="flex items-center gap-2">
                     <TrendingUp className="h-5 w-5 text-[#9BA899]" />
-                    <CardTitle className="font-serif font-normal text-[#5A5550]">Popular Classes</CardTitle>
+                    <CardTitle className="font-serif font-normal text-[#5A5550]">Instructor Performance</CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-[#B8AFA5]">Analytics coming soon</p>
-                  <p className="text-xs text-[#B8AFA5] mt-2">Track which class types are most popular with your students</p>
+                  <p className="text-sm text-[#5A5550] font-medium">View detailed report</p>
+                  <p className="text-xs text-[#B8AFA5] mt-2">Track bookings, attendance rates, and credits by instructor</p>
                 </CardContent>
               </Card>
             </div>
