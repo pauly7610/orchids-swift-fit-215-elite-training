@@ -4,8 +4,7 @@ import {
   classReminderTracking, 
   userProfiles, 
   user,
-  studentPurchases,
-  memberships 
+  studentPurchases
 } from '@/db/schema';
 import { eq, and, lte, lt } from 'drizzle-orm';
 import { resend } from '@/lib/resend';
@@ -135,13 +134,15 @@ export async function GET(request: NextRequest) {
     // ============================================
     console.log('Starting credit expiration...');
     try {
+      // Find and expire purchases that have passed their expiration date
+      // studentPurchases uses isActive (boolean), not status
       const expired = await db
         .update(studentPurchases)
-        .set({ status: 'expired' })
+        .set({ isActive: false })
         .where(
           and(
             lt(studentPurchases.expiresAt, new Date().toISOString()),
-            eq(studentPurchases.status, 'active')
+            eq(studentPurchases.isActive, true)
           )
         );
 
@@ -157,37 +158,50 @@ export async function GET(request: NextRequest) {
     // ============================================
     console.log('Starting membership renewals...');
     try {
+      // Active memberships are stored in studentPurchases with purchaseType='membership'
+      // The memberships table is just for defining membership TYPES/PLANS
       const renewalsDue = await db
         .select()
-        .from(memberships)
+        .from(studentPurchases)
         .where(
           and(
-            lte(memberships.expiresAt, new Date().toISOString()),
-            eq(memberships.autoRenew, true),
-            eq(memberships.status, 'active')
+            eq(studentPurchases.purchaseType, 'membership'),
+            eq(studentPurchases.autoRenew, true),
+            eq(studentPurchases.isActive, true),
+            lte(studentPurchases.nextBillingDate, new Date().toISOString())
           )
         )
         .limit(50);
 
-      for (const membership of renewalsDue) {
+      for (const purchase of renewalsDue) {
         try {
-          // Calculate new expiry (30 days from old expiry)
-          const oldExpiry = new Date(membership.expiresAt);
-          const newExpiry = new Date(oldExpiry);
-          newExpiry.setDate(newExpiry.getDate() + 30);
+          // Calculate new billing date (30 days from current billing date)
+          const oldBillingDate = purchase.nextBillingDate ? new Date(purchase.nextBillingDate) : new Date();
+          const newBillingDate = new Date(oldBillingDate);
+          newBillingDate.setDate(newBillingDate.getDate() + 30);
+
+          // Also extend expiration if set
+          let newExpiresAt = purchase.expiresAt;
+          if (purchase.expiresAt) {
+            const oldExpiry = new Date(purchase.expiresAt);
+            const extendedExpiry = new Date(oldExpiry);
+            extendedExpiry.setDate(extendedExpiry.getDate() + 30);
+            newExpiresAt = extendedExpiry.toISOString();
+          }
 
           await db
-            .update(memberships)
+            .update(studentPurchases)
             .set({
-              expiresAt: newExpiry.toISOString(),
-              updatedAt: new Date().toISOString(),
+              nextBillingDate: newBillingDate.toISOString(),
+              expiresAt: newExpiresAt,
             })
-            .where(eq(memberships.id, membership.id));
+            .where(eq(studentPurchases.id, purchase.id));
 
           results.membershipsProcessed.count++;
+          console.log(`Renewed membership purchase ${purchase.id}, next billing: ${newBillingDate.toISOString()}`);
         } catch (error) {
           results.membershipsProcessed.errors.push(
-            `Membership ${membership.id}: ${error instanceof Error ? error.message : 'Unknown'}`
+            `Membership purchase ${purchase.id}: ${error instanceof Error ? error.message : 'Unknown'}`
           );
         }
       }
