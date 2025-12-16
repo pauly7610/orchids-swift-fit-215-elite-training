@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Users, Mail, Calendar, Shield, ArrowLeft, Search, CheckCircle, XCircle } from "lucide-react"
+import { Users, Mail, Calendar, Shield, ArrowLeft, Search, CheckCircle, XCircle, Copy, Download } from "lucide-react"
 import { toast } from "sonner"
 import { format, parseISO } from "date-fns"
 import { Input } from "@/components/ui/input"
@@ -174,6 +174,30 @@ export default function UsersManagementPage() {
            (user.profile?.role || "").toLowerCase().includes(search)
   })
 
+  // Get student emails for export (comma-separated for Gmail)
+  const getStudentEmails = () => {
+    return users
+      .filter(u => u.profile?.role === "student")
+      .map(u => u.email)
+      .join(", ")
+  }
+
+  const copyStudentEmails = async () => {
+    const emails = getStudentEmails()
+    if (!emails) {
+      toast.error("No student emails to copy")
+      return
+    }
+    
+    try {
+      await navigator.clipboard.writeText(emails)
+      const count = users.filter(u => u.profile?.role === "student").length
+      toast.success(`Copied ${count} student emails to clipboard`)
+    } catch (error) {
+      toast.error("Failed to copy to clipboard")
+    }
+  }
+
   if (isPending || loading) {
     return (
       <div className="min-h-screen bg-[#FAF8F5] flex flex-col">
@@ -301,17 +325,27 @@ export default function UsersManagementPage() {
           </Card>
         </div>
 
-        {/* Search */}
+        {/* Search & Export */}
         <Card className="border-[#B8AFA5]/30 bg-white mb-6">
           <CardContent className="pt-6">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9BA899]" />
-              <Input
-                placeholder="Search by name, email, or role..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 border-[#B8AFA5]/30 focus:border-[#9BA899]"
-              />
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#9BA899]" />
+                <Input
+                  placeholder="Search by name, email, or role..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 border-[#B8AFA5]/30 focus:border-[#9BA899]"
+                />
+              </div>
+              <Button
+                onClick={copyStudentEmails}
+                variant="outline"
+                className="border-[#9BA899] text-[#9BA899] hover:bg-[#9BA899]/10 whitespace-nowrap"
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copy Student Emails
+              </Button>
             </div>
           </CardContent>
         </Card>
