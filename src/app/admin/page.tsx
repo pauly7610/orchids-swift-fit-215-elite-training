@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input"
 import { 
   Calendar, Users, DollarSign, TrendingUp, Plus, Shield, LogOut, Settings, 
   BarChart3, Search, Clock, ChevronRight, User, ArrowUpRight, ArrowDownRight,
-  CalendarDays, CreditCard, Package
+  CalendarDays, CreditCard, Package, Mail
 } from "lucide-react"
 import { toast } from "sonner"
 import Link from "next/link"
@@ -27,6 +27,8 @@ interface Stats {
   todayClasses: number
   newStudentsThisWeek: number
   bookingsThisWeek: number
+  emailSubscribers: number
+  totalSignups: number
 }
 
 interface ClassPreview {
@@ -97,7 +99,9 @@ export default function AdminDashboard() {
     upcomingClasses: 0,
     todayClasses: 0,
     newStudentsThisWeek: 0,
-    bookingsThisWeek: 0
+    bookingsThisWeek: 0,
+    emailSubscribers: 0,
+    totalSignups: 0
   })
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
@@ -197,7 +201,7 @@ export default function AdminDashboard() {
         }))
       }
       
-      // Process students
+      // Process students and calculate email subscribers
       if (studentsRes?.ok) {
         const studentsData = await studentsRes.json()
         const studentCount = Array.isArray(studentsData) ? studentsData.length : 0
@@ -208,10 +212,17 @@ export default function AdminDashboard() {
           ? studentsData.filter((s: any) => new Date(s.createdAt) > weekAgo).length 
           : 0
         
+        // Calculate email subscribers (students only - excludes instructors/admins)
+        const emailSubscribers = Array.isArray(studentsData)
+          ? studentsData.filter((s: any) => s.marketingEmails === true || s.marketingEmails === 1).length
+          : 0
+        
         setStats(prev => ({ 
           ...prev, 
           activeStudents: studentCount,
-          newStudentsThisWeek: newThisWeek
+          newStudentsThisWeek: newThisWeek,
+          emailSubscribers: emailSubscribers,
+          totalSignups: studentCount
         }))
       }
 
@@ -472,7 +483,7 @@ export default function AdminDashboard() {
 
       <div className="container mx-auto px-4 py-4 md:py-8 flex-1">
         {/* Stats - Clickable Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-6 mb-6">
           <Card 
             className="border-[#B8AFA5]/30 bg-white cursor-pointer hover:shadow-md hover:border-[#9BA899]/50 transition-all"
             onClick={() => router.push("/admin/users")}
@@ -525,6 +536,7 @@ export default function AdminDashboard() {
 
           <Card 
             className="border-[#B8AFA5]/30 bg-white cursor-pointer hover:shadow-md hover:border-[#9BA899]/50 transition-all"
+            onClick={() => router.push("/admin/bookings")}
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-xs md:text-sm font-medium text-[#5A5550]">Bookings</CardTitle>
@@ -533,6 +545,20 @@ export default function AdminDashboard() {
             <CardContent>
               <div className="text-xl md:text-2xl font-serif text-[#9BA899]">{stats.totalBookings}</div>
               <span className="text-xs text-[#B8AFA5]">All-time</span>
+            </CardContent>
+          </Card>
+
+          <Card 
+            className="border-[#B8AFA5]/30 bg-white cursor-pointer hover:shadow-md hover:border-[#9BA899]/50 transition-all"
+            onClick={() => router.push("/admin/users")}
+          >
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-xs md:text-sm font-medium text-[#5A5550]">Email List</CardTitle>
+              <Mail className="h-4 w-4 text-[#9BA899]" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl md:text-2xl font-serif text-[#9BA899]">{stats.emailSubscribers}</div>
+              <span className="text-xs text-[#B8AFA5]">Student subscribers</span>
             </CardContent>
           </Card>
         </div>
