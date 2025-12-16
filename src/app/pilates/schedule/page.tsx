@@ -6,13 +6,14 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Calendar, User, CreditCard, Menu, X } from "lucide-react"
+import { Heart, Calendar, User, CreditCard, Menu, X, Pencil } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { format, parseISO, startOfWeek, addDays, isSameDay, isToday, startOfDay } from "date-fns"
 import { useRef, useCallback } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
+import { AdminBar } from "@/components/admin-bar"
 
 interface Class {
   id: number
@@ -247,6 +248,9 @@ export default function SchedulePage() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
+      {/* Admin Bar - only shows for admins */}
+      <AdminBar currentPage="schedule" />
+      
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-sm border-b border-[#B8AFA5]/20">
         <div className="container mx-auto px-4 py-4 md:py-5 flex items-center justify-between">

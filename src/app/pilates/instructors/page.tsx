@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Heart, Award, Sparkles } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { AdminBar } from "@/components/admin-bar"
 
 const instructors = [
   {
@@ -77,6 +78,9 @@ const instructors = [
 export default function InstructorsPage() {
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
+      {/* Admin Bar - only shows for admins */}
+      <AdminBar currentPage="instructors" />
+      
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-sm border-b border-[#B8AFA5]/20">
         <div className="container mx-auto px-4 py-5 flex items-center justify-between">

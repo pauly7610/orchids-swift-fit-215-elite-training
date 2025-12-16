@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Heart, Activity, Wind, Flame, Brain, Music, Users } from "lucide-react"
 import Link from "next/link"
+import { AdminBar } from "@/components/admin-bar"
 
 const classTypes = [
   {
@@ -110,6 +111,9 @@ const classTypes = [
 export default function ClassesPage() {
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
+      {/* Admin Bar - only shows for admins */}
+      <AdminBar currentPage="classes" />
+      
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAF8F5]/95 backdrop-blur-sm border-b border-[#B8AFA5]/20">
         <div className="container mx-auto px-4 py-5 flex items-center justify-between">

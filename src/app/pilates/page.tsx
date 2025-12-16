@@ -9,10 +9,14 @@ import Image from "next/image"
 import { PilatesEmailPopup } from "@/components/pilates-email-popup"
 import { SoftOpeningBanner, WeeklyClassSchedule } from "@/components/weekly-class-schedule"
 import { PilatesNav } from "@/components/pilates-nav"
+import { AdminBar } from "@/components/admin-bar"
 
 export default function PilatesLanding() {
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
+      {/* Admin Bar - only shows for admins */}
+      <AdminBar currentPage="other" />
+      
       {/* Email Signup Popup */}
       <PilatesEmailPopup delayMs={3000} />
 
