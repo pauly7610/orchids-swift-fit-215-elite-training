@@ -15,7 +15,7 @@ function ComponentSeparator({
     >
       <div className="flex items-center justify-center space-x-4">
         {/* Left line */}
-        <div className="w-24 h-0.5 bg-gradient-to-r from-transparent to-primary/20" />
+        <div className="w-24 h-0.5 bg-linear-to-r from-transparent to-primary/20" />
         
         {/* Center decorative element */}
         <div className="relative flex items-center justify-center">
@@ -35,7 +35,7 @@ function ComponentSeparator({
         </div>
         
         {/* Right line */}
-        <div className="w-24 h-0.5 bg-gradient-to-l from-transparent to-primary/20" />
+        <div className="w-24 h-0.5 bg-linear-to-l from-transparent to-primary/20" />
       </div>
     </div>
   )

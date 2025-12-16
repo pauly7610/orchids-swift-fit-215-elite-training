@@ -173,7 +173,7 @@ export default function Home() {
       {/* Skip to main content link for accessibility */}
       <a 
         href="#main-content" 
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-100 focus:bg-primary focus:text-white focus:px-4 focus:py-2 focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
         Skip to main content
       </a>
@@ -274,9 +274,9 @@ export default function Home() {
       {/* Main Content */}
       <main id="main-content">
         {/* Hero Section */}
-        <section className="relative pt-20 pb-16 md:pt-32 md:pb-32 overflow-hidden bg-gradient-to-br from-secondary via-secondary/95 to-black" aria-labelledby="hero-heading">
+        <section className="relative pt-20 pb-16 md:pt-32 md:pb-32 overflow-hidden bg-linear-to-br from-secondary via-secondary/95 to-black" aria-labelledby="hero-heading">
           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80')] bg-cover bg-center opacity-20" role="img" aria-label="Gym equipment background"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-secondary via-secondary/90 to-transparent"></div>
+          <div className="absolute inset-0 bg-linear-to-r from-secondary via-secondary/90 to-transparent"></div>
           
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-3xl">
@@ -347,15 +347,15 @@ export default function Home() {
                   <CardDescription className="mb-4">No annual fees or commitments</CardDescription>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>State-of-the-art equipment</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Open 7 days a week</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Boutique gym atmosphere</span>
                     </li>
                   </ul>
@@ -374,15 +374,15 @@ export default function Home() {
                   <CardDescription className="mb-4">Personalized fitness plans</CardDescription>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Free consultation</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Certified trainers</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Progress tracking</span>
                     </li>
                   </ul>
@@ -401,15 +401,15 @@ export default function Home() {
                   <CardDescription className="mb-4">Speed & strength development</CardDescription>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Team training programs</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Football, basketball & track</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>College prep & recruitment</span>
                     </li>
                   </ul>
@@ -428,19 +428,19 @@ export default function Home() {
                   <CardDescription className="mb-4">Recovery & flexibility</CardDescription>
                   <ul className="space-y-2">
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Assisted stretch therapy</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Mat Pilates classes</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Cryotherapy</span>
                     </li>
                     <li className="flex items-start gap-2 text-sm">
-                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 flex-shrink-0" />
+                      <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
                       <span>Pregame routines</span>
                     </li>
                   </ul>
@@ -461,7 +461,7 @@ export default function Home() {
             </div>
             
             {/* Proven Track Record Banner */}
-            <Card className="mb-8 md:mb-12 overflow-hidden border-2 border-primary/20 bg-gradient-to-r from-secondary via-secondary/95 to-black">
+            <Card className="mb-8 md:mb-12 overflow-hidden border-2 border-primary/20 bg-linear-to-r from-secondary via-secondary/95 to-black">
               <div className="p-6 md:p-12 text-center">
                 <Badge className="mb-3 md:mb-4 bg-primary/20 text-primary border-primary/30 text-xs md:text-sm">PROVEN TRACK RECORD</Badge>
                 <h3 className="font-display text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-white mb-3 md:mb-4 tracking-wide px-2">
@@ -542,7 +542,7 @@ export default function Home() {
                   "Trust the vision that your trainer has for you. Always be comfortable with being uncomfortable. This is where champions are made."
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <span className="font-display text-primary text-sm">DS</span>
                   </div>
                   <div>
@@ -562,7 +562,7 @@ export default function Home() {
                   "SwiftFit is more than a gym—it's a family. The personalized attention and elite training programs have transformed not just my body, but my entire mindset."
                 </p>
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
                     <span className="font-display text-primary text-sm">AT</span>
                   </div>
                   <div>
@@ -835,7 +835,7 @@ export default function Home() {
                 </p>
                 <div className="space-y-3 md:space-y-4 mb-6 md:mb-8">
                   <div className="flex items-start gap-3">
-                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                       <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                     </div>
                     <div>
@@ -844,7 +844,7 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                       <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                     </div>
                     <div>
@@ -853,7 +853,7 @@ export default function Home() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <div className="h-9 w-9 md:h-10 md:w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                       <CheckCircle2 className="h-4 w-4 md:h-5 md:w-5 text-primary" />
                     </div>
                     <div>
@@ -875,7 +875,7 @@ export default function Home() {
                     alt="SwiftFit 215 Training" 
                     className="object-cover object-[center_30%] w-full h-full"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-secondary/60 to-transparent"></div>
+                  <div className="absolute inset-0 bg-linear-to-t from-secondary/60 to-transparent"></div>
                 </div>
                 <Card className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 p-4 md:p-6 bg-secondary text-white border-0 max-w-[280px] md:max-w-xs">
                   <div className="font-display text-2xl md:text-3xl text-primary mb-2">IT GETS GREATER, LATER</div>
@@ -987,7 +987,7 @@ export default function Home() {
                   <h3 className="font-display text-2xl md:text-3xl mb-4 md:mb-6 tracking-wide">LOCATION & HOURS</h3>
                   <div className="space-y-4 md:space-y-6">
                     <div className="flex gap-3 md:gap-4">
-                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <MapPin className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                       <div>
@@ -998,7 +998,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="flex gap-3 md:gap-4">
-                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <Phone className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                       <div>
@@ -1007,7 +1007,7 @@ export default function Home() {
                       </div>
                     </div>
                     <div className="flex gap-3 md:gap-4">
-                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <div className="h-10 w-10 md:h-12 md:w-12 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                         <Clock className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                       </div>
                       <div>

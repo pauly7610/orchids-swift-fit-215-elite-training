@@ -104,7 +104,7 @@ function getClassTypeColor(classType: string): string {
 
 export function SoftOpeningBanner() {
   return (
-    <Card className="border-2 border-[#E8B4B8] bg-gradient-to-r from-[#FFF5F7] via-white to-[#F5F9F5] overflow-hidden">
+    <Card className="border-2 border-[#E8B4B8] bg-linear-to-r from-[#FFF5F7] via-white to-[#F5F9F5] overflow-hidden">
       <CardHeader className="pb-4">
         <div className="flex items-center gap-3 mb-2">
           <div className="w-10 h-10 rounded-full bg-[#E8B4B8]/20 flex items-center justify-center">

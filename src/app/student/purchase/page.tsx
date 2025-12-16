@@ -151,7 +151,7 @@ export default function PurchasePage() {
       <div className="container mx-auto px-4 py-6 md:py-12">
         {/* New Student Intro Offer */}
         <section className="mb-10 md:mb-16">
-          <Card className="border-2 border-[#E8B4B8] bg-gradient-to-r from-[#FFF5F7] via-white to-[#F5F9F5] max-w-2xl mx-auto">
+          <Card className="border-2 border-[#E8B4B8] bg-linear-to-r from-[#FFF5F7] via-white to-[#F5F9F5] max-w-2xl mx-auto">
             <CardContent className="p-6 md:p-8 text-center">
               <div className="inline-flex items-center gap-2 bg-[#E8B4B8]/20 rounded-full px-4 py-1.5 mb-4">
                 <Sparkles className="h-4 w-4 text-[#E8B4B8]" />

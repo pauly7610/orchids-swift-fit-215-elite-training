@@ -368,7 +368,7 @@ export default function PricingPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
+      <section className="pt-32 pb-16 bg-linear-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
         <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-[#9BA899]/5 blur-3xl"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -443,18 +443,18 @@ export default function PricingPage() {
                     <CardContent>
                       <ul className="space-y-3 mb-6">
                         <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                           <span>
                             {pkg.credits}{" "}
                             {pkg.credits === 1 ? "class" : "classes"} included
                           </span>
                         </li>
                         <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                           <span>Valid for all class types</span>
                         </li>
                         <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                           <span>
                             {pkg.expirationDays === 1
                               ? "Valid same day only"
@@ -467,13 +467,13 @@ export default function PricingPage() {
                         </li>
                         {pkg.credits >= 5 && (
                           <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                             <span>Share with friends/family</span>
                           </li>
                         )}
                         {pkg.credits >= 10 && (
                           <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                             <span>Priority booking access</span>
                           </li>
                         )}
@@ -565,7 +565,7 @@ export default function PricingPage() {
                     <CardContent>
                       <ul className="space-y-3 mb-6">
                         <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                           <span>
                             {membership.isUnlimited
                               ? "Unlimited classes per month"
@@ -573,27 +573,27 @@ export default function PricingPage() {
                           </span>
                         </li>
                         <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                          <RefreshCw className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                          <RefreshCw className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                           <span className="font-medium">
                             Automatically renews monthly
                           </span>
                         </li>
                         {!membership.isUnlimited && (
                           <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                            <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                             <span>Rollover unused classes (up to 1 month)</span>
                           </li>
                         )}
                         <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                           <span>Priority booking</span>
                         </li>
                         <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                           <span>Member-only events & wellness perks</span>
                         </li>
                         <li className="flex items-start gap-2 text-sm text-[#5A5550]">
-                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 flex-shrink-0" />
+                          <CheckCircle2 className="h-4 w-4 text-[#9BA899] mt-0.5 shrink-0" />
                           <span>10% off workshops & merch</span>
                         </li>
                       </ul>
@@ -634,7 +634,7 @@ export default function PricingPage() {
             <div className="grid md:grid-cols-2 gap-6">
               <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
                 <div className="flex items-start gap-3 mb-2">
-                  <RefreshCw className="h-5 w-5 text-[#9BA899] flex-shrink-0 mt-0.5" />
+                  <RefreshCw className="h-5 w-5 text-[#9BA899] shrink-0 mt-0.5" />
                   <h3 className="text-xl font-serif font-normal text-[#5A5550]">
                     Auto-Renewal & Rollover
                   </h3>
@@ -682,7 +682,7 @@ export default function PricingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
+      <section className="py-20 bg-linear-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#B8AFA5]/10 blur-3xl"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-6 font-light">

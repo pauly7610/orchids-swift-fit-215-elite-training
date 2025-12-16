@@ -47,7 +47,7 @@ export const GalleryImage = ({ src, alt, caption, className = "" }: GalleryImage
             onLoad={handleLoad}
             className={`object-cover w-full h-full group-hover:scale-110 transition-transform duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+          <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             <div className="absolute bottom-4 left-4 right-4">
               <p className="text-white font-semibold text-sm">{caption}</p>
             </div>

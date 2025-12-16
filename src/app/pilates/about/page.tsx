@@ -40,7 +40,7 @@ export default function AboutPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
+      <section className="pt-32 pb-16 bg-linear-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
         <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-[#9BA899]/5 blur-3xl"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -156,7 +156,7 @@ export default function AboutPage() {
             <div className="space-y-6">
               <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
                 <div className="flex items-start gap-4">
-                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 flex-shrink-0" />
+                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 shrink-0" />
                   <div>
                     <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">Inclusivity & Welcome</h3>
                     <p className="text-[#7A736B]">
@@ -168,7 +168,7 @@ export default function AboutPage() {
 
               <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
                 <div className="flex items-start gap-4">
-                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 flex-shrink-0" />
+                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 shrink-0" />
                   <div>
                     <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">Mind-Body Connection</h3>
                     <p className="text-[#7A736B]">
@@ -180,7 +180,7 @@ export default function AboutPage() {
 
               <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
                 <div className="flex items-start gap-4">
-                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 flex-shrink-0" />
+                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 shrink-0" />
                   <div>
                     <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">Intentional Practice</h3>
                     <p className="text-[#7A736B]">
@@ -192,7 +192,7 @@ export default function AboutPage() {
 
               <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
                 <div className="flex items-start gap-4">
-                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 flex-shrink-0" />
+                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 shrink-0" />
                   <div>
                     <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">Community & Support</h3>
                     <p className="text-[#7A736B]">
@@ -204,7 +204,7 @@ export default function AboutPage() {
 
               <Card className="p-6 border-l-4 border-l-[#9BA899] border-[#B8AFA5]/30 bg-[#FAF8F5]">
                 <div className="flex items-start gap-4">
-                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 flex-shrink-0" />
+                  <CheckCircle2 className="h-6 w-6 text-[#9BA899] mt-1 shrink-0" />
                   <div>
                     <h3 className="text-xl font-serif font-normal text-[#5A5550] mb-2">Personal Growth</h3>
                     <p className="text-[#7A736B]">
@@ -230,7 +230,7 @@ export default function AboutPage() {
 
             <Card className="p-8 md:p-12 border-[#B8AFA5]/30 bg-white">
               <div className="flex items-center gap-4 mb-6">
-                <div className="h-24 w-24 rounded-full overflow-hidden flex-shrink-0 border-2 border-[#B8AFA5]">
+                <div className="h-24 w-24 rounded-full overflow-hidden shrink-0 border-2 border-[#B8AFA5]">
                   <Image
                     src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/render/image/public/document-uploads/image-1764789079370.png"
                     alt="Deserae C. Smith"
@@ -268,7 +268,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
+      <section className="py-20 bg-linear-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#B8AFA5]/10 blur-3xl"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-6 font-light">

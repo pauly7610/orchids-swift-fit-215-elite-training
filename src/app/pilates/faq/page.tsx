@@ -164,7 +164,7 @@ export default function FAQPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
+      <section className="pt-32 pb-16 bg-linear-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
         <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-[#9BA899]/5 blur-3xl"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -241,7 +241,7 @@ export default function FAQPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
+      <section className="py-20 bg-linear-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#B8AFA5]/10 blur-3xl"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-6 font-light">

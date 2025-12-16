@@ -145,7 +145,7 @@ export default function ClassesPage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-16 bg-gradient-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
+      <section className="pt-32 pb-16 bg-linear-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
         <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-[#9BA899]/5 blur-3xl"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -171,7 +171,7 @@ export default function ClassesPage() {
                     <div className="grid md:grid-cols-3 gap-8">
                       <div className="md:col-span-2">
                         <div className="flex items-start gap-4 mb-4">
-                          <div className="h-16 w-16 rounded-full bg-[#9BA899]/10 flex items-center justify-center flex-shrink-0 border border-[#B8AFA5]/30">
+                          <div className="h-16 w-16 rounded-full bg-[#9BA899]/10 flex items-center justify-center shrink-0 border border-[#B8AFA5]/30">
                             <Icon className="h-8 w-8 text-[#9BA899]" />
                           </div>
                           <div className="flex-1">
@@ -197,7 +197,7 @@ export default function ClassesPage() {
                         <ul className="space-y-2">
                           {classType.benefits.map((benefit, i) => (
                             <li key={i} className="flex items-start gap-2 text-sm text-[#7A736B]">
-                              <div className="h-1.5 w-1.5 rounded-full bg-[#9BA899] mt-2 flex-shrink-0" />
+                              <div className="h-1.5 w-1.5 rounded-full bg-[#9BA899] mt-2 shrink-0" />
                               <span>{benefit}</span>
                             </li>
                           ))}
@@ -259,7 +259,7 @@ export default function ClassesPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
+      <section className="py-20 bg-linear-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#B8AFA5]/10 blur-3xl"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="font-serif text-4xl md:text-5xl text-[#5A5550] mb-6 font-light">

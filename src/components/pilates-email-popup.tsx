@@ -96,7 +96,7 @@ export function PilatesEmailPopup({ delayMs = 3000 }: PilatesEmailPopupProps) {
         </button>
         
         <DialogHeader className="pt-2">
-          <div className="mx-auto mb-3 sm:mb-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#9BA899]/20 to-[#E8B4B8]/20 flex items-center justify-center">
+          <div className="mx-auto mb-3 sm:mb-4 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-linear-to-br from-[#9BA899]/20 to-[#E8B4B8]/20 flex items-center justify-center">
             <Sparkles className="h-6 w-6 sm:h-8 sm:w-8 text-[#9BA899]" />
           </div>
           <DialogTitle className="text-xl sm:text-2xl font-serif text-center text-[#5A5550]">

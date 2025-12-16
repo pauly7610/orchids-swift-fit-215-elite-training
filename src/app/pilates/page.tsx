@@ -24,10 +24,10 @@ export default function PilatesLanding() {
       <PilatesNav />
 
       {/* CTA Banner */}
-      <div className="fixed top-[65px] md:top-[73px] left-0 right-0 z-40 bg-gradient-to-r from-[#E8B4B8]/90 via-[#9BA899]/90 to-[#B8AFA5]/90 backdrop-blur-sm border-b border-white/20">
+      <div className="fixed top-[65px] md:top-[73px] left-0 right-0 z-40 bg-linear-to-r from-[#E8B4B8]/90 via-[#9BA899]/90 to-[#B8AFA5]/90 backdrop-blur-sm border-b border-white/20">
         <div className="container mx-auto px-4 py-2.5 md:py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2 md:gap-3 text-center sm:text-left">
-            <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-white flex-shrink-0" />
+            <Sparkles className="h-4 w-4 md:h-5 md:w-5 text-white shrink-0" />
             <p className="text-white font-medium text-xs sm:text-sm md:text-base">
               <span className="hidden sm:inline">New Students: </span>Try 3 classes for just $49! 
               <span className="hidden md:inline ml-1">🎉 Limited time offer</span>
@@ -42,7 +42,7 @@ export default function PilatesLanding() {
       </div>
 
       {/* Hero Section */}
-      <section className="relative pt-[120px] pb-16 md:pt-[160px] md:pb-32 overflow-hidden bg-gradient-to-b from-[#F5F2EE] to-[#FAF8F5]">
+      <section className="relative pt-[120px] pb-16 md:pt-[160px] md:pb-32 overflow-hidden bg-linear-to-b from-[#F5F2EE] to-[#FAF8F5]">
         <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-[#9BA899]/5 blur-3xl"></div>
         <div className="absolute bottom-10 left-10 w-96 h-96 rounded-full bg-[#B8AFA5]/5 blur-3xl"></div>
         
@@ -254,7 +254,7 @@ export default function PilatesLanding() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
+      <section className="py-16 md:py-24 bg-linear-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#B8AFA5]/10 blur-3xl"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-[#5A5550] mb-4 md:mb-6 font-light px-4">

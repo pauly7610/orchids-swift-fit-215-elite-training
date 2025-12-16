@@ -345,7 +345,7 @@ export default function SchedulePage() {
       </header>
 
       {/* Hero Section */}
-      <section className="pt-24 pb-8 md:pt-32 md:pb-12 bg-gradient-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
+      <section className="pt-24 pb-8 md:pt-32 md:pb-12 bg-linear-to-b from-[#F5F2EE] to-[#FAF8F5] relative overflow-hidden">
         <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-[#9BA899]/5 blur-3xl"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto text-center">
@@ -401,7 +401,7 @@ export default function SchedulePage() {
                     key={day.toISOString()}
                     ref={isDayToday ? todayButtonRef : null}
                     onClick={() => setSelectedDate(day)}
-                    className={`flex flex-col items-center min-w-[60px] md:min-w-[70px] px-2 md:px-3 py-2 md:py-3 rounded-xl border-2 transition-all flex-shrink-0 ${
+                    className={`flex flex-col items-center min-w-[60px] md:min-w-[70px] px-2 md:px-3 py-2 md:py-3 rounded-xl border-2 transition-all shrink-0 ${
                       isSelected
                         ? "border-[#9BA899] bg-[#9BA899]/10 shadow-sm"
                         : isDayToday
@@ -535,7 +535,7 @@ export default function SchedulePage() {
 
                           <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                             {/* Desktop: Time Badge */}
-                            <div className="hidden md:block flex-shrink-0">
+                            <div className="hidden md:block shrink-0">
                               <div className="bg-[#9BA899]/10 rounded-2xl px-6 py-4 text-center border border-[#B8AFA5]/30">
                                 <div className="font-serif text-3xl text-[#9BA899] font-light">
                                   {cls.startTime}
@@ -643,7 +643,7 @@ export default function SchedulePage() {
                             </div>
 
                             {/* Desktop: Booking Actions */}
-                            <div className="hidden md:flex flex-col gap-2 flex-shrink-0">
+                            <div className="hidden md:flex flex-col gap-2 shrink-0">
                               {cls.isUserBooked ? (
                                 <>
                                   <Button variant="outline" disabled className="w-32 rounded-full border-[#9BA899] text-[#9BA899]">
@@ -694,7 +694,7 @@ export default function SchedulePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 md:py-20 bg-gradient-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
+      <section className="py-16 md:py-20 bg-linear-to-b from-[#9BA899]/10 to-white relative overflow-hidden">
         <div className="absolute top-0 right-0 w-96 h-96 rounded-full bg-[#B8AFA5]/10 blur-3xl"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-[#5A5550] mb-4 md:mb-6 font-light px-4">
