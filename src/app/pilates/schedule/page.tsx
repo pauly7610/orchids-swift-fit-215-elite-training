@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Calendar, User, CreditCard, Menu, X, Pencil } from "lucide-react"
+import { Heart, Calendar, User, CreditCard, Menu, X, Pencil, Plus, Settings } from "lucide-react"
 import Link from "next/link"
 import { toast } from "sonner"
 import { format, parseISO, startOfWeek, addDays, isSameDay, isToday, startOfDay } from "date-fns"
@@ -14,6 +14,7 @@ import { useRef, useCallback } from "react"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import Image from "next/image"
 import { AdminBar } from "@/components/admin-bar"
+import { useAdmin } from "@/hooks/use-admin"
 
 interface Class {
   id: number
@@ -40,6 +41,7 @@ interface Purchase {
 export default function SchedulePage() {
   const { data: session, isPending } = useSession()
   const router = useRouter()
+  const { isAdmin } = useAdmin()
   const [classes, setClasses] = useState<Class[]>([])
   const [purchases, setPurchases] = useState<Purchase[]>([])
   const [loading, setLoading] = useState(true)
@@ -500,8 +502,24 @@ export default function SchedulePage() {
                   const isLowCapacity = cls.spotsRemaining <= 3 && cls.spotsRemaining > 0
                   
                   return (
-                    <Card key={cls.id} className="border-2 border-[#B8AFA5]/30 hover:border-[#9BA899] transition-all bg-white">
+                    <Card key={cls.id} className={`border-2 transition-all bg-white ${isAdmin ? 'border-[#5A5550]/40 hover:border-[#5A5550]' : 'border-[#B8AFA5]/30 hover:border-[#9BA899]'}`}>
                       <CardContent className="p-4 md:p-6">
+                        {/* Admin Edit Controls */}
+                        {isAdmin && (
+                          <div className="flex items-center justify-between mb-3 pb-3 border-b border-dashed border-[#5A5550]/30">
+                            <div className="flex items-center gap-2 text-xs text-[#5A5550]">
+                              <Settings className="h-3 w-3" />
+                              <span>Class ID: {cls.id}</span>
+                            </div>
+                            <Link href={`/admin/classes?edit=${cls.id}`}>
+                              <Button size="sm" variant="outline" className="h-7 text-xs border-[#5A5550] text-[#5A5550] hover:bg-[#5A5550] hover:text-white">
+                                <Pencil className="h-3 w-3 mr-1" />
+                                Edit Class
+                              </Button>
+                            </Link>
+                          </div>
+                        )}
+                        
                         <div className="flex flex-col gap-4 md:gap-6">
                           {/* Mobile: Time at top */}
                           <div className="md:hidden">
@@ -746,6 +764,18 @@ export default function SchedulePage() {
           </div>
         </div>
       </footer>
+
+      {/* Admin Floating Action Button */}
+      {isAdmin && (
+        <Link href="/admin/classes/create">
+          <button className="fixed bottom-6 right-6 z-50 bg-[#5A5550] hover:bg-[#4A4540] text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all group">
+            <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" />
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-[#5A5550] text-white text-sm px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+              Add New Class
+            </span>
+          </button>
+        </Link>
+      )}
     </div>
   )
 }

@@ -3,10 +3,11 @@
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Heart, Award, Sparkles } from "lucide-react"
+import { Heart, Award, Sparkles, Pencil, Plus, Settings } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { AdminBar } from "@/components/admin-bar"
+import { useAdmin } from "@/hooks/use-admin"
 
 const instructors = [
   {
@@ -76,6 +77,8 @@ const instructors = [
 ]
 
 export default function InstructorsPage() {
+  const { isAdmin } = useAdmin()
+  
   return (
     <div className="min-h-screen bg-[#FAF8F5]">
       {/* Admin Bar - only shows for admins */}
@@ -132,7 +135,23 @@ export default function InstructorsPage() {
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-8">
               {instructors.map((instructor, index) => (
-                <Card key={index} className="p-8 border-2 border-[#B8AFA5]/30 hover:border-[#9BA899] transition-all bg-[#FAF8F5]">
+                <Card key={index} className={`p-8 border-2 transition-all bg-[#FAF8F5] ${isAdmin ? 'border-[#5A5550]/40 hover:border-[#5A5550]' : 'border-[#B8AFA5]/30 hover:border-[#9BA899]'}`}>
+                  {/* Admin Edit Controls */}
+                  {isAdmin && (
+                    <div className="flex items-center justify-between mb-4 pb-4 border-b border-dashed border-[#5A5550]/30">
+                      <div className="flex items-center gap-2 text-xs text-[#5A5550]">
+                        <Settings className="h-3 w-3" />
+                        <span>Instructor: {instructor.name}</span>
+                      </div>
+                      <Link href={`/admin/instructors?search=${encodeURIComponent(instructor.name)}`}>
+                        <Button size="sm" variant="outline" className="h-7 text-xs border-[#5A5550] text-[#5A5550] hover:bg-[#5A5550] hover:text-white">
+                          <Pencil className="h-3 w-3 mr-1" />
+                          Edit Instructor
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                  
                   <div className="flex items-start gap-4 mb-4">
                     <div className="h-24 w-24 rounded-full overflow-hidden flex-shrink-0 bg-muted border-2 border-[#B8AFA5] flex items-center justify-center">
                       {instructor.image ? (
@@ -294,6 +313,18 @@ export default function InstructorsPage() {
           </div>
         </div>
       </footer>
+
+      {/* Admin Floating Action Button */}
+      {isAdmin && (
+        <Link href="/admin/instructors/create">
+          <button className="fixed bottom-6 right-6 z-50 bg-[#5A5550] hover:bg-[#4A4540] text-white rounded-full p-4 shadow-lg hover:shadow-xl transition-all group">
+            <Plus className="h-6 w-6 group-hover:rotate-90 transition-transform" />
+            <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-[#5A5550] text-white text-sm px-3 py-1.5 rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity">
+              Add New Instructor
+            </span>
+          </button>
+        </Link>
+      )}
     </div>
   )
 }
