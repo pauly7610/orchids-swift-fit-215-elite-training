@@ -307,7 +307,7 @@ export default function ClassScheduleManagement() {
                   Create Class
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-[#FAF8F5] max-w-2xl">
+              <DialogContent className="bg-[#FAF8F5] max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
                 <DialogHeader>
                   <DialogTitle className="text-[#5A5550] font-serif text-2xl">
                     {editingClass ? "Edit Class" : "Create New Class"}
@@ -316,7 +316,8 @@ export default function ClassScheduleManagement() {
                     {editingClass ? "Update class details" : "Schedule a new class session"}
                   </DialogDescription>
                 </DialogHeader>
-                <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                <form onSubmit={handleSubmit} className="flex flex-col flex-1 overflow-hidden">
+                <div className="space-y-4 overflow-y-auto flex-1 pr-2 pb-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="classTypeId" className="text-[#5A5550]">Class Type *</Label>
@@ -433,24 +434,25 @@ export default function ClassScheduleManagement() {
                       <option value="completed">Completed</option>
                     </select>
                   </div>
+                </div>
 
-                  <div className="flex gap-3 pt-4">
-                    <Button type="submit" className="flex-1 bg-[#9BA899] hover:bg-[#8A9788] text-white">
-                      {editingClass ? "Update Class" : "Create Class"}
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => {
-                        setIsCreateDialogOpen(false)
-                        setEditingClass(null)
-                        resetForm()
-                      }}
-                      className="border-[#B8AFA5] text-[#5A5550]"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
+                <div className="flex gap-3 pt-4 border-t border-[#B8AFA5]/20 mt-4 bg-[#FAF8F5]">
+                  <Button type="submit" className="flex-1 bg-[#9BA899] hover:bg-[#8A9788] text-white">
+                    {editingClass ? "Save Changes" : "Create Class"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setIsCreateDialogOpen(false)
+                      setEditingClass(null)
+                      resetForm()
+                    }}
+                    className="border-[#B8AFA5] text-[#5A5550]"
+                  >
+                    Cancel
+                  </Button>
+                </div>
                 </form>
               </DialogContent>
             </Dialog>
