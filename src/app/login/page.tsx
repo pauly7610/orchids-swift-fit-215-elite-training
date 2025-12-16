@@ -46,7 +46,7 @@ function LoginForm() {
         email: formData.email,
         password: formData.password,
         rememberMe: formData.rememberMe,
-        callbackURL: redirectTo || "/"
+        // Don't set callbackURL - we handle redirect manually based on role
       })
 
       if (error?.code) {
@@ -57,20 +57,30 @@ function LoginForm() {
 
       toast.success("Logged in successfully!")
       
+      // Small delay to ensure token is saved to localStorage
+      await new Promise(resolve => setTimeout(resolve, 100))
+      
       // Redirect based on user role (fetch from user profile)
       const token = localStorage.getItem("bearer_token")
+      console.log("Login successful, token present:", !!token, "user id:", data?.user?.id)
+      
       if (token && data?.user?.id) {
         // Fetch user profile to determine role
-        const profileRes = await fetch(`/api/user-profiles?userId=${data.user.id}`, {
+        const profileRes = await fetch(`/api/user-profiles`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         })
         
         if (profileRes.ok) {
-          const profiles = await profileRes.json()
-          if (profiles && profiles.length > 0) {
-            const role = profiles[0].role
+          const profileData = await profileRes.json()
+          console.log("Profile data:", profileData)
+          
+          // API returns single object when fetching current user's profile
+          const role = profileData?.role || (Array.isArray(profileData) && profileData[0]?.role)
+          
+          if (role) {
+            console.log("User role:", role)
             
             // If there's a specific redirect, use it
             if (redirectTo) {
