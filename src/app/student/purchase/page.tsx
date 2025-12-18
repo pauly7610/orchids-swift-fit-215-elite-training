@@ -89,17 +89,38 @@ export default function PurchasePage() {
     }
   }
 
-  const handlePurchase = (name: string) => {
+  const handlePurchase = async (name: string, pkg?: Package, membership?: Membership) => {
     const link = SWIPE_SIMPLE_LINKS[name]
     
     if (!link) {
       toast.error("Payment link not available. Please contact us.")
       return
     }
+
+    // Record purchase intent for admin tracking
+    try {
+      const token = localStorage.getItem("bearer_token")
+      await fetch("/api/pending-purchases", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          packageId: pkg?.id || null,
+          membershipId: membership?.id || null,
+          productName: name,
+          productType: membership ? 'membership' : 'package',
+          amount: membership?.priceMonthly || pkg?.price || 0
+        })
+      })
+    } catch (error) {
+      console.error("Failed to record purchase intent:", error)
+    }
     
     // Open SwipeSimple payment page
     window.open(link, "_blank", "noopener,noreferrer")
-    toast.success(`Opening payment page for ${name}`)
+    toast.success(`Opening payment page for ${name}. Credits will be added once payment is confirmed.`)
   }
 
   if (isPending || loading) {
@@ -216,7 +237,7 @@ export default function PurchasePage() {
 
                   <Button 
                     className="w-full bg-[#9BA899] hover:bg-[#8A9788] text-white rounded-full" 
-                    onClick={() => handlePurchase(membership.name)}
+                    onClick={() => handlePurchase(membership.name, undefined, membership)}
                   >
                     Subscribe Now
                     <ExternalLink className="h-4 w-4 ml-2" />
@@ -272,7 +293,7 @@ export default function PurchasePage() {
                   <Button 
                     className="w-full rounded-full border-[#9BA899] text-[#9BA899] hover:bg-[#9BA899]/10" 
                     variant="outline"
-                    onClick={() => handlePurchase(pkg.name)}
+                    onClick={() => handlePurchase(pkg.name, pkg, undefined)}
                   >
                     Buy Package
                     <ExternalLink className="h-4 w-4 ml-2" />

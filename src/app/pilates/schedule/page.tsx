@@ -36,6 +36,7 @@ interface Class {
 interface Purchase {
   id: number
   creditsRemaining: number
+  expiresAt: string | null
 }
 
 export default function SchedulePage() {
@@ -226,7 +227,14 @@ export default function SchedulePage() {
     }
   }
 
-  const totalCredits = purchases.reduce((sum, p) => sum + (p.creditsRemaining || 0), 0)
+  // Filter purchases to only count active, non-expired credits
+  const now = new Date().toISOString()
+  const validPurchases = purchases.filter(p => {
+    if (!p.creditsRemaining || p.creditsRemaining <= 0) return false
+    if (p.expiresAt && p.expiresAt < now) return false
+    return true
+  })
+  const totalCredits = validPurchases.reduce((sum, p) => sum + (p.creditsRemaining || 0), 0)
   const filteredClasses = selectedDate
     ? classes.filter(cls => isSameDay(parseISO(cls.date), selectedDate))
     : classes

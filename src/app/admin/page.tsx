@@ -522,15 +522,16 @@ export default function AdminDashboard() {
           </Card>
 
           <Card 
-            className="border-[#B8AFA5]/30 bg-white cursor-pointer hover:shadow-md hover:border-[#9BA899]/50 transition-all"
+            className="border-[#E8B4B8]/50 bg-white cursor-pointer hover:shadow-md hover:border-[#E8B4B8] transition-all"
+            onClick={() => router.push("/admin/pending-payments")}
           >
             <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-xs md:text-sm font-medium text-[#5A5550]">Total Revenue</CardTitle>
-              <DollarSign className="h-4 w-4 text-[#9BA899]" />
+              <CardTitle className="text-xs md:text-sm font-medium text-[#5A5550]">Pending Payments</CardTitle>
+              <CreditCard className="h-4 w-4 text-[#E8B4B8]" />
             </CardHeader>
             <CardContent>
-              <div className="text-xl md:text-2xl font-serif text-[#9BA899]">${stats.totalRevenue.toFixed(0)}</div>
-              <span className="text-xs text-[#B8AFA5]">All-time earnings</span>
+              <div className="text-xl md:text-2xl font-serif text-[#E8B4B8]">View</div>
+              <span className="text-xs text-[#B8AFA5]">Confirm & add credits</span>
             </CardContent>
           </Card>
 

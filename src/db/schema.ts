@@ -260,3 +260,19 @@ export const classReminderTracking = sqliteTable('class_reminder_tracking', {
   reminderSentAt: text('reminder_sent_at'),
   createdAt: text('created_at').notNull(),
 });
+
+// Pending purchases - tracks when users click to buy (for admin confirmation)
+export const pendingPurchases = sqliteTable('pending_purchases', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  studentProfileId: integer('student_profile_id').notNull().references(() => userProfiles.id),
+  packageId: integer('package_id').references(() => packages.id),
+  membershipId: integer('membership_id').references(() => memberships.id),
+  productName: text('product_name').notNull(),
+  productType: text('product_type').notNull(), // 'package' or 'membership'
+  amount: real('amount').notNull(),
+  status: text('status').notNull().default('pending'), // 'pending', 'confirmed', 'cancelled', 'expired'
+  createdAt: text('created_at').notNull(),
+  confirmedAt: text('confirmed_at'),
+  confirmedBy: integer('confirmed_by').references(() => userProfiles.id),
+  notes: text('notes'),
+});

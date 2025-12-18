@@ -365,7 +365,16 @@ export default function StudentDashboard() {
     }
   }
 
-  const totalCredits = purchases.reduce((sum, p) => sum + (p.creditsRemaining || 0), 0)
+  // Filter purchases to only count active, non-expired credits
+  const now = new Date().toISOString()
+  const validPurchases = purchases.filter(p => {
+    // Must have credits remaining
+    if (!p.creditsRemaining || p.creditsRemaining <= 0) return false
+    // Must not be expired (if expiration date exists)
+    if (p.expiresAt && p.expiresAt < now) return false
+    return true
+  })
+  const totalCredits = validPurchases.reduce((sum, p) => sum + (p.creditsRemaining || 0), 0)
   const activeBookings = bookings.filter(b => b.bookingStatus === "confirmed")
   const upcomingClasses = classes.filter(c => new Date(`${c.date}T${c.startTime}`) > new Date())
 
@@ -473,7 +482,7 @@ export default function StudentDashboard() {
             <CardContent>
               <div className="text-2xl font-serif text-[#9BA899]">{totalCredits}</div>
               <p className="text-xs text-[#B8AFA5]">
-                {purchases.filter(p => p.creditsRemaining > 0).length} active packages
+                {validPurchases.length} active packages
               </p>
             </CardContent>
           </Card>

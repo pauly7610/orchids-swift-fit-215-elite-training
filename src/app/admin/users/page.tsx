@@ -8,7 +8,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Users, Mail, Calendar, Shield, ArrowLeft, Search, CheckCircle, XCircle, Copy, Download } from "lucide-react"
+import { Users, Mail, Calendar, Shield, ArrowLeft, Search, CheckCircle, XCircle, Copy, Download, Plus, CreditCard } from "lucide-react"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { format, parseISO } from "date-fns"
 import { Input } from "@/components/ui/input"
@@ -58,6 +59,9 @@ export default function UsersManagementPage() {
   const [loading, setLoading] = useState(true)
   const [updatingRole, setUpdatingRole] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
+  const [addCreditsUser, setAddCreditsUser] = useState<UserWithProfile | null>(null)
+  const [creditsToAdd, setCreditsToAdd] = useState("5")
+  const [addingCredits, setAddingCredits] = useState(false)
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -226,6 +230,43 @@ export default function UsersManagementPage() {
       toast.success(`Copied ${count} student emails to clipboard`)
     } catch (error) {
       toast.error("Failed to copy to clipboard")
+    }
+  }
+
+  const handleAddCredits = async () => {
+    if (!addCreditsUser?.profile?.id) return
+    
+    setAddingCredits(true)
+    try {
+      const token = localStorage.getItem("bearer_token")
+      const res = await fetch("/api/admin/add-credits", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          studentProfileId: addCreditsUser.profile.id,
+          credits: parseInt(creditsToAdd),
+          expirationDays: 365,
+          notes: `Admin added ${creditsToAdd} credits`
+        })
+      })
+
+      const data = await res.json()
+      
+      if (res.ok) {
+        toast.success(`Added ${creditsToAdd} credits to ${addCreditsUser.name}'s account`)
+        setAddCreditsUser(null)
+        setCreditsToAdd("5")
+        fetchUsers()
+      } else {
+        toast.error(data.error || "Failed to add credits")
+      }
+    } catch (error) {
+      toast.error("Failed to add credits")
+    } finally {
+      setAddingCredits(false)
     }
   }
 
@@ -431,6 +472,15 @@ export default function UsersManagementPage() {
                                   <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-[#9BA899]/10 text-[#9BA899]">
                                     {user.hasUnlimitedMembership ? '∞ Unlimited' : `${user.creditsRemaining || 0} credits`}
                                   </span>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 px-2 text-xs text-[#9BA899] hover:text-[#5A5550] hover:bg-[#9BA899]/10"
+                                    onClick={() => setAddCreditsUser(user)}
+                                  >
+                                    <Plus className="h-3 w-3 mr-1" />
+                                    Add
+                                  </Button>
                                 </div>
                               )}
                             </div>
@@ -472,6 +522,83 @@ export default function UsersManagementPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Add Credits Dialog */}
+      <Dialog open={!!addCreditsUser} onOpenChange={(open) => !open && setAddCreditsUser(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="font-serif font-normal text-[#5A5550] flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-[#9BA899]" />
+              Add Credits
+            </DialogTitle>
+            <DialogDescription className="text-[#7A736B]">
+              Add credits to {addCreditsUser?.name}'s account
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="flex items-center gap-4">
+              <div className="h-12 w-12 rounded-full bg-[#9BA899]/20 flex items-center justify-center">
+                <span className="text-lg font-semibold text-[#9BA899]">
+                  {addCreditsUser?.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+              <div>
+                <p className="font-medium text-[#5A5550]">{addCreditsUser?.name}</p>
+                <p className="text-sm text-[#7A736B]">{addCreditsUser?.email}</p>
+                <p className="text-xs text-[#9BA899]">
+                  Current: {addCreditsUser?.hasUnlimitedMembership ? '∞ Unlimited' : `${addCreditsUser?.creditsRemaining || 0} credits`}
+                </p>
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-[#5A5550]">Credits to Add</label>
+              <div className="flex gap-2">
+                {['1', '3', '5', '10', '20'].map((val) => (
+                  <Button
+                    key={val}
+                    type="button"
+                    variant={creditsToAdd === val ? "default" : "outline"}
+                    size="sm"
+                    className={creditsToAdd === val 
+                      ? "bg-[#9BA899] hover:bg-[#8A9788] text-white" 
+                      : "border-[#B8AFA5] text-[#5A5550] hover:bg-[#9BA899]/10"}
+                    onClick={() => setCreditsToAdd(val)}
+                  >
+                    {val}
+                  </Button>
+                ))}
+              </div>
+              <Input
+                type="number"
+                min="1"
+                value={creditsToAdd}
+                onChange={(e) => setCreditsToAdd(e.target.value)}
+                className="mt-2 border-[#B8AFA5]/50 focus:border-[#9BA899]"
+                placeholder="Or enter custom amount"
+              />
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setAddCreditsUser(null)}
+              className="border-[#B8AFA5] text-[#5A5550]"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleAddCredits}
+              disabled={addingCredits || !creditsToAdd || parseInt(creditsToAdd) <= 0}
+              className="bg-[#9BA899] hover:bg-[#8A9788] text-white"
+            >
+              {addingCredits ? "Adding..." : `Add ${creditsToAdd} Credits`}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="border-t border-[#B8AFA5]/20 bg-white py-4 mt-auto">
