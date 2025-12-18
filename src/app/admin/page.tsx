@@ -12,8 +12,9 @@ import { Input } from "@/components/ui/input"
 import { 
   Calendar, Users, DollarSign, TrendingUp, Plus, Shield, LogOut, Settings, 
   BarChart3, Search, Clock, ChevronRight, User, ArrowUpRight, ArrowDownRight,
-  CalendarDays, CreditCard, Package, Mail
+  CalendarDays, CreditCard, Package, Mail, CheckCircle, XCircle, ChevronDown, AlertCircle
 } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { toast } from "sonner"
 import Link from "next/link"
 import Image from "next/image"
@@ -56,6 +57,24 @@ interface PackagePreview {
   name: string
   credits: number
   price: number
+}
+
+interface PendingPurchase {
+  id: number
+  studentName: string
+  studentEmail: string
+  productName: string
+  amount: number
+  createdAt: string
+}
+
+interface StudentWithCredits {
+  id: string
+  profileId: number
+  name: string
+  email: string
+  credits: number
+  hasUnlimited: boolean
 }
 
 // Skeleton Components
@@ -113,6 +132,14 @@ export default function AdminDashboard() {
   const [upcomingClasses, setUpcomingClasses] = useState<ClassPreview[]>([])
   const [recentUsers, setRecentUsers] = useState<UserPreview[]>([])
   const [packages, setPackages] = useState<PackagePreview[]>([])
+  
+  // Pending payments & credits
+  const [pendingPurchases, setPendingPurchases] = useState<PendingPurchase[]>([])
+  const [allStudents, setAllStudents] = useState<StudentWithCredits[]>([])
+  const [processingId, setProcessingId] = useState<number | null>(null)
+  const [addingCreditsTo, setAddingCreditsTo] = useState<string | null>(null)
+  const [creditsAmount, setCreditsAmount] = useState("5")
+  const [studentSearch, setStudentSearch] = useState("")
 
   useEffect(() => {
     if (!isPending && !session) {
@@ -286,6 +313,125 @@ export default function AdminDashboard() {
       setLoading(false)
     }
   }
+
+  // Fetch pending purchases and all students for credits management
+  const fetchPendingAndStudents = async () => {
+    try {
+      const token = localStorage.getItem("bearer_token")
+      const headers = { Authorization: `Bearer ${token}` }
+
+      const [pendingRes, usersRes, profilesRes, purchasesRes] = await Promise.all([
+        fetch("/api/pending-purchases?status=pending", { headers }),
+        fetch("/api/auth/users", { headers }),
+        fetch("/api/user-profiles?limit=500", { headers }),
+        fetch("/api/student-purchases?limit=500", { headers })
+      ])
+
+      if (pendingRes.ok) {
+        const data = await pendingRes.json()
+        setPendingPurchases(data)
+      }
+
+      if (usersRes.ok && profilesRes.ok) {
+        const users = await usersRes.json()
+        const profiles = await profilesRes.json()
+        const purchases = purchasesRes.ok ? await purchasesRes.json() : []
+
+        // Calculate credits per profile
+        const creditsByProfile = new Map<number, { credits: number, unlimited: boolean }>()
+        if (Array.isArray(purchases)) {
+          const now = new Date().toISOString()
+          purchases.forEach((p: any) => {
+            if (p.isActive && (!p.expiresAt || p.expiresAt > now)) {
+              const current = creditsByProfile.get(p.studentProfileId) || { credits: 0, unlimited: false }
+              if (p.creditsRemaining === null && p.purchaseType === 'membership') {
+                current.unlimited = true
+              } else if (p.creditsRemaining > 0) {
+                current.credits += p.creditsRemaining
+              }
+              creditsByProfile.set(p.studentProfileId, current)
+            }
+          })
+        }
+
+        // Merge users with profiles and credits (only students)
+        const students: StudentWithCredits[] = (Array.isArray(users) ? users : [])
+          .map((u: any) => {
+            const profile = (Array.isArray(profiles) ? profiles : []).find((p: any) => p.userId === u.id)
+            if (!profile || profile.role !== 'student') return null
+            const creditInfo = creditsByProfile.get(profile.id)
+            return {
+              id: u.id,
+              profileId: profile.id,
+              name: u.name,
+              email: u.email,
+              credits: creditInfo?.credits || 0,
+              hasUnlimited: creditInfo?.unlimited || false
+            }
+          })
+          .filter(Boolean) as StudentWithCredits[]
+
+        setAllStudents(students.sort((a, b) => a.name.localeCompare(b.name)))
+      }
+    } catch (error) {
+      console.error("Failed to fetch pending/students:", error)
+    }
+  }
+
+  // Confirm pending payment
+  const handleConfirmPayment = async (id: number) => {
+    setProcessingId(id)
+    try {
+      const token = localStorage.getItem("bearer_token")
+      const res = await fetch("/api/pending-purchases", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ pendingId: id, action: "confirm" })
+      })
+      const data = await res.json()
+      if (res.ok) {
+        toast.success(data.message || "Payment confirmed!")
+        fetchPendingAndStudents()
+      } else {
+        toast.error(data.error || "Failed to confirm")
+      }
+    } catch { toast.error("Failed to confirm payment") }
+    finally { setProcessingId(null) }
+  }
+
+  // Add credits to a student
+  const handleAddCredits = async (profileId: number, studentName: string) => {
+    const credits = parseInt(creditsAmount)
+    if (!credits || credits <= 0) {
+      toast.error("Enter a valid credit amount")
+      return
+    }
+    setAddingCreditsTo(profileId.toString())
+    try {
+      const token = localStorage.getItem("bearer_token")
+      const res = await fetch("/api/admin/add-credits", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ studentProfileId: profileId, credits, expirationDays: 365 })
+      })
+      const data = await res.json()
+      if (res.ok) {
+        toast.success(`Added ${credits} credits to ${studentName}`)
+        setCreditsAmount("5")
+        fetchPendingAndStudents()
+      } else {
+        toast.error(data.error || "Failed to add credits")
+      }
+    } catch { toast.error("Failed to add credits") }
+    finally { setAddingCreditsTo(null) }
+  }
+
+  // Load pending/students on mount
+  useEffect(() => {
+    if (session && !loading) {
+      fetchPendingAndStudents()
+    }
+  }, [session, loading])
 
   const handleSearch = async (term: string) => {
     setSearchTerm(term)
@@ -563,6 +709,147 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Pending Payments & Add Credits Section */}
+        <Card className="border-2 border-[#E8B4B8]/50 bg-white mb-6">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-full bg-[#E8B4B8]/20 flex items-center justify-center">
+                  <CreditCard className="h-4 w-4 text-[#E8B4B8]" />
+                </div>
+                <div>
+                  <CardTitle className="font-serif font-normal text-[#5A5550] text-lg flex items-center gap-2">
+                    Pending Payments & Add Credits
+                    {pendingPurchases.length > 0 && (
+                      <Badge className="bg-[#E8B4B8] text-white rounded-full">{pendingPurchases.length} pending</Badge>
+                    )}
+                  </CardTitle>
+                  <CardDescription className="text-[#7A736B]">Confirm SwipeSimple payments or manually add credits</CardDescription>
+                </div>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => router.push("/admin/pending-payments")}
+                className="border-[#E8B4B8] text-[#E8B4B8] hover:bg-[#E8B4B8]/10"
+              >
+                View All <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {/* Pending Purchases */}
+            {pendingPurchases.length > 0 && (
+              <div className="mb-6">
+                <h4 className="text-sm font-medium text-[#5A5550] mb-3 flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-[#E8B4B8]" />
+                  Awaiting Confirmation ({pendingPurchases.length})
+                </h4>
+                <div className="space-y-2">
+                  {pendingPurchases.slice(0, 5).map((p) => (
+                    <div key={p.id} className="flex items-center justify-between p-3 bg-[#FFF5F7] rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 rounded-full bg-[#E8B4B8]/20 flex items-center justify-center">
+                          <User className="h-4 w-4 text-[#E8B4B8]" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-sm text-[#5A5550]">{p.studentName}</p>
+                          <p className="text-xs text-[#7A736B]">{p.productName} - ${p.amount}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-[#B8AFA5]">{format(new Date(p.createdAt), 'MMM d, h:mm a')}</span>
+                        <Button
+                          size="sm"
+                          onClick={() => handleConfirmPayment(p.id)}
+                          disabled={processingId === p.id}
+                          className="bg-[#9BA899] hover:bg-[#8A9788] text-white h-7 text-xs"
+                        >
+                          {processingId === p.id ? "..." : <><CheckCircle className="h-3 w-3 mr-1" /> Confirm</>}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Add Credits to Any Student */}
+            <div>
+              <h4 className="text-sm font-medium text-[#5A5550] mb-3 flex items-center gap-2">
+                <Plus className="h-4 w-4 text-[#9BA899]" />
+                Add Credits to Student
+              </h4>
+              <div className="flex gap-2 mb-3">
+                <Input
+                  placeholder="Search students by name or email..."
+                  value={studentSearch}
+                  onChange={(e) => setStudentSearch(e.target.value)}
+                  className="flex-1 border-[#B8AFA5]/50 focus:border-[#9BA899]"
+                />
+                <Select value={creditsAmount} onValueChange={setCreditsAmount}>
+                  <SelectTrigger className="w-24 border-[#B8AFA5]/50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 credit</SelectItem>
+                    <SelectItem value="3">3 credits</SelectItem>
+                    <SelectItem value="5">5 credits</SelectItem>
+                    <SelectItem value="10">10 credits</SelectItem>
+                    <SelectItem value="20">20 credits</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="max-h-48 overflow-y-auto space-y-1 border border-[#B8AFA5]/20 rounded-lg">
+                {allStudents
+                  .filter(s => 
+                    studentSearch === "" || 
+                    s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
+                    s.email.toLowerCase().includes(studentSearch.toLowerCase())
+                  )
+                  .slice(0, 10)
+                  .map((student) => (
+                    <div key={student.id} className="flex items-center justify-between p-2 hover:bg-[#FAF8F5] border-b border-[#B8AFA5]/10 last:border-b-0">
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <div className="h-7 w-7 rounded-full bg-[#9BA899]/20 flex items-center justify-center shrink-0">
+                          <span className="text-xs font-medium text-[#9BA899]">{student.name.charAt(0)}</span>
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-[#5A5550] truncate">{student.name}</p>
+                          <p className="text-xs text-[#B8AFA5] truncate">{student.email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant="outline" className="text-xs border-[#9BA899] text-[#9BA899]">
+                          {student.hasUnlimited ? '∞' : student.credits} credits
+                        </Badge>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleAddCredits(student.profileId, student.name)}
+                          disabled={addingCreditsTo === student.profileId.toString()}
+                          className="h-7 text-xs border-[#9BA899] text-[#9BA899] hover:bg-[#9BA899]/10"
+                        >
+                          {addingCreditsTo === student.profileId.toString() ? "..." : `+${creditsAmount}`}
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                {allStudents.length === 0 && (
+                  <div className="p-4 text-center text-sm text-[#B8AFA5]">Loading students...</div>
+                )}
+                {allStudents.length > 0 && allStudents.filter(s => 
+                  studentSearch === "" || 
+                  s.name.toLowerCase().includes(studentSearch.toLowerCase()) ||
+                  s.email.toLowerCase().includes(studentSearch.toLowerCase())
+                ).length === 0 && (
+                  <div className="p-4 text-center text-sm text-[#B8AFA5]">No students match your search</div>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Today's Classes - Quick View */}
         {todayClasses.length > 0 && (
